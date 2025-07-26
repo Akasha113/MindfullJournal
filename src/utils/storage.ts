@@ -60,16 +60,14 @@ export const getFlaggedContent = (): FlaggedContent[] => {
 
 export const addFlaggedContent = (content: Omit<FlaggedContent, 'id' | 'timestamp'>): FlaggedContent => {
   const flaggedContent = getFlaggedContent();
-  
   const newEntry: FlaggedContent = {
     id: Date.now().toString(),
     timestamp: Date.now(),
     ...content,
+    riskLevel: content.riskLevel || 'low', // fallback for legacy data
   };
-  
   const updated = [...flaggedContent, newEntry];
   localStorage.setItem(STORAGE_KEYS.FLAGGED_CONTENT, JSON.stringify(updated));
-  
   return newEntry;
 };
 
@@ -106,13 +104,7 @@ export const addJournalEntry = (entry: Omit<JournalEntry, 'id' | 'createdAt' | '
     flagReason: contentCheck.reason,
   };
   
-  if (contentCheck.flagged) {
-    addFlaggedContent({
-      type: 'journal',
-      content: entry.content,
-      reason: contentCheck.reason!,
-    });
-  }
+  // Do NOT call addFlaggedContent here; handled by enhancedCheckContent in chat.ts
   
   const updatedJournals = [...profile.journals, newEntry];
   updateUserProfile({ journals: updatedJournals });
@@ -138,13 +130,7 @@ export const updateJournalEntry = (id: string, updates: Omit<JournalEntry, 'id' 
     flagReason: contentCheck.reason,
   };
   
-  if (contentCheck.flagged) {
-    addFlaggedContent({
-      type: 'journal',
-      content: updates.content,
-      reason: contentCheck.reason!,
-    });
-  }
+  // Do NOT call addFlaggedContent here; handled by enhancedCheckContent in chat.ts
   
   const updatedJournals = [...profile.journals];
   updatedJournals[index] = updatedEntry;
@@ -256,13 +242,7 @@ export const addMessageToConversation = (
     flagReason: contentCheck.reason,
   };
   
-  if (contentCheck.flagged) {
-    addFlaggedContent({
-      type: 'chat',
-      content: message.content,
-      reason: contentCheck.reason!,
-    });
-  }
+  // Do NOT call addFlaggedContent here; handled by enhancedCheckContent in chat.ts
   
   const updatedMessages = [...profile.conversations[convoIndex].messages, newMessage];
   const updatedConvo = {

@@ -72,8 +72,8 @@ class SimplifiedSuicideDetectionRAG:
     def mcp_classify(self, text):
         """Use Machine Learning Classification Pipeline for suicide detection"""
         if not self.mcp_vectorizer or not self.mcp_model:
+            print("MCP model or vectorizer not loaded. Defaulting to no risk.")
             return False, 0.0
-        
         try:
             X = self.mcp_vectorizer.transform([text])
             prediction = self.mcp_model.predict(X)[0]
@@ -81,7 +81,8 @@ class SimplifiedSuicideDetectionRAG:
             confidence = max(probability)
             return bool(prediction), confidence
         except Exception as e:
-            print(f"MCP classification error: {e}")
+            print(f"MCP classification error for input {text!r}: {e}")
+            # Default to no risk if MCP fails for any reason
             return False, 0.0
 
     def analyze_patterns(self, text):
@@ -143,17 +144,19 @@ class SimplifiedSuicideDetectionRAG:
         return context_score, contextual_cues
 
     def determine_risk_level(self, pattern_score, context_score, mcp_positive, mcp_confidence):
-        """Determine overall risk level"""
+        """Determine overall risk level with improved filter logic and MCP safeguard"""
         total_score = pattern_score + context_score
-        
-        if mcp_positive:
-            total_score += mcp_confidence * 5
-        
-        if total_score >= 15 or mcp_positive:
+
+        # Give more weight to MCP positive and confidence, but only if patterns/context are present
+        if mcp_positive and (pattern_score > 0 or context_score > 0):
+            total_score += mcp_confidence * 8
+
+        # Only allow MCP to trigger critical if confidence is extremely high AND patterns/context are present
+        if mcp_positive and (pattern_score >= 10 or total_score >= 20 or (pattern_score > 0 and mcp_confidence > 0.95)):
             return "critical"
-        elif total_score >= 10:
+        elif total_score >= 15 or (mcp_positive and (pattern_score >= 6 or (pattern_score > 0 and mcp_confidence > 0.8))):
             return "high"
-        elif total_score >= 5:
+        elif total_score >= 8 or (mcp_positive and (pattern_score >= 3 or (pattern_score > 0 and mcp_confidence > 0.6))):
             return "medium"
         else:
             return "low"
@@ -242,7 +245,18 @@ class SimplifiedSuicideDetectionRAG:
         print(f"HIGH RISK CASE LOGGED: {json.dumps(log_entry, indent=2)}")
 
 ### FASTAPI APP ###
+
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="Simplified Suicide Detection RAG API")
+
+# Enable CORS for all origins (for development)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify your frontend URL(s)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Initialize the RAG system
 rag_system = SimplifiedSuicideDetectionRAG()

@@ -25,3 +25,15 @@ dist-ssr
 .env
 pvt.jsx
 MCP\Suicide_Detection.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+venv_*/
+.venv
+env/
+.env

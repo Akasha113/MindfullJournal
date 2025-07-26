@@ -63,6 +63,7 @@ export interface FlaggedContent {
   type: 'chat' | 'journal';
   content: string;
   reason: string;
+  riskLevel: 'critical' | 'high' | 'medium' | 'low';
   timestamp: number;
   reviewed?: boolean;
   reviewedAt?: number;

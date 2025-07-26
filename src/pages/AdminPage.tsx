@@ -9,6 +9,7 @@ import Button from '../components/ui/Button';
 const AdminPage: React.FC = () => {
   const [flaggedContent, setFlaggedContent] = React.useState<FlaggedContent[]>([]);
   const [filter, setFilter] = React.useState<'all' | 'pending' | 'reviewed'>('all');
+  const [riskFilter, setRiskFilter] = React.useState<'all' | 'critical' | 'high' | 'medium' | 'low'>('all');
   
   React.useEffect(() => {
     const content = storage.getFlaggedContent();
@@ -37,8 +38,12 @@ const AdminPage: React.FC = () => {
         if (filter === 'reviewed') return item.reviewed;
         return true;
       })
+      .filter(item => {
+        if (riskFilter === 'all') return true;
+        return item.riskLevel === riskFilter;
+      })
       .sort((a, b) => b.timestamp - a.timestamp);
-  }, [flaggedContent, filter]);
+  }, [flaggedContent, filter, riskFilter]);
 
   return (
     <div>
@@ -48,7 +53,8 @@ const AdminPage: React.FC = () => {
       </div>
       
       {/* Filter buttons */}
-      <div className="mb-6 flex gap-2">
+      <div className="mb-6 flex flex-wrap gap-2">
+        {/* Status filter */}
         {(['all', 'pending', 'reviewed'] as const).map((option) => (
           <Button
             key={option}
@@ -56,6 +62,17 @@ const AdminPage: React.FC = () => {
             onClick={() => setFilter(option)}
           >
             {option.charAt(0).toUpperCase() + option.slice(1)}
+          </Button>
+        ))}
+        {/* Risk level filter */}
+        <span className="ml-4 font-medium text-gray-600">Risk Level:</span>
+        {(['all', 'critical', 'high', 'medium', 'low'] as const).map((level) => (
+          <Button
+            key={level}
+            variant={riskFilter === level ? 'primary' : 'outline'}
+            onClick={() => setRiskFilter(level)}
+          >
+            {level.charAt(0).toUpperCase() + level.slice(1)}
           </Button>
         ))}
       </div>
@@ -106,6 +123,7 @@ const AdminPage: React.FC = () => {
                     Reason for flagging:
                   </p>
                   <p className="text-red-600">{item.reason}</p>
+                  <p className="text-xs text-gray-500 mt-1">Risk Level: <span className="font-semibold capitalize">{item.riskLevel}</span></p>
                 </div>
                 
                 <div className="bg-gray-50 p-4 rounded">

@@ -128,9 +128,11 @@ export const fetchGitHubModelResponse = async (messages: ChatMessage[]): Promise
 };
 
 
+// Add an optional contentType parameter to support both 'chat' and 'journal'
 export const sendMessage = async (
   conversationId: string,
-  content: string
+  content: string,
+  contentType: 'chat' | 'journal' = 'chat'
 ): Promise<Conversation | null> => {
   // Fetch current conversation
   const convo = storage.getConversation(conversationId);
@@ -195,15 +197,32 @@ export const sendMessage = async (
 
   if (!updatedConvo) return null;
 
-  // Check if this is a high-risk message that should get crisis resources instead of AI response
-  if (riskAnalysis && (riskAnalysis.riskLevel === 'critical' || riskAnalysis.riskLevel === 'high')) {
+
+  // For critical risk: block and show crisis resources
+  if (riskAnalysis && riskAnalysis.riskLevel === 'critical') {
+    storage.addFlaggedContent({
+      type: contentType,
+      content,
+      reason: riskAnalysis.recommendedAction || 'Critical suicide risk detected',
+      riskLevel: 'critical',
+    });
     const crisisResponse = getCrisisResourcesResponse(riskAnalysis.riskLevel);
-    
-    // Add crisis resources response instead of calling the AI API
     return storage.addMessageToConversation(conversationId, {
       role: 'assistant',
       content: crisisResponse,
     });
+  }
+
+  // For high risk: flag but do not show warning, allow chat/journal to continue
+  if (riskAnalysis && riskAnalysis.riskLevel === 'high') {
+    storage.addFlaggedContent({
+      type: contentType,
+      content,
+      reason: riskAnalysis.recommendedAction || 'High suicide risk detected',
+      riskLevel: 'high',
+    });
+    // No warning message is shown to the user
+    // Continue with AI response or journal flow
   }
 
   try {
