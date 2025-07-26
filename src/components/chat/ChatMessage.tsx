@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ChatMessage as ChatMessageType } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
-import { Brain, User } from 'lucide-react';
+import { Brain, User, AlertCircle, Heart } from 'lucide-react';
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -10,6 +10,14 @@ interface ChatMessageProps {
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
+  
+  // Check if this is a crisis resource message
+  const isCrisisMessage = !isUser && (
+    message.content.includes('IMMEDIATE HELP AVAILABLE') ||
+    message.content.includes('National Suicide Prevention Lifeline') ||
+    message.content.includes('Call 988') ||
+    message.content.includes('Crisis Text Line')
+  );
   
   return (
     <motion.div
@@ -22,10 +30,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         <div className={`
           flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center
           ${isUser ? 'ml-2' : 'mr-2'}
-          ${isUser ? 'bg-gray-200' : 'bg-black'}
+          ${isUser ? 'bg-gray-200' : isCrisisMessage ? 'bg-red-600' : 'bg-black'}
         `}>
           {isUser ? (
             <User size={16} className="text-gray-700" />
+          ) : isCrisisMessage ? (
+            <AlertCircle size={16} className="text-white" />
           ) : (
             <Brain size={16} className="text-white" />
           )}
@@ -33,12 +43,20 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         
         <div>
           <div className={`
-            rounded-lg p-3
+            rounded-lg p-3 border-2
             ${isUser 
-              ? 'bg-gray-200 text-gray-900' 
-              : 'bg-black text-white'
+              ? 'bg-gray-200 text-gray-900 border-transparent' 
+              : isCrisisMessage
+                ? 'bg-red-50 text-red-900 border-red-200 shadow-lg'
+                : 'bg-black text-white border-transparent'
             }
           `}>
+            {isCrisisMessage && (
+              <div className="flex items-center mb-2 text-red-600">
+                <Heart size={16} className="mr-2" />
+                <span className="font-semibold text-sm">Crisis Support Resources</span>
+              </div>
+            )}
             <p className="whitespace-pre-wrap">{message.content}</p>
           </div>
           

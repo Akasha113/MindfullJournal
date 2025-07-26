@@ -21,8 +21,15 @@ const ChatPage: React.FC = () => {
     // Create a new conversation if none exists
     if (loadedConversations.length === 0) {
       const newConversation = storage.createConversation('New Conversation');
-      setConversations([newConversation]);
-      setActiveConversation(newConversation);
+      const initializedConversation = chatService.initializeConversation(newConversation.id);
+      
+      if (initializedConversation) {
+        setConversations([initializedConversation]);
+        setActiveConversation(initializedConversation);
+      } else {
+        setConversations([newConversation]);
+        setActiveConversation(newConversation);
+      }
     } else {
       // Set the most recent conversation as active
       setActiveConversation(loadedConversations[loadedConversations.length - 1]);
@@ -61,9 +68,57 @@ const ChatPage: React.FC = () => {
   };
 
   const handleNewConversation = () => {
-    const newConversation = storage.createConversation();
-    setConversations([...conversations, newConversation]);
-    setActiveConversation(newConversation);
+    const newConversation = storage.createConversation('New Chat');
+    
+    // Initialize the conversation with the therapist's greeting
+    const initializedConversation = chatService.initializeConversation(newConversation.id);
+    
+    if (initializedConversation) {
+      setConversations([...conversations, initializedConversation]);
+      setActiveConversation(initializedConversation);
+    } else {
+      // Fallback to empty conversation if initialization fails
+      setConversations([...conversations, newConversation]);
+      setActiveConversation(newConversation);
+    }
+  };
+
+  const handleDeleteConversation = (conversationId: string, event: React.MouseEvent) => {
+    // Prevent the conversation from being selected when clicking delete
+    event.stopPropagation();
+    
+    // Show confirmation dialog
+    const confirmed = window.confirm('Are you sure you want to delete this conversation? This action cannot be undone.');
+    
+    if (!confirmed) return;
+    
+    const success = storage.deleteConversation(conversationId);
+    
+    if (success) {
+      // Update the conversations list
+      const updatedConversations = conversations.filter(convo => convo.id !== conversationId);
+      setConversations(updatedConversations);
+      
+      // If we deleted the active conversation, select another one or clear selection
+      if (activeConversation?.id === conversationId) {
+        if (updatedConversations.length > 0) {
+          // Select the most recent conversation
+          setActiveConversation(updatedConversations[updatedConversations.length - 1]);
+        } else {
+          // No conversations left, create a new one
+          const newConversation = storage.createConversation('New Conversation');
+          const initializedConversation = chatService.initializeConversation(newConversation.id);
+          
+          if (initializedConversation) {
+            setConversations([initializedConversation]);
+            setActiveConversation(initializedConversation);
+          } else {
+            setConversations([newConversation]);
+            setActiveConversation(newConversation);
+          }
+        }
+      }
+    }
   };
 
   const handleSelectConversation = (conversation: Conversation) => {
@@ -85,7 +140,7 @@ const ChatPage: React.FC = () => {
     );
 
     // Persist the cleared conversation to storage
-    storage.updateConversation(clearedConversation);
+    storage.updateConversation(clearedConversation.id, { messages: [] });
   };
 
   // Filter out system messages for display
@@ -117,23 +172,37 @@ const ChatPage: React.FC = () => {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
               >
-                <button
-                  onClick={() => handleSelectConversation(convo)}
+                <div 
                   className={`
-                    w-full p-3 text-left border-b border-gray-100 hover:bg-gray-50 transition-colors
+                    w-full border-b border-gray-100 hover:bg-gray-50 transition-colors
                     ${activeConversation?.id === convo.id ? 'bg-gray-100' : ''}
                   `}
                 >
-                  <div className="flex items-center gap-2">
-                    <MessageCircle size={16} className="text-gray-500" />
-                    <span className="truncate font-medium">{convo.title}</span>
-                  </div>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => handleSelectConversation(convo)}
+                      className="flex-1 p-3 text-left"
+                    >
+                      <div className="flex items-center gap-2">
+                        <MessageCircle size={16} className="text-gray-500" />
+                        <span className="truncate font-medium">{convo.title}</span>
+                      </div>
 
-                  <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
-                    <Clock size={12} />
-                    <span>{new Date(convo.updatedAt).toLocaleDateString()}</span>
+                      <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
+                        <Clock size={12} />
+                        <span>{new Date(convo.updatedAt).toLocaleDateString()}</span>
+                      </div>
+                    </button>
+                    
+                    <button
+                      onClick={(e) => handleDeleteConversation(convo.id, e)}
+                      className="p-2 m-1 rounded hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors"
+                      title="Delete conversation"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
-                </button>
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -144,20 +213,32 @@ const ChatPage: React.FC = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile conversation selector */}
         <div className="md:hidden p-2 bg-white border-b">
-          <select
-            value={activeConversation?.id}
-            onChange={(e) => {
-              const selectedConvo = conversations.find((c) => c.id === e.target.value);
-              if (selectedConvo) handleSelectConversation(selectedConvo);
-            }}
-            className="w-full p-2 border rounded"
-          >
-            {conversations.map((convo) => (
-              <option key={convo.id} value={convo.id}>
-                {convo.title}
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-2">
+            <select
+              value={activeConversation?.id}
+              onChange={(e) => {
+                const selectedConvo = conversations.find((c) => c.id === e.target.value);
+                if (selectedConvo) handleSelectConversation(selectedConvo);
+              }}
+              className="flex-1 p-2 border rounded"
+            >
+              {conversations.map((convo) => (
+                <option key={convo.id} value={convo.id}>
+                  {convo.title}
+                </option>
+              ))}
+            </select>
+            
+            {activeConversation && conversations.length > 1 && (
+              <button
+                onClick={(e) => handleDeleteConversation(activeConversation.id, e)}
+                className="px-3 py-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
+                title="Delete current conversation"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
 
           <button
             onClick={handleNewConversation}

@@ -23,7 +23,7 @@ A comprehensive, safety-first, and scalable platform leveraging **machine learni
 
 ## Overview
 
-This system is designed to identify and respond to potential suicide risks in real-time using advanced **machine learning classification** (TF-IDF and Logistic Regression) and **Retrieval Augmented Generation (RAG)**, integrated with **generative models** (e.g., OpenAI GPT, Gemini) to provide empathetic, context-aware responses. In addition to AI-based direct support, it offers a **journal** and **mood tracking** feature set for users to record personal reflections and monitor their emotional well-being over time.
+This system is designed to identify and respond to potential suicide risks in real-time using advanced **machine learning classification** (TF-IDF and Logistic Regression) and **Retrieval Augmented Generation (RAG)**, integrated with **generative models** (e.g., GitHub Models API with GPT-4, Claude) to provide empathetic, context-aware responses. In addition to AI-based direct support, it offers a **journal** and **mood tracking** feature set for users to record personal reflections and monitor their emotional well-being over time.
 
 ---
 
@@ -39,7 +39,7 @@ This system is designed to identify and respond to potential suicide risks in re
   Integration of curated resources and knowledge bases to enhance AI responses with relevant context.
 
 - **Generative AI Support**  
-  Empathetic and context-rich conversations powered by **OpenAI GPT** and **Gemini** APIs.
+  Empathetic and context-rich conversations powered by **GitHub Models API** with access to GPT-4, Claude, and other state-of-the-art models.
 
 - **Admin Dashboard**  
   A **React**-based interface for administrators to:
@@ -60,8 +60,8 @@ This system is designed to identify and respond to potential suicide risks in re
 
 1. **FastAPI Backend**  
    - Hosts the classification model, manages user data, handles API routes.  
-2. **Gemini / OpenAI Integration**  
-   - Powers generative responses using relevant context.  
+2. **GitHub Models API Integration**  
+   - Powers generative responses using state-of-the-art models like GPT-4 and Claude.  
 3. **React Admin Dashboard**  
    - Allows moderators or mental health professionals to review and manage flagged content.  
 
@@ -71,7 +71,7 @@ This system is designed to identify and respond to potential suicide risks in re
 
 - **Backend:** Python, FastAPI, Scikit-learn, SQLite/PostgreSQL  
 - **Frontend:** React, Material-UI  
-- **AI APIs:** Gemini, OpenAI GPT  
+- **AI APIs:** GitHub Models API (GPT-4, Claude, o1)  
 - **Others:** Docker (optional), JWT-based Auth, RESTful Services  
 
 ---
@@ -94,7 +94,7 @@ This system is designed to identify and respond to potential suicide risks in re
    - Ideal for referencing relevant mental health resources/articles.  
 
 4. **Generative Response Integration**  
-   - Uses **OpenAI GPT** or **Gemini** to generate empathetic, context-tuned messages.  
+   - Uses **GitHub Models API** with GPT-4, Claude, and other advanced models to generate empathetic, context-tuned messages.  
    - Automatic escalation triggers for high-risk user statements.  
 
 5. **Admin Dashboard**  
