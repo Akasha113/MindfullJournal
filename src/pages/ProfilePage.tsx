@@ -128,7 +128,7 @@ const ProfilePage: React.FC = () => {
         </h1>
         
         <p className="text-gray-600">
-          Your mental wellness journey with Zenify
+          Your mental wellness journey with MindFul Jounral
         </p>
       </motion.div>
       

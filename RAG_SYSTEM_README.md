@@ -1,6 +1,6 @@
 # Enhanced RAG-Based Suicide Detection System
 
-This document describes the improved RAG (Retrieval Augmented Generation) implementation for Zenify's suicide detection and prevention system.
+This document describes the improved RAG (Retrieval Augmented Generation) implementation for MindFul Jounral's suicide detection and prevention system.
 
 ## Overview
 
@@ -56,7 +56,7 @@ The enhanced system combines multiple AI techniques to provide comprehensive sui
 ### 1. Backend Setup
 ```bash
 # Navigate to project directory
-cd /path/to/Zenify
+cd /path/to/MindFul Jounral
 
 # Make startup script executable
 chmod +x start_apis.sh

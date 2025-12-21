@@ -37,7 +37,7 @@ const AboutPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            About Zenify
+            About MindFul Jounral
           </motion.h1>
           <motion.p
             className="text-xl text-gray-600 max-w-2xl mx-auto"
@@ -62,7 +62,7 @@ const AboutPage: React.FC = () => {
             <div>
               <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                At Zenify, we believe that mental wellness should be accessible to everyone. 
+                At MindFul Jounral, we believe that mental wellness should be accessible to everyone. 
                 Our AI-powered platform provides a safe space for self-reflection, emotional 
                 support, and personal growth.
               </p>

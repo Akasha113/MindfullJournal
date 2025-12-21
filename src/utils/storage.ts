@@ -20,11 +20,11 @@ const defaultProfile: UserProfile = {
 
 // Storage keys
 const STORAGE_KEYS = {
-  USER_PROFILE: 'zenify_user_profile',
-  JOURNALS: 'zenify_journals',
-  MOOD_ENTRIES: 'zenify_mood_entries',
-  CONVERSATIONS: 'zenify_conversations',
-  FLAGGED_CONTENT: 'zenify_flagged_content',
+  USER_PROFILE: 'MindFul Jounral_user_profile',
+  JOURNALS: 'MindFul Jounral_journals',
+  MOOD_ENTRIES: 'MindFul Jounral_mood_entries',
+  CONVERSATIONS: 'MindFul Jounral_conversations',
+  FLAGGED_CONTENT: 'MindFul Jounral_flagged_content',
 };
 
 // Initialize storage

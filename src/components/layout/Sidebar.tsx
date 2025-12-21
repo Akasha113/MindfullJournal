@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
   return (
     <aside className="h-full flex flex-col">
       <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold text-gray-900">Zenify</h2>
+        <h2 className="text-lg font-semibold text-gray-900">MindFul Jounral</h2>
         <p className="text-sm text-gray-600">Your AI mental health companion</p>
       </div>
       

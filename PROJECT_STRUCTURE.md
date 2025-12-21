@@ -1,9 +1,9 @@
-# Zenify Project Structure
+# MindFul Jounral Project Structure
 
 ## 📁 Clean Project Organization
 
 ```
-Zenify/
+MindFul Jounral/
 ├── 📋 Documentation
 │   ├── README.md                          # Main project documentation
 │   ├── CRISIS_RESPONSE_README.md          # Crisis intervention system docs
@@ -70,7 +70,7 @@ Zenify/
 - `file.py` - Unused MCP file
 - `model.py` - Unused MCP file
 - `start_simplified_apis.sh` - Duplicate startup script
-- `zenify-data-2025-05-03.json` - Old data file
+- `MindFul Jounral-data-2025-05-03.json` - Old data file
 - `__pycache__/` directories - Python cache files
 
 ### ✅ Kept Essential Files:

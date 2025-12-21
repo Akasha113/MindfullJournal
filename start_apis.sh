@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Startup script for Zenify RAG and MCP APIs
+# Startup script for MindFul Jounral RAG and MCP APIs
 
-echo "Starting Zenify Mental Health APIs..."
+echo "Starting MindFul Jounral Mental Health APIs..."
 
 # Check if Python virtual environment exists
 if [ ! -d "venv" ]; then

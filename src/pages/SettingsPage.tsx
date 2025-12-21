@@ -51,7 +51,7 @@ const SettingsPage: React.FC = () => {
       const dataStr = JSON.stringify(profile, null, 2);
       const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
       
-      const exportFileDefaultName = `zenify-data-${new Date().toISOString().slice(0, 10)}.json`;
+      const exportFileDefaultName = `MindFul Jounral-data-${new Date().toISOString().slice(0, 10)}.json`;
       
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
@@ -114,7 +114,7 @@ const SettingsPage: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-2xl font-semibold">Settings</h1>
-        <p className="text-gray-600">Customize your Zenify experience</p>
+        <p className="text-gray-600">Customize your MindFul Jounral experience</p>
       </motion.div>
       
       <motion.div
@@ -280,7 +280,7 @@ const SettingsPage: React.FC = () => {
           <p className="text-xs text-gray-500">
             Export your data regularly to avoid losing your journal entries and conversation history.
             Note that we store all your data locally in your browser. Clearing your browser data will
-            remove all your Zenify information.
+            remove all your MindFul Jounral information.
           </p>
         </div>
       </motion.div>

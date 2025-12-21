@@ -1,7 +1,7 @@
-# Zenify Crisis Response System
+# MindFul Jounral Crisis Response System
 
 ## Overview
-Zenify now includes an enhanced crisis response system that automatically detects suicide-related content and provides immediate crisis resources instead of sending concerning messages to the AI model.
+MindFul Jounral now includes an enhanced crisis response system that automatically detects suicide-related content and provides immediate crisis resources instead of sending concerning messages to the AI model.
 
 ## How It Works
 
