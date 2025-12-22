@@ -71,13 +71,13 @@ const HomePage: React.FC = () => {
           </div>
         </motion.div>
 
-        <motion.h1 
+          <motion.h1 
           className="text-6xl md:text-7xl font-semibold mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          Welcome to MindFul Jounral
+          Welcome to MindFul Journal
         </motion.h1>
         
         <motion.p 

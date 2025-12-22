@@ -18,7 +18,7 @@ The following models are available through GitHub Models API:
 
 **Note**: Model names should be used without the provider prefix (e.g., use `gpt-4o-mini` not `openai/gpt-4o-mini`)
 
-### 6. Test the Integration GitHub Models API integration for MindFul Jounral using the Azure REST client.
+### 6. Test the Integration GitHub Models API integration for MindFul Journal using the Azure REST client.
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ The following models are available through GitHub Models API:
 
 1. Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
 2. Click "Generate new token" → "Generate new token (classic)"
-3. Give your token a descriptive name (e.g., "MindFul Jounral Chat API")
+3. Give your token a descriptive name (e.g., "MindFul Journal Chat API")
 4. Set an appropriate expiration date
 5. Select the following scopes:
    - `repo` (if your repo is private)

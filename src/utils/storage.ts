@@ -20,11 +20,11 @@ const defaultProfile: UserProfile = {
 
 // Storage keys
 const STORAGE_KEYS = {
-  USER_PROFILE: 'MindFul Jounral_user_profile',
-  JOURNALS: 'MindFul Jounral_journals',
-  MOOD_ENTRIES: 'MindFul Jounral_mood_entries',
-  CONVERSATIONS: 'MindFul Jounral_conversations',
-  FLAGGED_CONTENT: 'MindFul Jounral_flagged_content',
+  USER_PROFILE: 'MindFul Journal_user_profile',
+  JOURNALS: 'MindFul Journal_journals',
+  MOOD_ENTRIES: 'MindFul Journal_mood_entries',
+  CONVERSATIONS: 'MindFul Journal_conversations',
+  FLAGGED_CONTENT: 'MindFul Journal_flagged_content',
 };
 
 // Initialize storage

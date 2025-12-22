@@ -36,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               >
                 <Brain size={20} className="text-white dark:text-black" />
               </motion.div>
-              <span className="ml-2 text-xl font-semibold text-gray-900 dark:text-white">MindFul Jounral</span>
+              <span className="ml-2 text-xl font-semibold text-gray-900 dark:text-white">MindFul Journal</span>
             </Link>
           </div>
           

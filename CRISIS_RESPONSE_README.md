@@ -1,7 +1,7 @@
-# MindFul Jounral Crisis Response System
+# MindFul Journal Crisis Response System
 
 ## Overview
-MindFul Jounral now includes an enhanced crisis response system that automatically detects suicide-related content and provides immediate crisis resources instead of sending concerning messages to the AI model.
+MindFul Journal now includes an enhanced crisis response system that automatically detects suicide-related content and provides immediate crisis resources instead of sending concerning messages to the AI model.
 
 ## How It Works
 

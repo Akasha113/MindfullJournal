@@ -261,7 +261,7 @@ const ChatPage: React.FC = () => {
                   transition={{ duration: 0.5 }}
                 >
                   <Brain size={48} className="mb-4 text-gray-400" />
-                  <h2 className="text-xl font-semibold mb-2">Welcome to MindFul Jounral</h2>
+                  <h2 className="text-xl font-semibold mb-2">Welcome to MindFul Journal</h2>
                   <p className="max-w-md">
                     I'm your AI mental wellness companion. You can talk to me about your thoughts,
                     feelings, or anything that's on your mind.
