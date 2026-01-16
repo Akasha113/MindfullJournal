@@ -80,7 +80,7 @@ const HomePage: React.FC = () => {
         </motion.h1>
         
         <motion.p 
-          className="text-xl md:text-2xl text-[#6E2B8A] mb-8 max-w-2xl mx-auto font-medium"
+          className="text-xl md:text-2xl text-black dark:text-white mb-8 max-w-2xl mx-auto font-medium"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}

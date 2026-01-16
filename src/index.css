@@ -29,11 +29,13 @@
 /* Base styles */
 body {
   @apply bg-white dark:bg-[#1a1a2e] text-black dark:text-white transition-colors duration-200;
+  color: #000000;
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-  @apply text-[#6E2B8A] font-bold;
+  @apply text-[#6E2B8A] font-bold dark:text-[#a323af];
+  color: #6E2B8A;
 }
 
 h1 { @apply text-4xl; }
@@ -42,6 +44,15 @@ h3 { @apply text-2xl; }
 h4 { @apply text-xl; }
 h5 { @apply text-lg; }
 h6 { @apply text-base; }
+
+/* Paragraphs and text */
+p, span, div {
+  color: #000000;
+}
+
+p {
+  @apply dark:text-white;
+}
 
 /* Buttons */
 button, .btn {
