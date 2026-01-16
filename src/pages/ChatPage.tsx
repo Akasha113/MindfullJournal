@@ -172,11 +172,8 @@ const ChatPage: React.FC = () => {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
               >
-                <div 
-                  className={`
-                    w-full border-b border-[#f4e4f5] dark:border-[#f4e4f5] hover:bg-[#f4e4f5] dark:hover:bg-[#f4e4f5] transition-colors
-                    ${activeConversation?.id === convo.id ? 'bg-[#f4e4f5] dark:bg-[#f4e4f5]' : 'bg-[#fdf9fe] dark:bg-[#fdf9fe]'}
-                  `}
+               <div 
+                  className={`w-full border-b border-[#e8c8eb] hover:bg-[#f1e6f8] transition-colors ${activeConversation?.id === convo.id ? 'bg-[#f7effb]' : 'bg-[#fbf6fd]'}`}
                 >
                   <div className="flex items-center  ">
                     <button
