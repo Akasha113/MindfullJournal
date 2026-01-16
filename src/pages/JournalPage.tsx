@@ -89,7 +89,7 @@ const JournalPage: React.FC = () => {
   }, [journals, searchQuery, activeTag]);
 
   return (
-    <div>
+    <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#1a1a2e] py-8 px-4 md:px-8">
       <AnimatePresence mode="wait">
         {showForm ? (
           <motion.div
@@ -113,7 +113,7 @@ const JournalPage: React.FC = () => {
             exit={{ opacity: 0 }}
           >
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-semibold">Journal</h1>
+              <h1 className="text-2xl font-semibold text-[#6E2B8A]">Journal</h1>
               <Button
                 onClick={handleCreateJournal}
                 icon={<Plus size={18} />}
@@ -126,28 +126,28 @@ const JournalPage: React.FC = () => {
             <div className="mb-6 flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search size={18} className="text-gray-400" />
+                  <Search size={18} className="text-[#6E2B8A]" />
                 </div>
                 <input
                   type="text"
                   placeholder="Search journals..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+                  className="pl-10 w-full p-2 border-2 border-[#f4e4f5] dark:border-[#6E2B8A] dark:bg-[#16213e] dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent"
                 />
               </div>
               
               {allTags.length > 0 && (
                 <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                  <Filter size={18} className="text-gray-400 flex-shrink-0" />
+                  <Filter size={18} className="text-[#6E2B8A] flex-shrink-0" />
                   
                   <button
                     onClick={() => setActiveTag(null)}
                     className={`
-                      px-2 py-1 rounded-full text-sm whitespace-nowrap
+                      px-2 py-1 rounded-full text-sm whitespace-nowrap font-medium transition-colors
                       ${!activeTag 
-                        ? 'bg-black text-white' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-[#6E2B8A] text-white' 
+                        : 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#e8c8eb] dark:hover:bg-[#3a2860]'
                       }
                     `}
                   >
@@ -159,10 +159,10 @@ const JournalPage: React.FC = () => {
                       key={tag}
                       onClick={() => setActiveTag(activeTag === tag ? null : tag)}
                       className={`
-                        px-2 py-1 rounded-full text-sm whitespace-nowrap
+                        px-2 py-1 rounded-full text-sm whitespace-nowrap font-medium transition-colors
                         ${activeTag === tag 
-                          ? 'bg-black text-white' 
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-[#6E2B8A] text-white' 
+                          : 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#e8c8eb] dark:hover:bg-[#3a2860]'
                         }
                       `}
                     >
@@ -176,7 +176,7 @@ const JournalPage: React.FC = () => {
             {/* Journal list */}
             {filteredJournals.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-500 mb-4">No journal entries found</p>
+                <p className="text-[#6E2B8A] dark:text-[#a323af] mb-4">No journal entries found</p>
                 <Button
                   variant="outline"
                   onClick={handleCreateJournal}

@@ -15,11 +15,11 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
   const [isExpanded, setIsExpanded] = React.useState(false);
   
   const moodColors = {
-    great: 'bg-gray-900 text-white',
-    good: 'bg-gray-700 text-white',
-    neutral: 'bg-gray-500 text-white',
-    bad: 'bg-gray-400 text-gray-900',
-    awful: 'bg-gray-300 text-gray-900',
+    great: 'bg-[#6E2B8A] dark:bg-[#a323af] text-white',
+    good: 'bg-[#8a0a9b] dark:bg-[#ba5ac3] text-white',
+    neutral: 'bg-[#a323af] dark:bg-[#d191d7] text-white',
+    bad: 'bg-[#d191d7] dark:bg-[#e8c8eb] text-black',
+    awful: 'bg-[#e8c8eb] dark:bg-[#f4e4f5] text-black',
   };
   
   const moodEmojis = {
@@ -32,7 +32,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
 
   return (
     <motion.div
-      className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100"
+      className="bg-white dark:bg-[#16213e] rounded-lg shadow-md overflow-hidden border-2 border-[#f4e4f5] dark:border-[#6E2B8A]"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -41,8 +41,8 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">{journal.title}</h3>
-            <div className="text-xs text-gray-500">
+            <h3 className="text-lg font-semibold text-[#6E2B8A] dark:text-[#a323af] mb-1">{journal.title}</h3>
+            <div className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3]">
               {format(new Date(journal.createdAt), 'MMM d, yyyy - h:mm a')}
             </div>
           </div>
@@ -53,7 +53,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
         </div>
         
         <motion.div
-          className="mt-3 text-gray-700 overflow-hidden"
+          className="mt-3 text-black dark:text-white overflow-hidden"
           animate={{ height: isExpanded ? 'auto' : '80px' }}
         >
           <p className={isExpanded ? '' : 'line-clamp-3'}>
@@ -64,7 +64,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
         {journal.content.length > 150 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-2 text-sm text-gray-600 hover:text-black focus:outline-none"
+            className="mt-2 text-sm text-[#6E2B8A] dark:text-[#a323af] hover:text-[#5a2270] dark:hover:text-[#ba5ac3] focus:outline-none font-medium"
           >
             {isExpanded ? 'Show less' : 'Read more'}
           </button>
@@ -75,7 +75,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
             {journal.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
+                className="text-xs bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#6E2B8A] dark:text-[#a323af] px-2 py-1 rounded-full"
               >
                 #{tag}
               </span>
