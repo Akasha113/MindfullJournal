@@ -40,19 +40,19 @@ const MoodPage: React.FC = () => {
   }, [moodEntries]);
 
   return (
-    <div>
+    <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#1a1a2e] py-8 px-4 md:px-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold">Mood Tracker</h1>
-        <p className="text-gray-600">Track your mood daily to see patterns over time</p>
+        <h1 className="text-2xl font-semibold text-[#6E2B8A]">Mood Tracker</h1>
+        <p className="text-black dark:text-white">Track your mood daily to see patterns over time</p>
       </div>
 
       {/* Today's mood section */}
       <motion.div
-        className="mb-8 bg-white p-6 rounded-lg shadow-md"
+        className="mb-8 bg-white dark:bg-[#16213e] p-6 rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h2 className="text-xl font-semibold mb-4">
+        <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">
           {hasTrackedMoodToday ? "Today's Mood" : "How are you feeling today?"}
         </h2>
 
@@ -71,14 +71,14 @@ const MoodPage: React.FC = () => {
                 value={moodNote}
                 onChange={(e) => setMoodNote(e.target.value)}
                 placeholder="Any specific thoughts about your mood today? (optional)"
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent resize-none"
+                className="w-full p-3 border-2 border-[#f4e4f5] dark:border-[#6E2B8A] dark:bg-[#16213e] dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent resize-none"
                 rows={2}
               />
             </div>
 
             <button
               onClick={handleTrackMood}
-              className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+              className="px-4 py-2 bg-[#6E2B8A] dark:bg-[#a323af] text-white rounded-md hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3] transition-colors font-medium"
             >
               Track Today's Mood
             </button>
@@ -86,7 +86,7 @@ const MoodPage: React.FC = () => {
         )}
         
         {hasTrackedMoodToday && moodNote && (
-          <div className="mt-4 p-3 bg-gray-50 rounded-md italic text-gray-700">
+          <div className="mt-4 p-3 bg-[#f4e4f5] dark:bg-[#2d1b4e] rounded-md italic text-[#6E2B8A] dark:text-[#a323af]">
             "{moodNote}"
           </div>
         )}
@@ -100,7 +100,7 @@ const MoodPage: React.FC = () => {
         transition={{ delay: 0.1 }}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Mood Trends</h2>
+          <h2 className="text-xl font-semibold text-[#6E2B8A]">Mood Trends</h2>
           
           <div className="flex space-x-2">
             {[7, 14, 30].map((days) => (
@@ -108,12 +108,11 @@ const MoodPage: React.FC = () => {
                 key={days}
                 onClick={() => setTimeframe(days as 7 | 14 | 30)}
                 className={`
-                  px-3 py-1 text-sm rounded
+                  px-3 py-1 text-sm rounded font-medium transition-colors
                   ${timeframe === days 
-                    ? 'bg-black text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#6E2B8A] dark:bg-[#a323af] text-white' 
+                    : 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#e8c8eb] dark:hover:bg-[#3a2860]'
                   }
-                  transition-colors
                 `}
               >
                 {days} days
@@ -134,24 +133,24 @@ const MoodPage: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <h2 className="text-xl font-semibold mb-4">Mood History</h2>
+        <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">Mood History</h2>
 
         {moodEntries.length === 0 ? (
-          <div className="text-center py-8 bg-white rounded-lg shadow-sm">
-            <p className="text-gray-500">No mood entries yet</p>
-            <p className="text-sm text-gray-400 mt-2">
+          <div className="text-center py-8 bg-white dark:bg-[#16213e] rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A]">
+            <p className="text-[#6E2B8A] dark:text-[#a323af]">No mood entries yet</p>
+            <p className="text-sm text-[#6E2B8A] dark:text-[#ba5ac3] mt-2">
               Start tracking your mood daily to see your history here
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-[#16213e] rounded-lg shadow-md overflow-hidden border-2 border-[#f4e4f5] dark:border-[#6E2B8A]">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-gray-50 text-left">
-                    <th className="py-3 px-4 font-medium">Date</th>
-                    <th className="py-3 px-4 font-medium">Mood</th>
-                    <th className="py-3 px-4 font-medium">Notes</th>
+                  <tr className="bg-[#f4e4f5] dark:bg-[#2d1b4e] text-left">
+                    <th className="py-3 px-4 font-medium text-[#6E2B8A] dark:text-[#a323af]">Date</th>
+                    <th className="py-3 px-4 font-medium text-[#6E2B8A] dark:text-[#a323af]">Mood</th>
+                    <th className="py-3 px-4 font-medium text-[#6E2B8A] dark:text-[#a323af]">Notes</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -160,18 +159,18 @@ const MoodPage: React.FC = () => {
                     .map((entry, index) => (
                       <motion.tr
                         key={entry.id}
-                        className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                        className={index % 2 === 0 ? 'bg-white dark:bg-[#16213e]' : 'bg-[#f4e4f5] dark:bg-[#2d1b4e]'}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + index * 0.03 }}
                       >
-                        <td className="py-3 px-4 border-t border-gray-100">
+                        <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-black dark:text-white">
                           {entry.date && !isNaN(new Date(entry.date).getTime())
                             ? format(new Date(entry.date), 'MMM d, yyyy')
                             : 'Invalid date'}
                         </td>
-                        <td className="py-3 px-4 border-t border-gray-100">
-                          <div className="flex items-center">
+                        <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e]">
+                          <div className="flex items-center text-black dark:text-white">
                             <span className="mr-2">
                               {entry.mood === 'great' ? '😁' :
                                 entry.mood === 'good' ? '🙂' :
@@ -181,7 +180,7 @@ const MoodPage: React.FC = () => {
                             <span className="capitalize">{entry.mood}</span>
                           </div>
                         </td>
-                        <td className="py-3 px-4 border-t border-gray-100 italic">
+                        <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] italic text-[#6E2B8A] dark:text-[#a323af]">
                           {entry.note || '-'}
                         </td>
                       </motion.tr>

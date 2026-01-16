@@ -107,56 +107,56 @@ const SettingsPage: React.FC = () => {
   };
   
   return (
-    <div>
+    <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#1a1a2e] py-8 px-4 md:px-8">
       <motion.div
         className="mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-2xl font-semibold">Settings</h1>
-        <p className="text-gray-600">Customize your MindFul Journal experience</p>
+        <h1 className="text-2xl font-semibold text-[#6E2B8A]">Settings</h1>
+        <p className="text-black dark:text-white">Customize your Mindful Journal experience</p>
       </motion.div>
       
       <motion.div
-        className="bg-white rounded-lg shadow-md p-6 mb-6"
+        className="bg-white dark:bg-[#16213e] rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A] p-6 mb-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <h2 className="text-xl font-semibold mb-4">Profile</h2>
+        <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">Profile</h2>
         
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[#6E2B8A] dark:text-[#a323af] mb-1">
             Display Name
           </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+            className="w-full p-2 border-2 border-[#f4e4f5] dark:border-[#6E2B8A] dark:bg-[#16213e] dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent"
             placeholder="Your name"
           />
         </div>
       </motion.div>
       
       <motion.div
-        className="bg-white rounded-lg shadow-md p-6 mb-6"
+        className="bg-white dark:bg-[#16213e] rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A] p-6 mb-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <h2 className="text-xl font-semibold mb-4">Appearance</h2>
+        <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">Appearance</h2>
         
         <div className="mb-4">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-[#6E2B8A] dark:text-[#a323af]">
               Dark Mode
             </label>
             <button
               onClick={() => setDarkMode(!darkMode)}
               className={`
                 relative inline-flex items-center h-6 rounded-full w-11
-                ${darkMode ? 'bg-black' : 'bg-gray-200'}
+                ${darkMode ? 'bg-[#6E2B8A]' : 'bg-[#f4e4f5]'}
                 transition-colors duration-200
               `}
             >
@@ -169,13 +169,13 @@ const SettingsPage: React.FC = () => {
               />
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3] mt-1">
             Coming soon: Toggle between light and dark themes
           </p>
         </div>
         
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-[#6E2B8A] dark:text-[#a323af] mb-2">
             Font Size
           </label>
           <div className="flex gap-2">
@@ -184,12 +184,11 @@ const SettingsPage: React.FC = () => {
                 key={size}
                 onClick={() => setFontSize(size)}
                 className={`
-                  px-4 py-2 rounded-md
+                  px-4 py-2 rounded-md font-medium transition-colors
                   ${fontSize === size 
-                    ? 'bg-black text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#6E2B8A] dark:bg-[#a323af] text-white' 
+                    : 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#e8c8eb] dark:hover:bg-[#3a2860]'
                   }
-                  transition-colors
                 `}
               >
                 <span className={size === 'small' ? 'text-sm' : size === 'large' ? 'text-lg' : ''}>
@@ -202,23 +201,23 @@ const SettingsPage: React.FC = () => {
       </motion.div>
       
       <motion.div
-        className="bg-white rounded-lg shadow-md p-6 mb-6"
+        className="bg-white dark:bg-[#16213e] rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A] p-6 mb-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <h2 className="text-xl font-semibold mb-4">Notifications</h2>
+        <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">Notifications</h2>
         
         <div className="mb-4">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-[#6E2B8A] dark:text-[#a323af]">
               Daily Reminders
             </label>
             <button
               onClick={() => setNotifications(!notifications)}
               className={`
                 relative inline-flex items-center h-6 rounded-full w-11
-                ${notifications ? 'bg-black' : 'bg-gray-200'}
+                ${notifications ? 'bg-[#6E2B8A]' : 'bg-[#f4e4f5]'}
                 transition-colors duration-200
               `}
             >
@@ -231,23 +230,23 @@ const SettingsPage: React.FC = () => {
               />
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3] mt-1">
             Coming soon: Get reminded to track your mood daily
           </p>
         </div>
       </motion.div>
       
       <motion.div
-        className="bg-white rounded-lg shadow-md p-6 mb-6"
+        className="bg-white dark:bg-[#16213e] rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A] p-6 mb-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <h2 className="text-xl font-semibold mb-4">Data Management</h2>
+        <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">Data Management</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Button
-            variant="outline"
+            variant="primary"
             onClick={exportData}
             icon={<Download size={16} />}
           >
@@ -257,7 +256,7 @@ const SettingsPage: React.FC = () => {
           <div>
             <label className="block w-full">
               <Button
-                variant="outline"
+                variant="primary"
                 className="w-full"
                 icon={<Upload size={16} />}
                 onClick={() => document.getElementById('import-file')?.click()}
@@ -276,11 +275,11 @@ const SettingsPage: React.FC = () => {
         </div>
         
         <div className="mt-4 flex items-start">
-          <Info size={16} className="text-gray-500 mt-1 mr-2 flex-shrink-0" />
-          <p className="text-xs text-gray-500">
+          <Info size={16} className="text-[#6E2B8A] dark:text-[#a323af] mt-1 mr-2 flex-shrink-0" />
+          <p className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3]">
             Export your data regularly to avoid losing your journal entries and conversation history.
             Note that we store all your data locally in your browser. Clearing your browser data will
-            remove all your MindFul Journal information.
+            remove all your Mindful Journal information.
           </p>
         </div>
       </motion.div>
@@ -291,11 +290,11 @@ const SettingsPage: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
-        <Button onClick={handleSave}>Save Settings</Button>
+        <Button variant="primary" onClick={handleSave}>Save Settings</Button>
         
         {saved && (
           <motion.div
-            className="flex items-center text-green-600"
+            className="flex items-center text-green-600 dark:text-green-400"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0 }}
@@ -307,7 +306,7 @@ const SettingsPage: React.FC = () => {
         
         {error && (
           <motion.div
-            className="flex items-center text-red-600"
+            className="flex items-center text-red-600 dark:text-red-400"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0 }}

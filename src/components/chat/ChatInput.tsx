@@ -47,7 +47,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
   return (
     <motion.form 
       onSubmit={handleSubmit}
-      className="relative bg-white rounded-lg shadow-md"
+      className="relative bg-white dark:bg-[#16213e] rounded-lg shadow-md w-full"
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.3 }}
@@ -58,7 +58,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Type your message here..."
-        className="w-full resize-none rounded-lg border border-gray-300 py-3 px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+        className="w-full resize-none rounded-lg border-2 border-[#f4e4f5] dark:border-[#6E2B8A] py-3 px-4 pr-12 bg-white dark:bg-[#16213e] text-[#000] dark:text-[#fff] placeholder-[#999] dark:placeholder-[#666] focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] dark:focus:ring-[#a323af] focus:border-transparent"
         disabled={isLoading}
         rows={1}
       />
@@ -68,8 +68,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
         className={`
           absolute right-2 bottom-2 p-2 rounded-full
           ${message.trim() && !isLoading
-            ? 'bg-black text-white hover:bg-gray-800'
-            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            ? 'bg-[#6E2B8A] dark:bg-[#a323af] text-white hover:bg-[#5a2270] dark:hover:bg-[#892c7e]'
+            : 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#999] dark:text-[#666] cursor-not-allowed'
           }
           transition-colors duration-200
         `}
