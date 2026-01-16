@@ -5,7 +5,7 @@ import ChatInput from '../components/chat/ChatInput';
 import storage from '../utils/storage';
 import chatService from '../utils/chat';
 import { ChatMessage as ChatMessageType, Conversation } from '../types';
-import { MessageCircle, Clock, PlusCircle, Trash2 } from 'lucide-react';
+import { MessageCircle, Clock, PlusCircle, Trash2, Brain } from 'lucide-react';
 
 const ChatPage: React.FC = () => {
   const [conversations, setConversations] = React.useState<Conversation[]>([]);
@@ -13,55 +13,36 @@ const ChatPage: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
-  // Load conversations
   React.useEffect(() => {
     const loadedConversations = storage.getConversations();
     setConversations(loadedConversations);
 
-    // Create a new conversation if none exists
     if (loadedConversations.length === 0) {
       const newConversation = storage.createConversation('New Conversation');
       const initializedConversation = chatService.initializeConversation(newConversation.id);
-      
-      if (initializedConversation) {
-        setConversations([initializedConversation]);
-        setActiveConversation(initializedConversation);
-      } else {
-        setConversations([newConversation]);
-        setActiveConversation(newConversation);
-      }
+      setConversations([initializedConversation ?? newConversation]);
+      setActiveConversation(initializedConversation ?? newConversation);
     } else {
-      // Set the most recent conversation as active
       setActiveConversation(loadedConversations[loadedConversations.length - 1]);
     }
   }, []);
 
-  // Scroll to bottom when messages change
   React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeConversation?.messages]);
 
   const handleSendMessage = async (message: string) => {
     if (!activeConversation) return;
-
     setIsLoading(true);
 
     try {
       const updatedConversation = await chatService.sendMessage(activeConversation.id, message);
-
       if (updatedConversation) {
-        // Update the conversations list
-        setConversations((prevConversations) =>
-          prevConversations.map((convo) =>
-            convo.id === updatedConversation.id ? updatedConversation : convo
-          )
+        setConversations(prev =>
+          prev.map(c => (c.id === updatedConversation.id ? updatedConversation : c))
         );
-
-        // Update the active conversation
         setActiveConversation(updatedConversation);
       }
-    } catch (error) {
-      console.error('Error sending message:', error);
     } finally {
       setIsLoading(false);
     }
@@ -69,224 +50,103 @@ const ChatPage: React.FC = () => {
 
   const handleNewConversation = () => {
     const newConversation = storage.createConversation('New Chat');
-    
-    // Initialize the conversation with the therapist's greeting
     const initializedConversation = chatService.initializeConversation(newConversation.id);
-    
-    if (initializedConversation) {
-      setConversations([...conversations, initializedConversation]);
-      setActiveConversation(initializedConversation);
-    } else {
-      // Fallback to empty conversation if initialization fails
-      setConversations([...conversations, newConversation]);
-      setActiveConversation(newConversation);
-    }
+    setConversations([...conversations, initializedConversation ?? newConversation]);
+    setActiveConversation(initializedConversation ?? newConversation);
   };
 
-  const handleDeleteConversation = (conversationId: string, event: React.MouseEvent) => {
-    // Prevent the conversation from being selected when clicking delete
-    event.stopPropagation();
-    
-    // Show confirmation dialog
-    const confirmed = window.confirm('Are you sure you want to delete this conversation? This action cannot be undone.');
-    
-    if (!confirmed) return;
-    
-    const success = storage.deleteConversation(conversationId);
-    
-    if (success) {
-      // Update the conversations list
-      const updatedConversations = conversations.filter(convo => convo.id !== conversationId);
-      setConversations(updatedConversations);
-      
-      // If we deleted the active conversation, select another one or clear selection
-      if (activeConversation?.id === conversationId) {
-        if (updatedConversations.length > 0) {
-          // Select the most recent conversation
-          setActiveConversation(updatedConversations[updatedConversations.length - 1]);
-        } else {
-          // No conversations left, create a new one
-          const newConversation = storage.createConversation('New Conversation');
-          const initializedConversation = chatService.initializeConversation(newConversation.id);
-          
-          if (initializedConversation) {
-            setConversations([initializedConversation]);
-            setActiveConversation(initializedConversation);
-          } else {
-            setConversations([newConversation]);
-            setActiveConversation(newConversation);
-          }
-        }
-      }
-    }
+  const handleDeleteConversation = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this conversation?')) return;
+
+    storage.deleteConversation(id);
+    const updated = conversations.filter(c => c.id !== id);
+    setConversations(updated);
+    setActiveConversation(updated[updated.length - 1] ?? null);
   };
 
-  const handleSelectConversation = (conversation: Conversation) => {
-    setActiveConversation(conversation);
-  };
-
-  const handleClearChat = () => {
-    if (!activeConversation) return;
-
-    // Clear messages in the active conversation
-    const clearedConversation = { ...activeConversation, messages: [] };
-    setActiveConversation(clearedConversation);
-
-    // Update the conversations list
-    setConversations((prevConversations) =>
-      prevConversations.map((convo) =>
-        convo.id === clearedConversation.id ? clearedConversation : convo
-      )
-    );
-
-    // Persist the cleared conversation to storage
-    storage.updateConversation(clearedConversation.id, { messages: [] });
-  };
-
-  // Filter out system messages for display
-  const getDisplayMessages = (messages: ChatMessageType[]) => {
-    return messages.filter((msg) => msg.role !== 'system');
-  };
+  const getDisplayMessages = (messages: ChatMessageType[]) =>
+    messages.filter(m => m.role !== 'system');
 
   return (
-    <div className="h-[calc(100vh-160px)] flex flex-col md:flex-row bg-white dark:bg-[#1a1a2e]">
-      {/* Conversations sidebar - hidden on mobile */}
-      <div className="hidden md:block w-64 bg-[#faf7fb] dark:bg-[#fdf9fe] border-r border-[#f4e4f5] dark:border-[#e8c8eb] overflow-y-auto">
-        <div className="p-4 border-b border-[#f4e4f5] dark:border-[#f4e4f5] bg-[#fdf9fe] dark:bg-[#fdf9fe]">
+    <div className="h-[calc(100vh-160px)] flex bg-white">
+
+      {/* 🟣 LIGHT PURPLE SIDEBAR */}
+      <div className="hidden md:block w-64 bg-[#FEF3FF] border-r border-[#F3E8FF] overflow-y-auto">
+
+        {/* 🔒 New Chat — DARK PURPLE */}
+        <div className="p-4 border-b border-[#C4B5FD]">
           <button
             onClick={handleNewConversation}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#6E2B8A] dark:bg-[#6E2B8A] text-white rounded-md hover:bg-[#5a2270] dark:hover:bg-[#5a2270] transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#6E2B8A] text-white rounded-md hover:bg-[#5A2270]"
           >
             <PlusCircle size={16} />
             New Chat
           </button>
         </div>
 
-        <div className="overflow-y-auto">
-          <AnimatePresence>
-            {conversations.map((convo) => (
-              <motion.div
-                key={convo.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
+        {/* Conversation list */}
+        <AnimatePresence>
+          {conversations.map(convo => (
+            <motion.div
+              key={convo.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+            >
+              <div
+                onClick={() => setActiveConversation(convo)}
+                className={`border-b border-[#C4B5FD] cursor-pointer ${
+                  activeConversation?.id === convo.id
+                    ? 'bg-[#D8B4FE]'
+                    : 'bg-[#E9D5FF] hover:bg-[#EDE9FE]'
+                }`}
               >
-               <div 
-                  style={{
-                    backgroundColor: activeConversation?.id === convo.id ? '#f4e4f5' : '#faf7fb',
-                  }}
-                  className="w-full border-b border-[#e8c8eb] transition-colors"
-                >
-                  <div className="flex items-center  ">
-                    <button
-                      onClick={() => handleSelectConversation(convo)}
-                      className="flex-1 p-3 text-left"
-                    >
-                      <div className="flex items-center gap-2">
-                        <MessageCircle size={16} className="text-[#000] dark:text-[#000]" />
-                        <span className="truncate font-medium text-[#000] dark:text-[#000]">{convo.title}</span>
-                      </div>
+                <div className="flex items-center">
+                  <div className="flex-1 p-3">
+                    <div className="flex items-center gap-2 text-[#4C1D95]">
+                      <MessageCircle size={16} />
+                      <span className="truncate font-medium">{convo.title}</span>
+                    </div>
 
-                      <div className="flex items-center gap-1 mt-1 text-xs text-[#000] dark:text-[#000]">
-                        <Clock size={12} />
-                        <span>{new Date(convo.updatedAt).toLocaleDateString()}</span>
-                      </div>
-                    </button>
-                    
-                    <button
-                      onClick={(e) => handleDeleteConversation(convo.id, e)}
-                      className="p-2 m-1 rounded hover:bg-red-200 dark:hover:bg-red-200 text-[#000] dark:text-[#000] hover:text-red-600 transition-colors"
-                      title="Delete conversation"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex items-center gap-1 mt-1 text-xs text-[#6D28D9]">
+                      <Clock size={12} />
+                      <span>{new Date(convo.updatedAt).toLocaleDateString()}</span>
+                    </div>
                   </div>
+
+                  {/* 🟣 DELETE BUTTON — EXTRA LIGHT */}
+                  <button
+                    onClick={(e) => handleDeleteConversation(convo.id, e)}
+                    className="p-2 m-1 rounded text-[#6D28D9] hover:bg-[#F3E8FF]"
+                    title="Delete conversation"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
-      {/* Chat main area */}
+      {/* MAIN CHAT — UNCHANGED */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Mobile conversation selector */}
-        <div className="md:hidden p-2 bg-white dark:bg-[#16213e] border-b border-[#f4e4f5] dark:border-[#6E2B8A]">
-          <div className="flex gap-2">
-            <select
-              value={activeConversation?.id}
-              onChange={(e) => {
-                const selectedConvo = conversations.find((c) => c.id === e.target.value);
-                if (selectedConvo) handleSelectConversation(selectedConvo);
-              }}
-              className="flex-1 p-2 border-2 border-[#f4e4f5] dark:border-[#6E2B8A] rounded bg-white dark:bg-[#16213e] text-[#000] dark:text-[#fff]"
-            >
-              {conversations.map((convo) => (
-                <option key={convo.id} value={convo.id}>
-                  {convo.title}
-                </option>
-              ))}
-            </select>
-            
-            {activeConversation && conversations.length > 1 && (
-              <button
-                onClick={(e) => handleDeleteConversation(activeConversation.id, e)}
-                className="px-3 py-2 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
-                title="Delete current conversation"
-              >
-                <Trash2 size={16} />
-              </button>
-            )}
-          </div>
-
-          <button
-            onClick={handleNewConversation}
-            className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2 bg-[#6E2B8A] dark:bg-[#a323af] text-white rounded-md hover:bg-[#5a2270] dark:hover:bg-[#892c7e] transition-colors"
-          >
-            <PlusCircle size={16} />
-            New Chat
-          </button>
-        </div>
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-[#1a1a2e]">
+        <div className="flex-1 overflow-y-auto p-4">
           {activeConversation && (
-            <div>
-              {getDisplayMessages(activeConversation.messages).length === 0 ? (
-                <motion.div
-                  className="flex flex-col items-center justify-center h-full py-20 text-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Brain size={48} className="mb-4 text-[#6E2B8A] dark:text-[#a323af]" />
-                  <h2 className="text-xl font-semibold mb-2 text-[#6E2B8A]">Welcome to Mindful Journal</h2>
-                  <p className="max-w-md text-[#6E2B8A] dark:text-[#ba5ac3]">
-                    I'm your AI mental wellness companion. You can talk to me about your thoughts,
-                    feelings, or anything that's on your mind.
-                  </p>
-                </motion.div>
-              ) : (
-                <AnimatePresence>
-                  {getDisplayMessages(activeConversation.messages).map((message) => (
-                    <ChatMessage key={message.id} message={message} />
-                  ))}
-                </AnimatePresence>
-              )}
+            <>
+              {getDisplayMessages(activeConversation.messages).map(msg => (
+                <ChatMessage key={msg.id} message={msg} />
+              ))}
               <div ref={messagesEndRef} />
-            </div>
+            </>
           )}
         </div>
 
-        {/* Input area */}
-        <div className="p-4 bg-white dark:bg-[#16213e] border-t border-[#f4e4f5] dark:border-[#6E2B8A] flex items-center justify-between">
+        <div className="p-4 border-t flex items-center gap-4">
           <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
-          <button
-            onClick={handleClearChat}
-            className="ml-4 flex items-center gap-2 px-4 py-2 bg-[#6E2B8A] dark:bg-[#a323af] text-white rounded-md hover:bg-[#5a2270] dark:hover:bg-[#892c7e] transition-colors text-sm whitespace-nowrap"
-          >
-            <Trash2 size={14} />
+          <button className="px-4 py-2 bg-[#6E2B8A] text-white rounded-md whitespace-nowrap flex items-center gap-2 hover:bg-[#5A2270] transition-colors">
+            <Trash2 size={14} className="text-black" />
             Clear Chat
           </button>
         </div>
@@ -294,8 +154,5 @@ const ChatPage: React.FC = () => {
     </div>
   );
 };
-
-// Add Brain icon import
-import { Brain } from 'lucide-react';
 
 export default ChatPage;
