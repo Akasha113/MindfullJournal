@@ -43,24 +43,26 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleDarkMode}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-2 rounded-full transition-colors"
             >
               {isDarkMode ? (
-                <Sun size={20} className="text-gray-200" />
+                <Sun size={20} className="text-[#a323af]" />
               ) : (
-                <Moon size={20} className="text-gray-700" />
+                <Moon size={20} className="text-[#6E2B8A]" />
               )}
             </button>
 
-            <Link to="/about">
-              <motion.button
-                className="px-4 py-2 text-sm font-medium text-[#6E2B8A] dark:text-[#a323af] hover:text-[#5a2270] dark:hover:text-[#ba5ac3]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link
+                to="/about"
+                className="inline-flex items-center px-4 py-2 border-2 border-[#6E2B8A] text-sm font-semibold rounded-lg text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6E2B8A]"
               >
                 About
-              </motion.button>
-            </Link>
+              </Link>
+            </motion.div>
 
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -68,7 +70,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             >
               <Link
                 to="/profile"
-                className="inline-flex items-center px-4 py-2 border-2 border-[#6E2B8A] text-sm font-medium rounded-md text-white bg-[#6E2B8A] dark:bg-[#a323af] hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6E2B8A]"
+                className="inline-flex items-center px-4 py-2 border-2 border-[#6E2B8A] text-sm font-semibold rounded-lg text-white bg-[#6E2B8A] dark:bg-[#a323af] hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6E2B8A]"
               >
                 Profile
               </Link>
