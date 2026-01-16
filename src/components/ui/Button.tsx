@@ -19,14 +19,14 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'flex items-center justify-center rounded-md focus:outline-none transition-all duration-200';
+  const baseStyles = 'flex items-center justify-center rounded-lg focus:outline-none transition-all duration-200 font-semibold';
   
   const variantStyles = {
-    primary: 'bg-black text-white hover:bg-gray-800 focus:ring-2 focus:ring-gray-400',
-    secondary: 'bg-gray-200 text-black hover:bg-gray-300 focus:ring-2 focus:ring-gray-400',
-    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-100 focus:ring-2 focus:ring-gray-400',
-    ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-2 focus:ring-gray-400',
-    link: 'text-gray-700 underline hover:text-black p-0 focus:ring-0',
+    primary: 'bg-[#6E2B8A] text-white hover:bg-[#5a2270] dark:bg-[#a323af] dark:hover:bg-[#ba5ac3] focus:ring-2 focus:ring-[#6E2B8A]',
+    secondary: 'bg-[#f4e4f5] text-[#6E2B8A] dark:bg-[#2d1b4e] dark:text-[#a323af] hover:bg-[#e8c8eb] dark:hover:bg-[#3a2860] focus:ring-2 focus:ring-[#6E2B8A]',
+    outline: 'border-2 border-[#6E2B8A] text-[#6E2B8A] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] focus:ring-2 focus:ring-[#6E2B8A]',
+    ghost: 'text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] focus:ring-2 focus:ring-[#6E2B8A]',
+    link: 'text-[#6E2B8A] dark:text-[#a323af] underline hover:text-[#5a2270] dark:hover:text-[#ba5ac3] p-0 focus:ring-0',
   };
   
   const sizeStyles = {

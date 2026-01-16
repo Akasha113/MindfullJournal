@@ -33,7 +33,6 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
     { to: '/journal', label: 'Journal', icon: <Book size={20} /> },
     { to: '/mood', label: 'Mood Tracker', icon: <BarChart size={20} /> },
     { to: '/settings', label: 'Settings', icon: <Settings size={20} /> },
-    ...(isAdmin ? [{ to: '/admin', label: 'Admin', icon: <Shield size={20} /> }] : []),
   ];
 
   const handleNavClick = () => {
@@ -44,9 +43,9 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
 
   return (
     <aside className="h-full flex flex-col">
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold text-gray-900">MindFul Journal</h2>
-        <p className="text-sm text-gray-600">Your AI mental health companion</p>
+      <div className="p-4 border-b-2 border-[#6E2B8A] bg-gradient-to-r from-white to-[#f4e4f5] dark:from-[#16213e] dark:to-[#2d1b4e]">
+        <h2 className="text-lg font-semibold text-[#6E2B8A] dark:text-[#a323af]">Mindful Journal</h2>
+        <p className="text-sm text-[#6E2B8A] dark:text-[#ba5ac3]">Your AI mental health companion</p>
       </div>
       
       <nav className="flex-1 p-4 space-y-1">
@@ -60,12 +59,11 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
             <NavLink
               to={item.to}
               className={({ isActive }) => `
-                flex items-center px-4 py-2 rounded-md text-gray-700
+                flex items-center px-4 py-2 rounded-md font-medium transition-colors duration-200
                 ${isActive 
-                  ? 'bg-gray-100 text-black font-medium' 
-                  : 'hover:bg-gray-50 hover:text-black'
+                  ? 'bg-[#6E2B8A] text-white shadow-md' 
+                  : 'text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e]'
                 }
-                transition-colors duration-200
               `}
               onClick={handleNavClick}
             >
@@ -77,13 +75,13 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
       </nav>
       
       <motion.div 
-        className="p-4 border-t mt-auto"
+        className="p-4 border-t-2 border-[#6E2B8A] mt-auto bg-gradient-to-t from-[#f4e4f5] to-white dark:from-[#2d1b4e] dark:to-[#16213e]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
         <motion.div 
-          className="text-xs text-gray-600 italic"
+          className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3] italic"
           key={quote.text}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -91,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
           transition={{ duration: 1 }}
         >
           <p>"{quote.text}"</p>
-          <p className="mt-1 text-gray-500">— {quote.author}</p>
+          <p className="mt-1 text-[#a323af] dark:text-[#8a0a9b]">— {quote.author}</p>
         </motion.div>
       </motion.div>
     </aside>
