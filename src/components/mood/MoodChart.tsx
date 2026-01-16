@@ -70,8 +70,8 @@ const MoodChart: React.FC<MoodChartProps> = ({ moodEntries, days = 7 }) => {
   const chartHeight = 150;
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md">
-      <h3 className="text-lg font-semibold mb-4">Mood Trend</h3>
+    <div className="bg-white dark:bg-[#16213e] p-4 rounded-lg shadow-md">
+      <h3 className="text-lg font-semibold mb-4 text-[#6E2B8A]">Mood Trend</h3>
       
       <div className="flex items-end h-[200px] justify-between">
         {moodData.map((day, index) => {
@@ -80,11 +80,11 @@ const MoodChart: React.FC<MoodChartProps> = ({ moodEntries, days = 7 }) => {
           
           const isToday = isSameDay(day.date, new Date());
           
-          const barColor = !day.mood ? 'bg-gray-200' : (
-            day.mood === 'great' ? 'bg-gray-900' :
-            day.mood === 'good' ? 'bg-gray-700' :
-            day.mood === 'neutral' ? 'bg-gray-500' :
-            day.mood === 'bad' ? 'bg-gray-400' : 'bg-gray-300'
+          const barColor = !day.mood ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e]' : (
+            day.mood === 'great' ? 'bg-[#6E2B8A] dark:bg-[#a323af]' :
+            day.mood === 'good' ? 'bg-[#8a0a9b] dark:bg-[#ba5ac3]' :
+            day.mood === 'neutral' ? 'bg-[#a323af] dark:bg-[#d191d7]' :
+            day.mood === 'bad' ? 'bg-[#d191d7] dark:bg-[#e8c8eb]' : 'bg-[#e8c8eb] dark:bg-[#f4e4f5]'
           );
           
           const moodEmojis: Record<Mood, string> = {
@@ -114,11 +114,11 @@ const MoodChart: React.FC<MoodChartProps> = ({ moodEntries, days = 7 }) => {
                 )}
               </div>
               
-              <div className={`text-xs mt-2 ${isToday ? 'font-bold' : ''}`}>
+              <div className={`text-xs mt-2 ${isToday ? 'font-bold text-[#6E2B8A] dark:text-[#a323af]' : 'text-black dark:text-white'}`}>
                 {format(day.date, 'EEE')}
               </div>
               
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-[#6E2B8A] dark:text-[#a323af]">
                 {format(day.date, 'd')}
               </div>
             </div>
@@ -126,8 +126,8 @@ const MoodChart: React.FC<MoodChartProps> = ({ moodEntries, days = 7 }) => {
         })}
       </div>
       
-      <div className="mt-4 border-t pt-2">
-        <div className="flex justify-between text-xs text-gray-500">
+      <div className="mt-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] pt-2">
+        <div className="flex justify-between text-xs text-[#6E2B8A] dark:text-[#a323af]">
           <span>Past {days} days</span>
           <span>Today</span>
         </div>
