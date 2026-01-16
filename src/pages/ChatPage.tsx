@@ -174,11 +174,11 @@ const ChatPage: React.FC = () => {
               >
                 <div 
                   className={`
-                    w-full border-b border-[#e8c8eb] dark:border-[#e8c8eb] hover:bg-[#f4e4f5] dark:hover:bg-[#faf7fb] transition-colors
-                    ${activeConversation?.id === convo.id ? 'bg-[#f4e4f5] dark:bg-[#faf7fb]' : 'bg-[#faf7fb] dark:bg-[#fdf9fe]'}
+                    w-full border-b border-[#f4e4f5] dark:border-[#f4e4f5] hover:bg-[#fdf9fe] dark:hover:bg-[#fdf9fe] transition-colors
+                    ${activeConversation?.id === convo.id ? 'bg-[#fdf9fe] dark:bg-[#fdf9fe]' : 'bg-[#fdf9fe] dark:bg-[#fdf9fe]'}
                   `}
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-center  ">
                     <button
                       onClick={() => handleSelectConversation(convo)}
                       className="flex-1 p-3 text-left"
@@ -199,7 +199,7 @@ const ChatPage: React.FC = () => {
                       className="p-2 m-1 rounded hover:bg-red-200 dark:hover:bg-red-200 text-[#000] dark:text-[#000] hover:text-red-600 transition-colors"
                       title="Delete conversation"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
