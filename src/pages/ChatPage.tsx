@@ -98,7 +98,7 @@ const ChatPage: React.FC = () => {
                 onClick={() => setActiveConversation(convo)}
                 className={`border-b border-[#C4B5FD] cursor-pointer ${
                   activeConversation?.id === convo.id
-                    ? 'bg-[#A78BFA]'
+                    ? 'bg-[#C084FC]'
                     : 'bg-[#E9D5FF] hover:bg-[#EDE9FE]'
                 }`}
               >
