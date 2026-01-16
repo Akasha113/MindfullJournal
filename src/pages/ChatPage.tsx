@@ -98,19 +98,19 @@ const ChatPage: React.FC = () => {
                 onClick={() => setActiveConversation(convo)}
                 className={`border-b border-[#C4B5FD] cursor-pointer ${
                   activeConversation?.id === convo.id
-                    ? 'bg-[#C084FC]'
+                    ? 'bg-[#6E2B8A]'
                     : 'bg-[#E9D5FF] hover:bg-[#EDE9FE]'
                 }`}
               >
                 <div className="flex items-center">
                   <div className="flex-1 p-3">
                     <div className="flex items-center gap-2 text-[#4C1D95]">
-                      <MessageCircle size={16} />
+                      <MessageCircle size={16} className="text-black" />
                       <span className="truncate font-medium">{convo.title}</span>
                     </div>
 
                     <div className="flex items-center gap-1 mt-1 text-xs text-[#6D28D9]">
-                      <Clock size={12} />
+                      <Clock size={12} className="text-black" />
                       <span>{new Date(convo.updatedAt).toLocaleDateString()}</span>
                     </div>
                   </div>
