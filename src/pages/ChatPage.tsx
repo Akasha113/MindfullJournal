@@ -118,7 +118,7 @@ const ChatPage: React.FC = () => {
                   {/* 🟣 DELETE BUTTON — EXTRA LIGHT */}
                   <button
                     onClick={(e) => handleDeleteConversation(convo.id, e)}
-                    className="p-2 m-1 rounded text-[#6D28D9] hover:bg-[#F3E8FF]"
+                    className="p-2 m-1 rounded text-black hover:bg-[#F3E8FF]"
                     title="Delete conversation"
                   >
                     <Trash2 size={16} />
