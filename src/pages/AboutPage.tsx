@@ -32,15 +32,15 @@ const AboutPage: React.FC = () => {
       >
         <div className="text-center mb-16">
           <motion.h1
-            className="text-5xl font-semibold mb-6"
+            className="text-5xl font-semibold mb-6 text-[#6E2B8A]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            About MindFul Journal
+            About Mindful Journal
           </motion.h1>
           <motion.p
-            className="text-xl text-gray-600 max-w-2xl mx-auto"
+            className="text-xl text-black dark:text-white max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -51,7 +51,7 @@ const AboutPage: React.FC = () => {
 
         <animated.div
           id="card"
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-16"
+          className="bg-white dark:bg-[#16213e] rounded-2xl shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A] p-8 mb-16"
           onMouseMove={({ clientX, clientY }) => set({ xys: calc(clientX, clientY) })}
           onMouseLeave={() => set({ xys: [0, 0, 1] })}
           style={{
@@ -60,13 +60,13 @@ const AboutPage: React.FC = () => {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
-                At MindFul Journal, we believe that mental wellness should be accessible to everyone. 
+              <h2 className="text-2xl font-semibold mb-4 text-[#6E2B8A]">Our Mission</h2>
+              <p className="text-black dark:text-white mb-6">
+                At Mindful Journal, we believe that mental wellness should be accessible to everyone. 
                 Our AI-powered platform provides a safe space for self-reflection, emotional 
                 support, and personal growth.
               </p>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-black dark:text-white">
                 While we're not a replacement for professional mental health services, 
                 we aim to be a supportive companion on your journey to better mental well-being.
               </p>
@@ -78,9 +78,9 @@ const AboutPage: React.FC = () => {
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
               >
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Brain size={64} className="text-black dark:text-white" />
+                  <Brain size={64} className="text-[#6E2B8A] dark:text-[#a323af]" />
                 </div>
-                <div className="absolute w-full h-full border-4 border-black dark:border-white rounded-full" />
+                <div className="absolute w-full h-full border-4 border-[#6E2B8A] dark:border-[#a323af] rounded-full" />
               </motion.div>
             </div>
           </div>
@@ -106,17 +106,17 @@ const AboutPage: React.FC = () => {
           ].map((feature, index) => (
             <motion.div
               key={feature.title}
-              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm"
+              className="bg-white dark:bg-[#16213e] p-6 rounded-xl shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + index * 0.1 }}
               whileHover={{ y: -5 }}
             >
-              <div className="h-12 w-12 bg-black dark:bg-white bg-opacity-5 dark:bg-opacity-5 rounded-lg flex items-center justify-center mb-4">
+              <div className="h-12 w-12 bg-[#f4e4f5] dark:bg-[#2d1b4e] rounded-lg flex items-center justify-center mb-4 text-[#6E2B8A] dark:text-[#a323af]">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600 dark:text-gray-300">{feature.description}</p>
+              <h3 className="text-xl font-semibold mb-2 text-[#6E2B8A]">{feature.title}</h3>
+              <p className="text-black dark:text-white">{feature.description}</p>
             </motion.div>
           ))}
         </div>
