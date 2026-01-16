@@ -174,8 +174,8 @@ const ChatPage: React.FC = () => {
               >
                 <div 
                   className={`
-                    w-full border-b border-[#f4e4f5] dark:border-[#2d1b4e] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] transition-colors
-                    ${activeConversation?.id === convo.id ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e]' : 'bg-[#faf7fb] dark:bg-[#1a1a2e]'}
+                    w-full border-b border-[#f4e4f5] dark:border-[#e8c8eb] hover:bg-[#f4e4f5] dark:hover:bg-[#f4e4f5] transition-colors
+                    ${activeConversation?.id === convo.id ? 'bg-[#f4e4f5] dark:bg-[#f4e4f5]' : 'bg-[#faf7fb] dark:bg-[#f4e4f5]'}
                   `}
                 >
                   <div className="flex items-center">
@@ -184,11 +184,11 @@ const ChatPage: React.FC = () => {
                       className="flex-1 p-3 text-left"
                     >
                       <div className="flex items-center gap-2">
-                        <MessageCircle size={16} className="text-[#6E2B8A] dark:text-[#a323af]" />
-                        <span className="truncate font-medium text-[#000] dark:text-[#fff]">{convo.title}</span>
+                        <MessageCircle size={16} className="text-[#6E2B8A] dark:text-[#6E2B8A]" />
+                        <span className="truncate font-medium text-[#000] dark:text-[#000]">{convo.title}</span>
                       </div>
 
-                      <div className="flex items-center gap-1 mt-1 text-xs text-[#6E2B8A] dark:text-[#ba5ac3]">
+                      <div className="flex items-center gap-1 mt-1 text-xs text-[#6E2B8A] dark:text-[#6E2B8A]">
                         <Clock size={12} />
                         <span>{new Date(convo.updatedAt).toLocaleDateString()}</span>
                       </div>
@@ -196,7 +196,7 @@ const ChatPage: React.FC = () => {
                     
                     <button
                       onClick={(e) => handleDeleteConversation(convo.id, e)}
-                      className="p-2 m-1 rounded hover:bg-red-100 dark:hover:bg-red-900 text-[#6E2B8A] dark:text-[#ba5ac3] hover:text-red-600 transition-colors"
+                      className="p-2 m-1 rounded hover:bg-red-200 dark:hover:bg-red-200 text-[#6E2B8A] dark:text-[#6E2B8A] hover:text-red-600 transition-colors"
                       title="Delete conversation"
                     >
                       <Trash2 size={14} />
@@ -284,7 +284,7 @@ const ChatPage: React.FC = () => {
           <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
           <button
             onClick={handleClearChat}
-            className="ml-4 flex items-center gap-2 px-4 py-2 bg-[#6E2B8A] dark:bg-[#a323af] text-white rounded-md hover:bg-[#5a2270] dark:hover:bg-[#892c7e] transition-colors text-sm"
+            className="ml-4 flex items-center gap-2 px-4 py-2 bg-[#6E2B8A] dark:bg-[#a323af] text-white rounded-md hover:bg-[#5a2270] dark:hover:bg-[#892c7e] transition-colors text-sm whitespace-nowrap"
           >
             <Trash2 size={16} />
             Clear Chat
