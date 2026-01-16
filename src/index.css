@@ -1,3 +1,78 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Root theme variables */
+:root {
+  --primary-color: #6E2B8A;
+  --primary-dark: #5a2270;
+  --primary-light: #a323af;
+  --text-primary: #000000;
+  --text-secondary: #4a4a4a;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9f5fd;
+  --bg-accent: #f4e4f5;
+  --border-color: #e8c8eb;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-accent: #2d1b4e;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-color: #6E2B8A;
+  }
+}
+
+/* Base styles */
+body {
+  @apply bg-white dark:bg-[#1a1a2e] text-black dark:text-white transition-colors duration-200;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  @apply text-[#6E2B8A] font-bold;
+}
+
+h1 { @apply text-4xl; }
+h2 { @apply text-3xl; }
+h3 { @apply text-2xl; }
+h4 { @apply text-xl; }
+h5 { @apply text-lg; }
+h6 { @apply text-base; }
+
+/* Buttons */
+button, .btn {
+  @apply bg-[#6E2B8A] hover:bg-[#5a2270] text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
+}
+
+button:active, .btn:active {
+  @apply transform scale-95;
+}
+
+/* Links */
+a {
+  @apply text-[#6E2B8A] hover:text-[#5a2270] transition-colors duration-200;
+}
+
+/* Inputs and textareas */
+input, textarea, select {
+  @apply border-2 border-[#e8c8eb] dark:border-[#6E2B8A] focus:border-[#6E2B8A] dark:focus:border-[#a323af] dark:bg-[#16213e] dark:text-white transition-colors duration-200;
+}
+
+/* Cards */
+.card {
+  @apply bg-white dark:bg-[#16213e] rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-4;
+}
+
+/* Accent elements */
+.accent {
+  @apply text-[#6E2B8A];
+}
+
+/* Primary background */
+.bg-primary {
+  @apply bg-[#6E2B8A] text-white;
+}

@@ -59,10 +59,9 @@ const HomePage: React.FC = () => {
           animate={{ scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <div className="absolute -inset-4 bg-black rounded-full blur-lg opacity-10"></div>
           <div className="relative flex justify-center">
             <motion.div
-              className="h-24 w-24 bg-black rounded-full flex items-center justify-center"
+              className="h-24 w-24 bg-[#6E2B8A] rounded-full flex items-center justify-center"
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ duration: 0.3 }}
             >
@@ -72,16 +71,16 @@ const HomePage: React.FC = () => {
         </motion.div>
 
           <motion.h1 
-          className="text-6xl md:text-7xl font-semibold mb-6"
+          className="text-6xl md:text-7xl font-semibold mb-6 text-[#6E2B8A]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          Welcome to MindFul Journal
+          Welcome to Mindful Journal
         </motion.h1>
         
         <motion.p 
-          className="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl mx-auto"
+          className="text-xl md:text-2xl text-[#6E2B8A] mb-8 max-w-2xl mx-auto font-medium"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
@@ -128,30 +127,30 @@ const HomePage: React.FC = () => {
         ].map((feature, index) => (
           <motion.div
             key={feature.title}
-            className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
-            whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(0, 0, 0, 0.12)' }}
+            className="bg-white p-8 rounded-2xl shadow-md border-2 border-[#f4e4f5] hover:border-[#6E2B8A]"
+            whileHover={{ y: -5, boxShadow: '0 12px 40px rgba(110, 43, 138, 0.15)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
           >
-            <div className="h-16 w-16 bg-black bg-opacity-5 rounded-xl flex items-center justify-center mb-6">
+            <div className="h-16 w-16 bg-[#f4e4f5] rounded-xl flex items-center justify-center mb-6 text-[#6E2B8A]">
               {feature.icon}
             </div>
-            <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+            <h3 className="text-xl font-semibold mb-3 text-[#6E2B8A]">{feature.title}</h3>
             <p className="text-gray-600">{feature.description}</p>
           </motion.div>
         ))}
       </motion.div>
 
       <motion.div
-        className="mt-16 text-center max-w-2xl mx-auto p-8 bg-white rounded-2xl shadow-sm border border-gray-100"
+        className="mt-16 text-center max-w-2xl mx-auto p-8 bg-gradient-to-br from-white to-[#f4e4f5] rounded-2xl shadow-md border-2 border-[#6E2B8A]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.9 }}
       >
-        <h2 className="text-2xl font-semibold mb-4">Thought of the Day</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-[#6E2B8A]">Thought of the Day</h2>
         <blockquote className="text-xl italic text-gray-700">"{quote.text}"</blockquote>
-        <p className="mt-4 text-gray-500">— {quote.author}</p>
+        <p className="mt-4 text-[#6E2B8A] font-medium">— {quote.author}</p>
       </motion.div>
     </div>
   );
