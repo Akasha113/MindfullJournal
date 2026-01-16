@@ -175,7 +175,7 @@ const ChatPage: React.FC = () => {
                 <div 
                   className={`
                     w-full border-b border-[#f4e4f5] dark:border-[#2d1b4e] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] transition-colors
-                    ${activeConversation?.id === convo.id ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e]' : ''}
+                    ${activeConversation?.id === convo.id ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e]' : 'bg-[#faf7fb] dark:bg-[#1a1a2e]'}
                   `}
                 >
                   <div className="flex items-center">
@@ -284,7 +284,7 @@ const ChatPage: React.FC = () => {
           <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
           <button
             onClick={handleClearChat}
-            className="ml-4 flex items-center gap-2 px-4 py-2 bg-red-500 dark:bg-red-700 text-white rounded-md hover:bg-red-600 dark:hover:bg-red-800 transition-colors"
+            className="ml-4 flex items-center gap-2 px-4 py-2 bg-[#6E2B8A] dark:bg-[#a323af] text-white rounded-md hover:bg-[#5a2270] dark:hover:bg-[#892c7e] transition-colors text-sm"
           >
             <Trash2 size={16} />
             Clear Chat
