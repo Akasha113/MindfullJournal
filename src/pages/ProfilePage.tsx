@@ -107,7 +107,7 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#1a1a2e] py-8 px-4 md:px-8">
       <motion.div
         className="mb-8 text-center"
         initial={{ opacity: 0, y: -20 }}

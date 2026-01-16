@@ -80,12 +80,7 @@ const MoodChart: React.FC<MoodChartProps> = ({ moodEntries, days = 7 }) => {
           
           const isToday = isSameDay(day.date, new Date());
           
-          const barColor = !day.mood ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e]' : (
-            day.mood === 'great' ? 'bg-[#6E2B8A] dark:bg-[#a323af]' :
-            day.mood === 'good' ? 'bg-[#8a0a9b] dark:bg-[#ba5ac3]' :
-            day.mood === 'neutral' ? 'bg-[#a323af] dark:bg-[#d191d7]' :
-            day.mood === 'bad' ? 'bg-[#d191d7] dark:bg-[#e8c8eb]' : 'bg-[#e8c8eb] dark:bg-[#f4e4f5]'
-          );
+          const barColor = !day.mood ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e]' : 'bg-[#6E2B8A] dark:bg-[#a323af]';
           
           const moodEmojis: Record<Mood, string> = {
             great: '😁',
@@ -106,7 +101,7 @@ const MoodChart: React.FC<MoodChartProps> = ({ moodEntries, days = 7 }) => {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
                     {day.mood && (
-                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
                         {moodEmojis[day.mood]}
                       </div>
                     )}
