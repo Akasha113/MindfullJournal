@@ -48,7 +48,7 @@ const TextArea: React.FC<TextAreaProps> = ({
       {label && (
         <label 
           htmlFor={props.id} 
-          className="block mb-2 text-sm font-medium text-gray-700"
+          className="block mb-2 text-sm font-medium text-[#6E2B8A] dark:text-[#a323af]"
         >
           {label}
         </label>
@@ -58,8 +58,8 @@ const TextArea: React.FC<TextAreaProps> = ({
         <motion.textarea
           ref={textareaRef}
           className={`
-            block w-full rounded-md border border-gray-300 py-2 px-3
-            focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent
+            block w-full rounded-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A] dark:bg-[#16213e] dark:text-white py-2 px-3
+            focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent
             transition-all duration-200 min-h-[100px] resize-none
             ${error ? 'border-red-300 focus:ring-red-400' : ''}
             ${className}
@@ -71,7 +71,7 @@ const TextArea: React.FC<TextAreaProps> = ({
         
         {isFocused && (
           <motion.div
-            className="absolute bottom-0 left-0 right-0 h-0.5 bg-black"
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#6E2B8A] dark:bg-[#a323af]"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 0.3 }}
