@@ -174,8 +174,8 @@ const ChatPage: React.FC = () => {
               >
                 <div 
                   className={`
-                    w-full border-b border-[#f4e4f5] dark:border-[#f4e4f5] hover:bg-[#fdf9fe] dark:hover:bg-[#fdf9fe] transition-colors
-                    ${activeConversation?.id === convo.id ? 'bg-[#fdf9fe] dark:bg-[#fdf9fe]' : 'bg-[#fdf9fe] dark:bg-[#fdf9fe]'}
+                    w-full border-b border-[#f4e4f5] dark:border-[#f4e4f5] hover:bg-[#f4e4f5] dark:hover:bg-[#f4e4f5] transition-colors
+                    ${activeConversation?.id === convo.id ? 'bg-[#f4e4f5] dark:bg-[#f4e4f5]' : 'bg-[#fdf9fe] dark:bg-[#fdf9fe]'}
                   `}
                 >
                   <div className="flex items-center  ">
