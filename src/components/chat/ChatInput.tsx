@@ -58,7 +58,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading = false 
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Type your message here..."
-        className="w-full resize-none rounded-lg border-2 border-[#f4e4f5] dark:border-[#6E2B8A] py-3 px-4 pr-12 bg-white dark:bg-[#16213e] text-[#000] dark:text-[#fff] placeholder-[#999] dark:placeholder-[#666] focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] dark:focus:ring-[#a323af] focus:border-transparent"
+        className="w-full resize-none rounded-lg border-2 border-[#f4e4f5] dark:border-[#6E2B8A] py-3 px-4 pr-12 bg-white dark:bg-[#16213e] text-black dark:text-white placeholder-[#999] dark:placeholder-[#666] focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] dark:focus:ring-[#a323af] focus:border-transparent"
         disabled={isLoading}
         rows={1}
       />
