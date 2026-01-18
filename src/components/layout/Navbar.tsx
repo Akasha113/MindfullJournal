@@ -62,7 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             >
               <Link
                 to="/profile"
-                className="inline-flex items-center px-4 py-2 border-2 border-[#6E2B8A] text-sm font-semibold rounded-lg text-white bg-[#6E2B8A] dark:bg-[#a323af] hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6E2B8A]"
+                className="inline-flex items-center px-4 py-2 border-2 border-[#6E2B8A] text-sm font-semibold rounded-lg text-white bg-[#6E2B8A] dark:bg-[#a323af] hover:bg-[#FEF3FF] hover:text-[#6E2B8A] dark:hover:bg-[#16213e] dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6E2B8A]"
               >
                 Profile
               </Link>

@@ -247,7 +247,10 @@ const ProfilePage: React.FC = () => {
                       </p>
                       
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {format(new Date(activity.date), 'MMM d, yyyy - h:mm a')}
+                        {activity.date && !isNaN(new Date(activity.date).getTime())
+                          ? format(new Date(activity.date), 'MMM d, yyyy - h:mm a')
+                          : 'Date unavailable'
+                        }
                       </p>
                     </div>
                   </motion.div>
