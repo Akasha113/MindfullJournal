@@ -24,18 +24,18 @@ const MoodSelector: React.FC<MoodSelectorProps> = ({
   const sizeClasses = {
     sm: {
       container: 'gap-1',
-      button: 'w-8 h-8 text-sm',
+      button: 'w-10 h-10 text-sm',
       emoji: 'text-base',
     },
     md: {
       container: 'gap-2',
-      button: 'w-12 h-12 text-sm',
-      emoji: 'text-xl',
+      button: 'w-16 h-16 text-sm',
+      emoji: 'text-2xl',
     },
     lg: {
       container: 'gap-3',
-      button: 'w-16 h-16 text-base',
-      emoji: 'text-2xl',
+      button: 'w-20 h-20 text-base',
+      emoji: 'text-3xl',
     },
   };
 
@@ -49,8 +49,8 @@ const MoodSelector: React.FC<MoodSelectorProps> = ({
             flex flex-col items-center justify-center rounded-full 
             ${sizeClasses[size].button}
             ${selectedMood === mood.value 
-              ? 'bg-black text-white ring-2 ring-gray-400' 
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              ? 'bg-[#6E2B8A] dark:bg-[#6E2B8A] text-white ring-2 ring-gray-400' 
+              : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white hover:bg-[#6E2B8A] dark:hover:bg-[#6E2B8A] hover:text-white'
             }
             transition-all duration-200
           `}

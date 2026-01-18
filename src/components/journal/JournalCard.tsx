@@ -32,7 +32,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
 
   return (
     <motion.div
-      className="bg-white dark:bg-[#16213e] rounded-lg shadow-md overflow-hidden border-2 border-[#f4e4f5] dark:border-[#6E2B8A]"
+      className="bg-white dark:bg-[#16213e] rounded-lg shadow-md overflow-hidden border-2 border-[#6E2B8A] dark:border-[#6E2B8A]"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -41,8 +41,8 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <div>
-            <h3 className="text-lg font-semibold text-[#6E2B8A] dark:text-[#a323af] mb-1">{journal.title}</h3>
-            <div className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3]">
+            <h3 className="text-lg font-semibold text-black dark:text-white mb-1">{journal.title}</h3>
+            <div className="text-xs text-black dark:text-white">
               {format(new Date(journal.createdAt), 'MMM d, yyyy - h:mm a')}
             </div>
           </div>
@@ -64,7 +64,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
         {journal.content.length > 150 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-2 text-sm text-[#6E2B8A] dark:text-[#a323af] hover:text-[#5a2270] dark:hover:text-[#ba5ac3] focus:outline-none font-medium"
+            className="mt-2 text-sm text-black dark:text-white hover:text-[#6E2B8A] dark:hover:text-[#a323af] focus:outline-none font-medium"
           >
             {isExpanded ? 'Show less' : 'Read more'}
           </button>
@@ -75,7 +75,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
             {journal.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-xs bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#6E2B8A] dark:text-[#a323af] px-2 py-1 rounded-full"
+                className="text-xs bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white px-2 py-1 rounded-full"
               >
                 #{tag}
               </span>
