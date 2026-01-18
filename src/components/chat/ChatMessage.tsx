@@ -45,7 +45,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           <div className={`
             rounded-lg p-3 border-2
             ${isUser 
-              ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#000] dark:text-[#fff] border-[#6E2B8A] dark:border-[#6E2B8A]' 
+              ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#2d1b4e] dark:text-white border-[#6E2B8A] dark:border-[#6E2B8A]' 
               : isCrisisMessage
                 ? 'bg-red-50 dark:bg-red-900 text-red-900 dark:text-red-100 border-red-200 dark:border-red-700 shadow-lg'
                 : 'bg-[#6E2B8A] dark:bg-[#2d1b4e] text-white dark:text-white border-[#6E2B8A] dark:border-[#a323af]'
