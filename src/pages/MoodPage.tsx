@@ -9,51 +9,72 @@ import { format } from 'date-fns';
 const MoodPage: React.FC = () => {
   const [moodEntries, setMoodEntries] = React.useState<MoodEntry[]>([]);
   const [currentMood, setCurrentMood] = React.useState<Mood>('neutral');
-  const [moodNote, setMoodNote] = React.useState('');
+  const [optionalThought, setOptionalThought] = React.useState('');
   const [timeframe, setTimeframe] = React.useState<7 | 14 | 30>(7);
 
-  // Load mood entries
+  // Load mood entries on mount
   React.useEffect(() => {
-    const loadedEntries = storage.getMoodEntries();
-    const validEntries = loadedEntries.filter(entry => {
-      const isValid = entry.date && !isNaN(new Date(entry.date).getTime());
-      if (!isValid) {
-        console.error('Invalid date found:', entry.date);
-      }
-      return isValid;
-    });
+    const entries = storage.getMoodEntries();
+
+    // Filter invalid timestamps
+    const validEntries = entries.filter(e => e.timestamp && !isNaN(new Date(e.timestamp).getTime()));
+
     setMoodEntries(validEntries);
+
+    // Load today's mood if exists
+    const todayStr = new Date().toDateString();
+    const todayEntry = validEntries.find(
+      e => new Date(e.timestamp).toDateString() === todayStr
+    );
+
+    if (todayEntry) {
+      setCurrentMood(todayEntry.mood);
+      setOptionalThought(todayEntry.note || '');
+    }
   }, []);
 
-  const handleTrackMood = () => {
-    const newEntry = storage.addMoodEntry(currentMood, moodNote);
-    setMoodEntries([...moodEntries, newEntry]);
-    setMoodNote('');
-  };
-
-  const hasTrackedMoodToday = React.useMemo(() => {
-    const today = new Date().setHours(0, 0, 0, 0);
-    return moodEntries.some(entry => {
-      const entryDate = new Date(entry.date).setHours(0, 0, 0, 0);
-      return entryDate === today;
-    });
+  const hasTrackedToday = React.useMemo(() => {
+    const todayStr = new Date().toDateString();
+    return moodEntries.some(e => new Date(e.timestamp).toDateString() === todayStr);
   }, [moodEntries]);
 
+  // Track today's mood
+  const handleTrackMood = () => {
+    if (hasTrackedToday) return;
+
+    const newEntry = storage.addMoodEntry(currentMood, optionalThought);
+
+    setMoodEntries(prev => [...prev, newEntry]);
+    setOptionalThought('');
+  };
+
+  // Edit today's mood
+  const handleEditTodayMood = () => {
+    const todayStr = new Date().toDateString();
+    const filtered = moodEntries.filter(e => new Date(e.timestamp).toDateString() !== todayStr);
+    setMoodEntries(filtered);
+    setCurrentMood('neutral');
+    setOptionalThought('');
+  };
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#1a1a2e] py-8 px-4 md:px-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#1a1a2e] py-8 px-4 md:px-8 space-y-6">
+      {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-[#6E2B8A]">Mood Tracker</h1>
-        <p className="text-black dark:text-white">Track your mood daily to see patterns over time</p>
+        <p className="text-black dark:text-white">
+          Track your mood daily to see patterns over time
+        </p>
       </div>
 
-      {/* Today's mood section */}
+      {/* Today's Mood Section */}
       <motion.div
         className="mb-8 bg-white dark:bg-[#16213e] p-6 rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">
-          {hasTrackedMoodToday ? "Today's Mood" : "How are you feeling today?"}
+          {hasTrackedToday ? "Today's Mood" : 'How are you feeling today?'}
         </h2>
 
         <div className="mb-4">
@@ -64,18 +85,18 @@ const MoodPage: React.FC = () => {
           />
         </div>
 
-        {!hasTrackedMoodToday && (
+        {/* Track / Edit Buttons */}
+        {!hasTrackedToday && (
           <>
             <div className="mb-4">
               <textarea
-                value={moodNote}
-                onChange={(e) => setMoodNote(e.target.value)}
-                placeholder="Any specific thoughts about your mood today? (optional)"
+                value={optionalThought}
+                onChange={e => setOptionalThought(e.target.value)}
+                placeholder="Any optional thoughts? (optional)"
                 className="w-full p-3 border-2 border-[#f4e4f5] dark:border-[#6E2B8A] dark:bg-[#16213e] dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent resize-none"
                 rows={2}
               />
             </div>
-
             <button
               onClick={handleTrackMood}
               className="px-4 py-2 bg-[#6E2B8A] dark:bg-[#a323af] text-white rounded-md hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3] transition-colors font-medium"
@@ -84,15 +105,24 @@ const MoodPage: React.FC = () => {
             </button>
           </>
         )}
-        
-        {hasTrackedMoodToday && moodNote && (
+
+        {hasTrackedToday && (
+          <button
+            onClick={handleEditTodayMood}
+            className="px-4 py-2 mt-2 border border-[#6E2B8A] text-white rounded-md"
+          >
+            Edit Today's Mood
+          </button>
+        )}
+
+        {hasTrackedToday && optionalThought && (
           <div className="mt-4 p-3 bg-[#f4e4f5] dark:bg-[#2d1b4e] rounded-md italic text-[#6E2B8A] dark:text-[#a323af]">
-            "{moodNote}"
+            "{optionalThought}"
           </div>
         )}
       </motion.div>
 
-      {/* Mood chart section */}
+      {/* Mood Chart */}
       <motion.div
         className="mb-8"
         initial={{ opacity: 0, y: 20 }}
@@ -101,33 +131,29 @@ const MoodPage: React.FC = () => {
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-[#6E2B8A]">Mood Trends</h2>
-          
           <div className="flex space-x-2">
-            {[7, 14, 30].map((days) => (
+            {[7, 14, 30].map(days => (
               <button
                 key={days}
                 onClick={() => setTimeframe(days as 7 | 14 | 30)}
-                className={`
-                  px-3 py-1 text-sm rounded font-medium transition-colors
-                  ${timeframe === days 
-                    ? 'bg-[#6E2B8A] dark:bg-[#a323af] text-white' 
+                className={`px-3 py-1 text-sm rounded font-medium transition-colors ${
+                  timeframe === days
+                    ? 'bg-[#6E2B8A] dark:bg-[#a323af] text-white'
                     : 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#e8c8eb] dark:hover:bg-[#3a2860]'
-                  }
-                `}
+                }`}
               >
                 {days} days
               </button>
             ))}
           </div>
         </div>
-        
         <MoodChart
-          moodEntries={moodEntries.filter(entry => entry.date && !isNaN(new Date(entry.date).getTime()))}
+          moodEntries={moodEntries.filter(e => e.timestamp && !isNaN(new Date(e.timestamp).getTime()))}
           days={timeframe}
         />
       </motion.div>
 
-      {/* Mood history section */}
+      {/* Mood History */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -155,30 +181,22 @@ const MoodPage: React.FC = () => {
                 </thead>
                 <tbody>
                   {[...moodEntries]
-                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                    .sort((a, b) => b.timestamp - a.timestamp)
                     .map((entry, index) => (
                       <motion.tr
-                        key={entry.id}
+                        key={entry.id || entry.timestamp}
                         className={index % 2 === 0 ? 'bg-white dark:bg-[#16213e]' : 'bg-[#f4e4f5] dark:bg-[#2d1b4e]'}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + index * 0.03 }}
                       >
                         <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-black dark:text-white">
-                          {entry.date && !isNaN(new Date(entry.date).getTime())
-                            ? format(new Date(entry.date), 'MMM d, yyyy')
+                          {entry.timestamp && !isNaN(new Date(entry.timestamp).getTime())
+                            ? format(new Date(entry.timestamp), 'MMM d, yyyy')
                             : 'Invalid date'}
                         </td>
-                        <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e]">
-                          <div className="flex items-center text-black dark:text-white">
-                            <span className="mr-2">
-                              {entry.mood === 'great' ? '😁' :
-                                entry.mood === 'good' ? '🙂' :
-                                  entry.mood === 'neutral' ? '😐' :
-                                    entry.mood === 'bad' ? '🙁' : '😞'}
-                            </span>
-                            <span className="capitalize">{entry.mood}</span>
-                          </div>
+                        <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-black dark:text-white">
+                          {entry.mood}
                         </td>
                         <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] italic text-[#6E2B8A] dark:text-[#a323af]">
                           {entry.note || '-'}

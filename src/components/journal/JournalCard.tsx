@@ -13,15 +13,24 @@ interface JournalCardProps {
 
 const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
-  
+
+  // Edit button colors
+  const editBg = 'bg-[#6E2B8A] dark:bg-[#a323af]';
+  const editText = 'text-white';
+  const editHoverBg = 'hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3]';
+  const editHoverText = 'hover:text-black'; // ✅ hover pe text black
+
+  // Delete button hover color (match Edit hover)
+  const deleteHoverBg = 'hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3]';
+
   const moodColors = {
-    great: 'bg-[#6E2B8A] dark:bg-[#a323af] text-white',
-    good: 'bg-[#8a0a9b] dark:bg-[#ba5ac3] text-white',
-    neutral: 'bg-[#a323af] dark:bg-[#d191d7] text-white',
+    great: `${editBg} ${editText}`,
+    good: `${editBg} ${editText}`,
+    neutral: `${editBg} ${editText}`,
     bad: 'bg-[#d191d7] dark:bg-[#e8c8eb] text-black',
-    awful: 'bg-[#e8c8eb] dark:bg-[#f4e4f5] text-black',
+    awful: 'bg-[#e8c8eb] dark:bg-[#f4f5f7] text-black',
   };
-  
+
   const moodEmojis = {
     great: '😁',
     good: '🙂',
@@ -46,21 +55,19 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
               {format(new Date(journal.createdAt), 'MMM d, yyyy - h:mm a')}
             </div>
           </div>
-          
+
           <div className={`px-2 py-1 rounded-full text-xs ${moodColors[journal.mood]}`}>
             {moodEmojis[journal.mood]} {journal.mood.charAt(0).toUpperCase() + journal.mood.slice(1)}
           </div>
         </div>
-        
+
         <motion.div
           className="mt-3 text-black dark:text-white overflow-hidden"
           animate={{ height: isExpanded ? 'auto' : '80px' }}
         >
-          <p className={isExpanded ? '' : 'line-clamp-3'}>
-            {journal.content}
-          </p>
+          <p className={isExpanded ? '' : 'line-clamp-3'}>{journal.content}</p>
         </motion.div>
-        
+
         {journal.content.length > 150 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
@@ -69,7 +76,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
             {isExpanded ? 'Show less' : 'Read more'}
           </button>
         )}
-        
+
         {journal.tags.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1">
             {journal.tags.map((tag) => (
@@ -82,22 +89,27 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
             ))}
           </div>
         )}
-        
+
+        {/* Buttons */}
         <div className="mt-4 flex justify-end gap-2">
+          {/* Delete button: text + icon black, hover bg like Edit */}
           <Button
             size="sm"
             variant="ghost"
             onClick={() => onDelete(journal.id)}
-            icon={<Trash size={16} />}
+            icon={<Trash size={16} className="text-black group-hover:text-black" />}
+            className={`text-black ${deleteHoverBg} group`}
           >
             Delete
           </Button>
-          
+
+          {/* Edit button: hover text black + icon matches */}
           <Button
             size="sm"
             variant="outline"
             onClick={() => onEdit(journal)}
-            icon={<Edit size={16} />}
+            icon={<Edit size={16} className="text-white group-hover:text-black" />}
+            className={`${editBg} ${editText} ${editHoverBg} ${editHoverText} group`}
           >
             Edit
           </Button>

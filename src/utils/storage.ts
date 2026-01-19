@@ -1,4 +1,12 @@
-import { UserProfile, JournalEntry, Conversation, Mood, MoodEntry, FlaggedContent, ChatMessage } from '../types';
+import {
+  UserProfile,
+  JournalEntry,
+  Conversation,
+  Mood,
+  MoodEntry,
+  FlaggedContent,
+  ChatMessage,
+} from '../types';
 import { checkContent } from './contentMonitor';
 
 // Default user profile
@@ -30,12 +38,15 @@ const STORAGE_KEYS = {
 // Initialize storage
 export const initializeStorage = (): UserProfile => {
   const storedProfile = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
-  
+
   if (!storedProfile) {
-    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(defaultProfile));
+    localStorage.setItem(
+      STORAGE_KEYS.USER_PROFILE,
+      JSON.stringify(defaultProfile)
+    );
     return defaultProfile;
   }
-  
+
   return JSON.parse(storedProfile);
 };
 
@@ -45,10 +56,15 @@ export const getUserProfile = (): UserProfile => {
   return storedProfile ? JSON.parse(storedProfile) : initializeStorage();
 };
 
-export const updateUserProfile = (profile: Partial<UserProfile>): UserProfile => {
+export const updateUserProfile = (
+  profile: Partial<UserProfile>
+): UserProfile => {
   const currentProfile = getUserProfile();
   const updatedProfile = { ...currentProfile, ...profile };
-  localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(updatedProfile));
+  localStorage.setItem(
+    STORAGE_KEYS.USER_PROFILE,
+    JSON.stringify(updatedProfile)
+  );
   return updatedProfile;
 };
 
@@ -58,43 +74,54 @@ export const getFlaggedContent = (): FlaggedContent[] => {
   return stored ? JSON.parse(stored) : [];
 };
 
-export const addFlaggedContent = (content: Omit<FlaggedContent, 'id' | 'timestamp'>): FlaggedContent => {
+export const addFlaggedContent = (
+  content: Omit<FlaggedContent, 'id' | 'timestamp'>
+): FlaggedContent => {
   const flaggedContent = getFlaggedContent();
   const newEntry: FlaggedContent = {
     id: Date.now().toString(),
     timestamp: Date.now(),
     ...content,
-    riskLevel: content.riskLevel || 'low', // fallback for legacy data
+    riskLevel: content.riskLevel || 'low',
   };
   const updated = [...flaggedContent, newEntry];
-  localStorage.setItem(STORAGE_KEYS.FLAGGED_CONTENT, JSON.stringify(updated));
+  localStorage.setItem(
+    STORAGE_KEYS.FLAGGED_CONTENT,
+    JSON.stringify(updated)
+  );
   return newEntry;
 };
 
-export const updateFlaggedContent = (id: string, updates: Partial<FlaggedContent>): FlaggedContent | null => {
+export const updateFlaggedContent = (
+  id: string,
+  updates: Partial<FlaggedContent>
+): FlaggedContent | null => {
   const flaggedContent = getFlaggedContent();
   const index = flaggedContent.findIndex(item => item.id === id);
-  
+
   if (index === -1) return null;
-  
+
   const updatedItem = { ...flaggedContent[index], ...updates };
-  const updated = [...flaggedContent];
-  updated[index] = updatedItem;
-  
-  localStorage.setItem(STORAGE_KEYS.FLAGGED_CONTENT, JSON.stringify(updated));
+  flaggedContent[index] = updatedItem;
+  localStorage.setItem(
+    STORAGE_KEYS.FLAGGED_CONTENT,
+    JSON.stringify(flaggedContent)
+  );
   return updatedItem;
 };
 
-// Journal entries with content monitoring
+// Journal entries
 export const getJournalEntries = (): JournalEntry[] => {
   const profile = getUserProfile();
   return profile.journals;
 };
 
-export const addJournalEntry = (entry: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>): JournalEntry => {
+export const addJournalEntry = (
+  entry: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>
+): JournalEntry => {
   const profile = getUserProfile();
   const contentCheck = checkContent(entry.content);
-  
+
   const newEntry: JournalEntry = {
     id: Date.now().toString(),
     createdAt: Date.now(),
@@ -103,23 +130,24 @@ export const addJournalEntry = (entry: Omit<JournalEntry, 'id' | 'createdAt' | '
     flagged: contentCheck.flagged,
     flagReason: contentCheck.reason,
   };
-  
-  // Do NOT call addFlaggedContent here; handled by enhancedCheckContent in chat.ts
-  
+
   const updatedJournals = [...profile.journals, newEntry];
   updateUserProfile({ journals: updatedJournals });
-  
+
   return newEntry;
 };
 
-export const updateJournalEntry = (id: string, updates: Omit<JournalEntry, 'id' | 'createdAt'>): JournalEntry | null => {
+export const updateJournalEntry = (
+  id: string,
+  updates: Omit<JournalEntry, 'id' | 'createdAt'>
+): JournalEntry | null => {
   const profile = getUserProfile();
   const index = profile.journals.findIndex(journal => journal.id === id);
-  
+
   if (index === -1) return null;
-  
+
   const contentCheck = checkContent(updates.content);
-  
+
   const updatedEntry: JournalEntry = {
     ...profile.journals[index],
     ...updates,
@@ -129,49 +157,58 @@ export const updateJournalEntry = (id: string, updates: Omit<JournalEntry, 'id' 
     flagged: contentCheck.flagged,
     flagReason: contentCheck.reason,
   };
-  
-  // Do NOT call addFlaggedContent here; handled by enhancedCheckContent in chat.ts
-  
-  const updatedJournals = [...profile.journals];
-  updatedJournals[index] = updatedEntry;
-  updateUserProfile({ journals: updatedJournals });
-  
+
+  profile.journals[index] = updatedEntry;
+  updateUserProfile({ journals: profile.journals });
+
   return updatedEntry;
 };
 
 export const deleteJournalEntry = (id: string): boolean => {
   const profile = getUserProfile();
-  const updatedJournals = profile.journals.filter(journal => journal.id !== id);
-  
-  if (updatedJournals.length === profile.journals.length) {
-    return false;
-  }
-  
+  const updatedJournals = profile.journals.filter(
+    journal => journal.id !== id
+  );
+
+  if (updatedJournals.length === profile.journals.length) return false;
+
   updateUserProfile({ journals: updatedJournals });
   return true;
 };
 
-// Mood entries
+// ✅ Mood entries
 export const getMoodEntries = (): MoodEntry[] => {
   const profile = getUserProfile();
-  return profile.mood.history;
+  return profile.mood.history.map(entry => ({
+    ...entry,
+    date: entry.date ?? new Date(entry.timestamp).toISOString(),
+    note: entry.note ?? '',
+  }));
 };
 
-export const addMoodEntry = (mood: Mood): MoodEntry => {
+export const addMoodEntry = (
+  mood: Mood,
+  note: string = ''
+): MoodEntry => {
   const profile = getUserProfile();
+
   const newEntry: MoodEntry = {
+    id: Date.now().toString(),
     mood,
+    note,
     timestamp: Date.now(),
+    date: new Date().toISOString(),
   };
-  
+
   const updatedHistory = [...profile.mood.history, newEntry];
+
   updateUserProfile({
     mood: {
       current: mood,
       history: updatedHistory,
     },
   });
-  
+
   return newEntry;
 };
 
@@ -196,44 +233,45 @@ export const createConversation = (title: string): Conversation => {
     updatedAt: Date.now(),
     hasFlaggedContent: false,
   };
-  
+
   const updatedConversations = [...profile.conversations, newConversation];
   updateUserProfile({ conversations: updatedConversations });
-  
+
   return newConversation;
 };
 
-export const updateConversation = (id: string, updates: Partial<Conversation>): Conversation | null => {
+export const updateConversation = (
+  id: string,
+  updates: Partial<Conversation>
+): Conversation | null => {
   const profile = getUserProfile();
   const index = profile.conversations.findIndex(convo => convo.id === id);
-  
+
   if (index === -1) return null;
-  
+
   const updatedConvo = {
     ...profile.conversations[index],
     ...updates,
     updatedAt: Date.now(),
   };
-  
-  const updatedConversations = [...profile.conversations];
-  updatedConversations[index] = updatedConvo;
-  
-  updateUserProfile({ conversations: updatedConversations });
+
+  profile.conversations[index] = updatedConvo;
+  updateUserProfile({ conversations: profile.conversations });
+
   return updatedConvo;
 };
 
-// Chat messages with content monitoring
+// Chat messages
 export const addMessageToConversation = (
   conversationId: string,
   message: Omit<Omit<Omit<ChatMessage, 'id'>, 'timestamp'>, 'conversationId'>
 ): Conversation | null => {
   const profile = getUserProfile();
-  const convoIndex = profile.conversations.findIndex(convo => convo.id === conversationId);
-  
+  const convoIndex = profile.conversations.findIndex(c => c.id === conversationId);
   if (convoIndex === -1) return null;
-  
+
   const contentCheck = message.role === 'user' ? checkContent(message.content) : { flagged: false };
-  
+
   const newMessage: ChatMessage = {
     id: Date.now().toString(),
     timestamp: Date.now(),
@@ -241,32 +279,23 @@ export const addMessageToConversation = (
     flagged: contentCheck.flagged,
     flagReason: contentCheck.reason,
   };
-  
-  // Do NOT call addFlaggedContent here; handled by enhancedCheckContent in chat.ts
-  
-  const updatedMessages = [...profile.conversations[convoIndex].messages, newMessage];
-  const updatedConvo = {
-    ...profile.conversations[convoIndex],
-    messages: updatedMessages,
-    updatedAt: Date.now(),
-    hasFlaggedContent: updatedMessages.some(msg => msg.flagged),
-  };
-  
-  const updatedConversations = [...profile.conversations];
-  updatedConversations[convoIndex] = updatedConvo;
-  
-  updateUserProfile({ conversations: updatedConversations });
-  return updatedConvo;
+
+  profile.conversations[convoIndex].messages.push(newMessage);
+  profile.conversations[convoIndex].updatedAt = Date.now();
+  profile.conversations[convoIndex].hasFlaggedContent =
+    profile.conversations[convoIndex].messages.some(msg => msg.flagged);
+
+  updateUserProfile({ conversations: profile.conversations });
+
+  return profile.conversations[convoIndex];
 };
 
 export const deleteConversation = (id: string): boolean => {
   const profile = getUserProfile();
-  const updatedConversations = profile.conversations.filter(convo => convo.id !== id);
-  
-  if (updatedConversations.length === profile.conversations.length) {
-    return false;
-  }
-  
+  const updatedConversations = profile.conversations.filter(c => c.id !== id);
+
+  if (updatedConversations.length === profile.conversations.length) return false;
+
   updateUserProfile({ conversations: updatedConversations });
   return true;
 };

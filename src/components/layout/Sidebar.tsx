@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
     { to: '/chat', label: 'Chat', icon: <MessageCircle size={20} className="group-[.active]:text-white" /> },
     { to: '/journal', label: 'Journal', icon: <Book size={20} className="group-[.active]:text-white" /> },
     { to: '/mood', label: 'Mood Tracker', icon: <BarChart size={20} className="group-[.active]:text-white" /> },
-    { to: '/profile', label: 'Profile', icon: <User size={20} className="group-[.active]:text-white" /> },
+   
     { to: '/settings', label: 'Settings', icon: <Settings size={20} className="group-[.active]:text-white" /> },
   ];
 

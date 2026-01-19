@@ -74,18 +74,14 @@ const JournalPage: React.FC = () => {
   const filteredJournals = React.useMemo(() => {
     return journals
       .filter(journal => {
-        // Search filter
         const searchLower = searchQuery.toLowerCase();
         const matchesSearch = !searchQuery || 
           journal.title.toLowerCase().includes(searchLower) ||
           journal.content.toLowerCase().includes(searchLower);
-        
-        // Tag filter
         const matchesTag = !activeTag || journal.tags.includes(activeTag);
-        
         return matchesSearch && matchesTag;
       })
-      .sort((a, b) => b.createdAt - a.createdAt); // Sort by newest first
+      .sort((a, b) => b.createdAt - a.createdAt);
   }, [journals, searchQuery, activeTag]);
 
   return (
@@ -116,7 +112,8 @@ const JournalPage: React.FC = () => {
               <h1 className="text-2xl font-semibold text-black dark:text-white">Journal</h1>
               <Button
                 onClick={handleCreateJournal}
-                icon={<Plus size={18} />}
+                icon={<Plus size={18} className="text-white dark:text-white" />}
+                className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white dark:text-white"
               >
                 New Entry
               </Button>
@@ -143,10 +140,9 @@ const JournalPage: React.FC = () => {
                   
                   <button
                     onClick={() => setActiveTag(null)}
-                    className={`
-                      px-2 py-1 rounded-full text-sm whitespace-nowrap font-medium transition-colors
-                      ${!activeTag 
-                        ? 'bg-[#6E2B8A] text-white' 
+                    className={`px-2 py-1 rounded-full text-sm font-medium transition-colors
+                      ${!activeTag
+                        ? 'bg-[#6E2B8A] text-white'
                         : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white hover:bg-[#E8D5F2] dark:hover:bg-[#3a2860]'
                       }
                     `}
@@ -158,14 +154,14 @@ const JournalPage: React.FC = () => {
                     <button
                       key={tag}
                       onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                      className={`
-                        px-2 py-1 rounded-full text-sm whitespace-nowrap font-medium transition-colors
-                        ${activeTag === tag 
-                          ? 'bg-[#6E2B8A] text-white' 
+                      className={`px-2 py-1 rounded-full text-sm font-medium transition-colors flex items-center gap-1
+                        ${activeTag === tag
+                          ? 'bg-[#6E2B8A] text-white'
                           : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white hover:bg-[#E8D5F2] dark:hover:bg-[#3a2860]'
                         }
                       `}
                     >
+                      <Filter size={14} className={`${activeTag === tag ? 'text-white' : 'text-black dark:text-white'}`} />
                       #{tag}
                     </button>
                   ))}
@@ -180,7 +176,8 @@ const JournalPage: React.FC = () => {
                 <Button
                   variant="outline"
                   onClick={handleCreateJournal}
-                  icon={<Plus size={18} />}
+                  icon={<Plus size={18} className="text-black dark:text-white" />}
+                  className="border border-[#6E2B8A] dark:border-[#6E2B8A] text-black dark:text-white hover:bg-[#E8D5F2] dark:hover:bg-[#3a2860]"
                 >
                   Create your first entry
                 </Button>
