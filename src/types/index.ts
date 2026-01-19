@@ -55,6 +55,7 @@ export interface UserProfile {
     theme: 'light' | 'dark';
     notifications: boolean;
     fontSize: 'small' | 'medium' | 'large';
+    notificationTime?: string;
   };
 }
 

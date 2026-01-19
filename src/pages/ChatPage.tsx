@@ -70,23 +70,23 @@ const ChatPage: React.FC = () => {
     messages.filter(m => m.role !== 'system');
 
   return (
-    <div className="h-[calc(100vh-160px)] flex bg-white">
+    <div className="h-[calc(100vh-64px)] flex bg-white dark:bg-[#16213e]">
 
-      {/* 🟣 LIGHT PURPLE SIDEBAR */}
-      <div className="hidden md:block w-64 bg-[#FEF3FF] dark:bg-[#2d1b4e] border-r border-[#F3E8FF] dark:border-[#4C1D95] overflow-y-auto">
+      {/* Sidebar - Conversations */}
+      <div className="hidden md:block w-64 bg-[#FEF3FF] dark:bg-gradient-to-b dark:from-[#2d1b4e] dark:to-[#16213e] border-r border-[#F3E8FF] dark:border-[#2d1b4e] overflow-y-auto">
 
-        {/* 🔒 New Chat — DARK PURPLE */}
-        <div className="p-4 border-b border-[#C4B5FD] dark:border-[#6E2B8A]">
+        {/* New Chat Button */}
+        <div className="p-4 border-b border-[#C4B5FD] dark:border-[#2d1b4e]">
           <button
             onClick={handleNewConversation}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#6E2B8A] text-white rounded-md hover:bg-[#5A2270]"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#6E2B8A] dark:bg-gradient-to-r dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white rounded-md hover:bg-[#5a2270] dark:hover:shadow-lg transition-all"
           >
-            <PlusCircle size={16} className="text-white" />
+            <PlusCircle size={16} />
             New Chat
           </button>
         </div>
 
-        {/* Conversation list */}
+        {/* Conversations List */}
         <AnimatePresence>
           {conversations.map(convo => (
             <motion.div
@@ -97,32 +97,32 @@ const ChatPage: React.FC = () => {
             >
               <div
                 onClick={() => setActiveConversation(convo)}
-                className={`border-b border-[#C4B5FD] dark:border-[#4C1D95] cursor-pointer transition-colors duration-200 ${
+                className={`border-b border-[#C4B5FD] dark:border-[#2d1b4e] cursor-pointer transition-all duration-200 ${
                   activeConversation?.id === convo.id
-                    ? 'bg-[#6E2B8A] text-white'
+                    ? 'bg-[#6E2B8A] dark:bg-gradient-to-r dark:from-[#6E2B8A] dark:to-[#a323af] text-white shadow-md'
                     : 'bg-[#E9D5FF] dark:bg-[#16213e] hover:bg-[#EDE9FE] dark:hover:bg-[#2d1b4e] text-black dark:text-white'
                 }`}
               >
                 <div className="flex items-center">
                   <div className="flex-1 p-3">
-                    <div className={`flex items-center gap-2 ${activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'}`}>
+                    <div className={`flex items-center gap-2 font-semibold ${activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'}`}>
                       <MessageCircle size={16} className={activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'} />
-                      <span className={`truncate font-medium ${activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'}`}>{convo.title}</span>
+                      <span className="truncate">{convo.title}</span>
                     </div>
 
-                    <div className={`flex items-center gap-1 mt-1 text-xs ${activeConversation?.id === convo.id ? 'text-gray-100' : 'text-black dark:text-white'}`}>
-                      <Clock size={12} className={activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'} />
-                      <span className={activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'}>{new Date(convo.updatedAt).toLocaleDateString()}</span>
+                    <div className={`flex items-center gap-1 mt-1 text-xs ${activeConversation?.id === convo.id ? 'text-gray-100' : 'text-black dark:text-gray-400'}`}>
+                      <Clock size={12} className={activeConversation?.id === convo.id ? 'text-gray-100' : 'text-black dark:text-gray-400'} />
+                      <span>{new Date(convo.updatedAt).toLocaleDateString()}</span>
                     </div>
                   </div>
 
-                  {/* 🟣 DELETE BUTTON — EXTRA LIGHT */}
+                  {/* Delete Button */}
                   <button
                     onClick={(e) => handleDeleteConversation(convo.id, e)}
-                    className={`p-2 m-1 rounded ${activeConversation?.id === convo.id ? 'bg-[#5A2270] text-white hover:bg-[#4A1860]' : 'bg-[#E9D5FF] dark:bg-[#16213e] text-black dark:text-white hover:bg-[#F3E8FF] dark:hover:bg-[#2d1b4e]'}`}
+                    className={`p-2 m-1 rounded transition-all ${activeConversation?.id === convo.id ? 'bg-[#5a2270] hover:bg-[#4A1860]' : 'hover:bg-red-100 dark:hover:bg-red-900/20'}`}
                     title="Delete conversation"
                   >
-                    <Trash2 size={16} className={activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'} />
+                    <Trash2 size={16} className={activeConversation?.id === convo.id ? 'text-white' : 'text-red-500'} />
                   </button>
                 </div>
               </div>
@@ -131,9 +131,9 @@ const ChatPage: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      {/* MAIN CHAT — UNCHANGED */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 flex flex-col">
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-[#16213e]">
+        <div className="flex-1 overflow-y-auto p-6 flex flex-col">
           {activeConversation && getDisplayMessages(activeConversation.messages).length > 0 ? (
             <>
               {getDisplayMessages(activeConversation.messages).map(msg => (
@@ -147,12 +147,12 @@ const ChatPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="text-lg text-gray-500 dark:text-gray-400 mb-6"
+                className="text-center"
               >
-                <Brain size={48} className="mx-auto mb-4 text-[#6E2B8A]" />
-                <p className="text-xl font-semibold text-[#6E2B8A] dark:text-[#a323af] mb-4">Start a conversation</p>
+                <Brain size={48} className="mx-auto mb-4 text-[#6E2B8A] dark:text-[#ba5ac3]" />
+                <p className="text-xl font-semibold text-[#6E2B8A] dark:text-[#ba5ac3] mb-4">Start a conversation</p>
                 <motion.div 
-                  className="text-sm text-black dark:text-white italic max-w-md"
+                  className="text-sm text-black dark:text-white italic max-w-md p-4 bg-[#F4E4F5] dark:bg-[#2d1b4e] rounded-lg border border-[#F3E8FF] dark:border-[#4C1D95]"
                   key={getRandomQuote().text}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -167,7 +167,8 @@ const ChatPage: React.FC = () => {
           )}
         </div>
 
-        <div className="p-4 border-t flex items-center gap-4">
+        {/* Chat Input Area */}
+        <div className="p-4 border-t border-[#C4B5FD] dark:border-[#2d1b4e] bg-white dark:bg-[#16213e] flex items-center gap-3">
           <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
           <button
             onClick={() => {
@@ -178,10 +179,10 @@ const ChatPage: React.FC = () => {
                 setConversations(prev => prev.map(c => c.id === updated.id ? updated : c));
               }
             }}
-            className="px-4 py-2 bg-[#6E2B8A] text-white rounded-md whitespace-nowrap flex items-center gap-2 hover:bg-[#5A2270] transition-colors"
+            className="px-4 py-2 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white rounded-md whitespace-nowrap flex items-center gap-2 hover:shadow-lg transition-all font-semibold"
           >
-            <Trash2 size={14} className="text-white" />
-            Clear Chat
+            <Trash2 size={14} />
+            Clear
           </button>
         </div>
       </div>

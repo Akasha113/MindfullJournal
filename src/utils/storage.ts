@@ -23,6 +23,7 @@ const defaultProfile: UserProfile = {
     theme: 'light',
     notifications: false,
     fontSize: 'medium',
+    notificationTime: '09:00',
   },
 };
 

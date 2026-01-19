@@ -31,7 +31,7 @@ const Layout: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e] flex flex-col">
       <Navbar toggleSidebar={toggleSidebar} />
       
       <div className="flex flex-1 overflow-hidden">
@@ -49,7 +49,7 @@ const Layout: React.FC = () => {
         {/* Sidebar */}
         <motion.div
           className={`
-            fixed lg:static inset-y-0 left-0 w-64 bg-white shadow-lg z-30
+            fixed lg:static inset-y-0 left-0 w-64 bg-white dark:bg-gradient-to-b dark:from-[#1a1a2e] dark:to-[#16213e] shadow-lg dark:shadow-xl z-30
             transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             transition-transform duration-300 ease-in-out
           `}
@@ -57,7 +57,7 @@ const Layout: React.FC = () => {
           <div className="lg:hidden absolute right-0 p-2 transform translate-x-full top-0 mt-2">
             <button
               onClick={toggleSidebar}
-              className="p-2 rounded-full bg-white shadow-md text-gray-700 hover:bg-gray-100"
+              className="p-2 rounded-full bg-white dark:bg-[#2d1b4e] shadow-md text-gray-700 dark:text-[#ba5ac3] hover:bg-gray-100 dark:hover:bg-[#3a2860]"
             >
               {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -68,12 +68,12 @@ const Layout: React.FC = () => {
         
         {/* Main content */}
         <motion.main 
-          className="flex-1 overflow-auto p-4 lg:p-6"
+          className="flex-1 overflow-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-7xl mx-auto w-full">
             <Outlet />
           </div>
         </motion.main>
