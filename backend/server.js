@@ -617,9 +617,106 @@ app.post('/api/chats/:id/messages', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Chat not found' });
     }
 
+    // Add user message
     chat.messages.push({
-      role,
+      role: 'user',
       content,
+      timestamp: new Date(),
+    });
+
+    // Crisis detection keywords
+    const crisisKeywords = [
+      'suicide', 'suicidal', 'kill myself', 'end my life', 'want to die',
+      'don\'t want to live', 'harm myself', 'self harm', 'self-harm',
+      'cutting', 'overdose', 'jump', 'hang myself', 'can\'t take it anymore',
+      'give up', 'no point', 'hopeless', 'worthless', 'burden'
+    ];
+
+    const messageContent = content.toLowerCase();
+    const isCrisisMessage = crisisKeywords.some(keyword => messageContent.includes(keyword));
+
+    // Crisis response template
+    let aiResponse = 'Thank you for sharing. I\'m here to support you on your mindfulness journey. How are you feeling right now?';
+
+    if (isCrisisMessage) {
+      // Immediate crisis response - don't call external API
+      aiResponse = `IMMEDIATE HELP AVAILABLE
+
+I'm very concerned about what you're sharing. Your life matters and help is available right now.
+
+**National Suicide Prevention Lifeline**
+Call or Text: 988
+Chat: suicidepreventionlifeline.org
+
+**Crisis Text Line**
+Text: HOME to 741741
+
+**International Association for Suicide Prevention**
+https://www.iasp.info/resources/Crisis_Centres/
+
+**If you're in immediate danger:**
+Call 911 or go to your nearest Emergency Room
+
+Please reach out to one of these resources now. Trained counselors are available 24/7.`;
+      
+      chat.riskLevel = 'critical';
+    } else {
+      // Regular AI response for non-crisis messages
+      try {
+        if (process.env.GITHUB_API_TOKEN && process.env.GITHUB_MODEL) {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+          const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${process.env.GITHUB_API_TOKEN}`,
+            },
+            body: JSON.stringify({
+              model: process.env.GITHUB_MODEL || 'gpt-4o-mini',
+              messages: [
+                {
+                  role: 'system',
+                  content: 'You are a compassionate mindfulness coach and mental health support assistant. Provide supportive, empathetic responses that encourage self-reflection and emotional well-being. Keep responses concise (2-3 sentences).',
+                },
+                ...chat.messages.slice(-6).map(m => ({
+                  role: m.role,
+                  content: m.content,
+                })),
+              ],
+              temperature: 0.7,
+              max_tokens: 200,
+            }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            const generatedMessage = data.choices?.[0]?.message?.content;
+            if (generatedMessage) {
+              aiResponse = generatedMessage;
+              console.log('AI response generated successfully');
+            }
+          } else {
+            const errorText = await response.text();
+            console.error('AI API error:', response.status, errorText);
+          }
+        } else {
+          console.warn('GitHub API credentials not configured');
+        }
+      } catch (aiError) {
+        console.error('Failed to generate AI response:', aiError.message);
+        // Use default response - no need to fail the entire request
+      }
+    }
+
+    // Add AI response
+    chat.messages.push({
+      role: 'assistant',
+      content: aiResponse,
       timestamp: new Date(),
     });
 

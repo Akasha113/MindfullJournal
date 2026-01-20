@@ -4,41 +4,62 @@ import ChatMessage from '../components/chat/ChatMessage';
 import ChatInput from '../components/chat/ChatInput';
 import { chatAPI } from '../utils/api';
 import chatService from '../utils/chat';
-import { ChatMessage as ChatMessageType, Conversation } from '../types';
-import { MessageCircle, Clock, PlusCircle, Trash2, Brain, Loader } from 'lucide-react';
+import { ChatMessage as ChatMessageType } from '../types';
+import { MessageCircle, Clock, PlusCircle, Trash2, Brain } from 'lucide-react';
 import { getRandomQuote } from '../utils/quotes';
 
+interface Conversation {
+  _id: string;
+  conversationTitle: string;
+  messages: ChatMessageType[];
+  updatedAt: string;
+  id?: string;
+}
+
 const ChatPage: React.FC = () => {
-  const [conversations, setConversations] = React.useState<any[]>([]);
-  const [activeConversation, setActiveConversation] = React.useState<any | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [isSending, setIsSending] = React.useState(false);
-  const [error, setError] = React.useState('');
+  const [conversations, setConversations] = React.useState<Conversation[]>([]);
+  const [activeConversation, setActiveConversation] = React.useState<Conversation | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [pageLoading, setPageLoading] = React.useState(true);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
+  // Load chats from API
   React.useEffect(() => {
     const loadChats = async () => {
       try {
-        setIsLoading(true);
+        setPageLoading(true);
         const data = await chatAPI.getAll(1, 100);
-        const loadedConversations = data.chats || [];
-        setConversations(loadedConversations);
-
-        if (loadedConversations.length > 0) {
-          setActiveConversation(loadedConversations[loadedConversations.length - 1]);
-        } else {
+        let chats = data.chats || [];
+        
+        // If no chats exist, create a default one
+        if (chats.length === 0) {
           const newChat = await chatAPI.create({ conversationTitle: 'New Conversation' });
-          setConversations([newChat]);
-          setActiveConversation(newChat);
+          chats = [newChat];
+        }
+        
+        // Map MongoDB _id to id for compatibility
+        const formattedChats = chats.map((chat: any) => ({
+          ...chat,
+          _id: chat._id || chat.id,
+          id: chat._id || chat.id,
+          conversationTitle: chat.conversationTitle || 'Conversation',
+          messages: (chat.messages || []).map((msg: any, idx: number) => ({
+            ...msg,
+            id: msg.id || msg._id || `msg-${chat._id}-${idx}`,
+            timestamp: typeof msg.timestamp === 'string' ? new Date(msg.timestamp).getTime() : msg.timestamp || Date.now(),
+          })),
+          updatedAt: chat.updatedAt || new Date().toISOString(),
+        }));
+        setConversations(formattedChats);
+        if (formattedChats.length > 0) {
+          setActiveConversation(formattedChats[formattedChats.length - 1]);
         }
       } catch (err: any) {
-        setError(err.message);
         console.error('Failed to load chats:', err);
       } finally {
-        setIsLoading(false);
+        setPageLoading(false);
       }
     };
-
     loadChats();
   }, []);
 
@@ -47,31 +68,70 @@ const ChatPage: React.FC = () => {
   }, [activeConversation?.messages]);
 
   const handleSendMessage = async (message: string) => {
-    if (!activeConversation) return;
-    setIsSending(true);
+    if (!activeConversation) {
+      alert('No conversation selected');
+      return;
+    }
+    setIsLoading(true);
 
     try {
-      const updatedConversation = await chatAPI.addMessage(activeConversation._id, message, 'user');
-      if (updatedConversation) {
-        setConversations(prev =>
-          prev.map(c => (c._id === updatedConversation._id ? updatedConversation : c))
-        );
-        setActiveConversation(updatedConversation);
+      // Debug logging
+      console.log('Active conversation:', activeConversation);
+      
+      const chatId = activeConversation._id || activeConversation.id;
+      console.log('Chat ID:', chatId);
+      
+      if (!chatId) {
+        throw new Error('Chat ID is missing. Active conversation: ' + JSON.stringify(activeConversation));
       }
+      
+      const updated = await chatAPI.addMessage(chatId, message, 'user');
+      console.log('Updated chat:', updated);
+      
+      // Add IDs to messages if they don't have them
+      const messagesWithIds = (updated.messages || []).map((msg: any, idx: number) => ({
+        ...msg,
+        id: msg.id || msg._id || `msg-${Date.now()}-${idx}`,
+        timestamp: typeof msg.timestamp === 'string' ? new Date(msg.timestamp).getTime() : msg.timestamp || Date.now(),
+      }));
+      
+      const formattedUpdated = { 
+        ...updated, 
+        _id: updated._id || updated.id,
+        id: updated._id || updated.id,
+        messages: messagesWithIds,
+      };
+      
+      setConversations(prev =>
+        prev.map(c => (c._id === updated._id || c.id === updated._id || c.id === updated.id ? formattedUpdated : c))
+      );
+      setActiveConversation(formattedUpdated);
     } catch (err: any) {
+      console.error('Failed to send message:', err);
       alert('Failed to send message: ' + err.message);
     } finally {
-      setIsSending(false);
+      setIsLoading(false);
     }
   };
 
   const handleNewConversation = async () => {
     try {
-      const newConversation = await chatAPI.create({ conversationTitle: 'New Chat' });
-      setConversations([...conversations, newConversation]);
-      setActiveConversation(newConversation);
+      const newChat = await chatAPI.create({ conversationTitle: 'New Chat' });
+      const messagesWithIds = (newChat.messages || []).map((msg: any, idx: number) => ({
+        ...msg,
+        id: msg.id || msg._id || `msg-${newChat._id}-${idx}`,
+        timestamp: typeof msg.timestamp === 'string' ? new Date(msg.timestamp).getTime() : msg.timestamp || Date.now(),
+      }));
+      const formatted = { 
+        ...newChat, 
+        _id: newChat._id, 
+        id: newChat._id,
+        messages: messagesWithIds,
+      };
+      setConversations([...conversations, formatted]);
+      setActiveConversation(formatted);
     } catch (err: any) {
-      alert('Failed to create conversation: ' + err.message);
+      alert('Failed to create chat: ' + err.message);
     }
   };
 
@@ -81,16 +141,24 @@ const ChatPage: React.FC = () => {
 
     try {
       await chatAPI.delete(id);
-      const updated = conversations.filter(c => c._id !== id);
+      const updated = conversations.filter(c => c._id !== id && c.id !== id);
       setConversations(updated);
       setActiveConversation(updated[updated.length - 1] ?? null);
     } catch (err: any) {
-      alert('Failed to delete conversation: ' + err.message);
+      alert('Failed to delete: ' + err.message);
     }
   };
 
-  const getDisplayMessages = (messages: ChatMessageType[]) =>
-    messages.filter(m => m.role !== 'system');
+  const getDisplayMessages = (messages: ChatMessageType[] | undefined) =>
+    (messages || []).filter(m => m.role !== 'system');
+
+  if (pageLoading) {
+    return (
+      <div className="h-[calc(100vh-64px)] flex items-center justify-center bg-white dark:bg-[#16213e]">
+        <p className="text-black dark:text-white">Loading chats...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-64px)] flex bg-white dark:bg-[#16213e]">
@@ -121,35 +189,35 @@ const ChatPage: React.FC = () => {
               <div
                 onClick={() => setActiveConversation(convo)}
                 className={`border-b border-[#C4B5FD] dark:border-[#2d1b4e] cursor-pointer transition-all duration-200 ${
-                  activeConversation?.id === convo.id
+                  activeConversation?.id === convo.id || activeConversation?._id === convo._id
                     ? 'bg-gradient-to-r from-[#ba5ac3] to-[#e8c8eb] dark:bg-gradient-to-r dark:from-[#a323af] dark:to-[#ba5ac3] text-white shadow-md'
                     : 'bg-[#E9D5FF] dark:bg-[#16213e] hover:bg-[#EDE9FE] dark:hover:bg-[#2d1b4e] text-black dark:text-white'
                 }`}
               >
                 <div className="flex items-center">
                   <div className="flex-1 p-3">
-                    <div className={`flex items-center gap-2 font-semibold ${activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'}`}>
-                      <MessageCircle size={16} className={activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'} />
-                      <span className="truncate">{convo.title}</span>
+                    <div className={`flex items-center gap-2 font-semibold ${activeConversation?.id === convo.id || activeConversation?._id === convo._id ? 'text-white' : 'text-black dark:text-white'}`}>
+                      <MessageCircle size={16} className={activeConversation?.id === convo.id || activeConversation?._id === convo._id ? 'text-white' : 'text-black dark:text-white'} />
+                      <span className="truncate">{convo.conversationTitle}</span>
                     </div>
 
-                    <div className={`flex items-center gap-1 mt-1 text-xs ${activeConversation?.id === convo.id ? 'text-gray-100' : 'text-black dark:text-white'}`}>
-                      <Clock size={12} className={activeConversation?.id === convo.id ? 'text-gray-100' : 'text-black dark:text-white'} />
+                    <div className={`flex items-center gap-1 mt-1 text-xs ${activeConversation?.id === convo.id || activeConversation?._id === convo._id ? 'text-gray-100' : 'text-black dark:text-white'}`}>
+                      <Clock size={12} className={activeConversation?.id === convo.id || activeConversation?._id === convo._id ? 'text-gray-100' : 'text-black dark:text-white'} />
                       <span>{new Date(convo.updatedAt).toLocaleDateString()}</span>
                     </div>
                   </div>
 
                   {/* Delete Button */}
                   <button
-                    onClick={(e) => handleDeleteConversation(convo.id, e)}
+                    onClick={(e) => handleDeleteConversation(convo._id || convo.id, e)}
                     className={`p-2 m-1 rounded transition-all ${
-                      activeConversation?.id === convo.id 
+                      activeConversation?.id === convo.id || activeConversation?._id === convo._id
                         ? 'hover:bg-[#5a2270]' 
                         : 'hover:bg-[#d8a4e8] dark:hover:bg-[#4C1D95]'
                     }`}
                     title="Delete conversation"
                   >
-                    <Trash2 size={16} className={activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'} />
+                    <Trash2 size={16} className={activeConversation?.id === convo.id || activeConversation?._id === convo._id ? 'text-white' : 'text-black dark:text-white'} />
                   </button>
                 </div>
               </div>
@@ -201,9 +269,8 @@ const ChatPage: React.FC = () => {
             onClick={() => {
               if (activeConversation) {
                 const updated = { ...activeConversation, messages: [] };
-                storage.updateConversation(updated);
                 setActiveConversation(updated);
-                setConversations(prev => prev.map(c => c.id === updated.id ? updated : c));
+                setConversations(prev => prev.map(c => c._id === updated._id || c.id === updated.id ? updated : c));
               }
             }}
             className="px-4 py-2 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white rounded-md whitespace-nowrap flex items-center gap-2 hover:shadow-lg transition-all font-semibold"

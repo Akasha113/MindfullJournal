@@ -14,11 +14,11 @@ interface JournalCardProps {
 const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
-  // Edit button colors
-  const editBg = 'bg-[#6E2B8A] dark:bg-[#a323af]';
-  const editText = 'text-white';
-  const editHoverBg = 'hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3]';
-  const editHoverText = 'hover:text-black'; // ✅ hover pe text black
+  // Edit button colors - Dark background with white hover
+  const editBg = 'bg-[#1a1a2e] dark:bg-[#16213e]';
+  const editText = 'text-white dark:text-white';
+  const editHoverBg = 'hover:bg-white dark:hover:bg-white';
+  const editHoverText = 'hover:text-black dark:hover:text-black';
 
   // Delete button hover color (match Edit hover)
   const deleteHoverBg = 'hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3]';

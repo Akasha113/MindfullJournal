@@ -101,7 +101,8 @@ export const chatAPI = {
       headers: getAuthHeaders(),
       body: JSON.stringify(chat),
     });
-    return handleResponse(response);
+    const data = await handleResponse(response);
+    return data.chat || data;
   },
 
   // Get all chats
@@ -133,7 +134,8 @@ export const chatAPI = {
       headers: getAuthHeaders(),
       body: JSON.stringify({ content, role }),
     });
-    return handleResponse(response);
+    const data = await handleResponse(response);
+    return data.chat || data;
   },
 
   // Update chat metadata

@@ -18,7 +18,7 @@ const JournalSchema = new mongoose.Schema(
     },
     mood: {
       type: String,
-      enum: ['excellent', 'good', 'neutral', 'sad', 'anxious', 'angry'],
+      enum: ['great', 'good', 'neutral', 'bad', 'awful'],
       default: 'neutral',
     },
     moodScore: {

@@ -30,7 +30,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         <div className={`
           flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center
           ${isUser ? 'ml-2' : 'mr-2'}
-          ${isUser ? 'bg-[#6E2B8A] dark:bg-[#2d1b4e]' : isCrisisMessage ? 'bg-red-600' : 'bg-[#6E2B8A] dark:bg-[#a323af]'}
+          ${isUser ? 'bg-[#6E2B8A] dark:bg-[#2d1b4e]' : isCrisisMessage ? 'bg-[#a323af]' : 'bg-[#6E2B8A] dark:bg-[#a323af]'}
         `}>
           {isUser ? (
             <User size={16} className="text-white dark:text-[#a323af]" />
@@ -47,17 +47,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             ${isUser 
               ? 'bg-[#E8D5F2] dark:bg-[#E8D5F2] text-black dark:text-black border-[#6E2B8A] dark:border-[#6E2B8A]' 
               : isCrisisMessage
-                ? 'bg-red-50 dark:bg-red-900 text-red-900 dark:text-red-100 border-red-200 dark:border-red-700 shadow-lg'
+                ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#5a2270] dark:text-[#a323af] border-[#6E2B8A] dark:border-[#a323af] shadow-lg'
                 : 'bg-[#6E2B8A] dark:bg-[#6E2B8A] text-white dark:text-white border-[#6E2B8A] dark:border-[#6E2B8A]'
             }
           `}>
             {isCrisisMessage && (
-              <div className="flex items-center mb-2 text-red-600 dark:text-red-300">
-                <Heart size={16} className="mr-2" />
+              <div className="flex items-center mb-2 text-[#6E2B8A] dark:text-[#a323af]">
+                <AlertCircle size={16} className="mr-2" />
                 <span className="font-semibold text-sm">Crisis Support Resources</span>
               </div>
             )}
-            <p className={`whitespace-pre-wrap ${isUser ? 'text-black' : 'text-white'}`}>{message.content}</p>
+            <p className={`whitespace-pre-wrap ${isUser ? 'text-black' : isCrisisMessage ? 'text-[#5a2270] dark:text-white' : 'text-white'}`}>{message.content}</p>
           </div>
           
           <div className={`text-xs text-black dark:text-black mt-1 ${isUser ? 'text-right' : 'text-left'}`}>

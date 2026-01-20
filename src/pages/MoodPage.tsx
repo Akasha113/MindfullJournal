@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MoodEntry, Mood } from '../types';
-import storage from '../utils/storage';
+import { journalAPI } from '../utils/api';
 import MoodSelector from '../components/mood/MoodSelector';
 import MoodChart from '../components/mood/MoodChart';
 import { format } from 'date-fns';
@@ -11,26 +11,45 @@ const MoodPage: React.FC = () => {
   const [currentMood, setCurrentMood] = React.useState<Mood>('neutral');
   const [optionalThought, setOptionalThought] = React.useState('');
   const [timeframe, setTimeframe] = React.useState<7 | 14 | 30>(7);
+  const [loading, setLoading] = React.useState(true);
 
-  // Load mood entries on mount
+  // Load mood entries from journals with mood data
   React.useEffect(() => {
-    const entries = storage.getMoodEntries();
+    const loadMoods = async () => {
+      try {
+        setLoading(true);
+        const data = await journalAPI.getAll(1, 1000);
+        const journals = data.journals || [];
+        
+        // Convert journals with mood to mood entries
+        const moodEntries: MoodEntry[] = journals
+          .filter(j => j.mood)
+          .map(j => ({
+            id: j._id || j.id,
+            mood: j.mood as Mood,
+            note: j.content,
+            timestamp: j.createdAt || new Date().toISOString(),
+          }));
+        
+        setMoodEntries(moodEntries);
 
-    // Filter invalid timestamps
-    const validEntries = entries.filter(e => e.timestamp && !isNaN(new Date(e.timestamp).getTime()));
+        // Load today's mood if exists
+        const todayStr = new Date().toDateString();
+        const todayEntry = moodEntries.find(
+          e => new Date(e.timestamp).toDateString() === todayStr
+        );
 
-    setMoodEntries(validEntries);
-
-    // Load today's mood if exists
-    const todayStr = new Date().toDateString();
-    const todayEntry = validEntries.find(
-      e => new Date(e.timestamp).toDateString() === todayStr
-    );
-
-    if (todayEntry) {
-      setCurrentMood(todayEntry.mood);
-      setOptionalThought(todayEntry.note || '');
-    }
+        if (todayEntry) {
+          setCurrentMood(todayEntry.mood);
+          setOptionalThought(todayEntry.note || '');
+        }
+      } catch (err: any) {
+        console.error('Failed to load moods:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadMoods();
   }, []);
 
   const hasTrackedToday = React.useMemo(() => {
@@ -39,13 +58,31 @@ const MoodPage: React.FC = () => {
   }, [moodEntries]);
 
   // Track today's mood
-  const handleTrackMood = () => {
+  const handleTrackMood = async () => {
     if (hasTrackedToday) return;
 
-    const newEntry = storage.addMoodEntry(currentMood, optionalThought);
+    try {
+      const newJournal = await journalAPI.create({
+        title: `Mood: ${currentMood}`,
+        content: optionalThought,
+        mood: currentMood,
+        moodScore: 5,
+        tags: ['mood-tracking'],
+        isPrivate: true,
+      });
 
-    setMoodEntries(prev => [...prev, newEntry]);
-    setOptionalThought('');
+      const newEntry: MoodEntry = {
+        id: newJournal._id || newJournal.id,
+        mood: currentMood,
+        note: optionalThought,
+        timestamp: newJournal.createdAt || new Date().toISOString(),
+      };
+
+      setMoodEntries(prev => [...prev, newEntry]);
+      setOptionalThought('');
+    } catch (err: any) {
+      alert('Failed to track mood: ' + err.message);
+    }
   };
 
   // Edit today's mood
@@ -59,6 +96,12 @@ const MoodPage: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#1a1a2e] py-8 px-4 md:px-8 space-y-6">
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-black dark:text-white">Loading mood data...</p>
+        </div>
+      ) : (
+        <>
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-[#6E2B8A]">Mood Tracker</h1>
@@ -209,6 +252,8 @@ const MoodPage: React.FC = () => {
           </div>
         )}
       </motion.div>
+        </>
+      )}
     </div>
   );
 };
