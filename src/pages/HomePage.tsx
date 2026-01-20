@@ -1,44 +1,52 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Book, BarChart, Brain } from 'lucide-react';
+import { MessageCircle, Book, BarChart, Brain, CheckCircle, Zap, Shield, Users, TrendingUp, Star } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { getRandomQuote } from '../utils/quotes';
 import storage from '../utils/storage';
 import MoodSelector from '../components/mood/MoodSelector';
 import { Mood } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 const HomePage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const [quote, setQuote] = React.useState(getRandomQuote());
   const [currentMood, setCurrentMood] = React.useState<Mood>('neutral');
   const [moodNote, setMoodNote] = React.useState('');
   const [hasTrackedMood, setHasTrackedMood] = React.useState(false);
   
-  // Check if user already tracked mood today
+  // Check if user already tracked mood today (only for authenticated users)
   React.useEffect(() => {
-    const entries = storage.getMoodEntries();
-    const today = new Date().setHours(0, 0, 0, 0);
-    
-    const trackedToday = entries.some(entry => {
-      const entryDate = new Date(entry.date).setHours(0, 0, 0, 0);
-      return entryDate === today;
-    });
-    
-    setHasTrackedMood(trackedToday);
-    
-    if (trackedToday) {
-      // Get today's mood
-      const todayEntry = entries.find(entry => {
-        const entryDate = new Date(entry.date).setHours(0, 0, 0, 0);
-        return entryDate === today;
-      });
-      
-      if (todayEntry) {
-        setCurrentMood(todayEntry.mood);
-        setMoodNote(todayEntry.note || '');
+    if (isAuthenticated) {
+      try {
+        const entries = storage.getMoodEntries();
+        const today = new Date().setHours(0, 0, 0, 0);
+        
+        const trackedToday = entries.some(entry => {
+          const entryDate = new Date(entry.date).setHours(0, 0, 0, 0);
+          return entryDate === today;
+        });
+        
+        setHasTrackedMood(trackedToday);
+        
+        if (trackedToday) {
+          // Get today's mood
+          const todayEntry = entries.find(entry => {
+            const entryDate = new Date(entry.date).setHours(0, 0, 0, 0);
+            return entryDate === today;
+          });
+          
+          if (todayEntry) {
+            setCurrentMood(todayEntry.mood);
+            setMoodNote(todayEntry.note || '');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading mood entries:', error);
       }
     }
-  }, []);
+  }, [isAuthenticated]);
   
   const trackMood = () => {
     storage.addMoodEntry(currentMood, moodNote);
@@ -94,11 +102,33 @@ const HomePage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
         >
-          <Link to="/chat">
-            <Button size="lg" className="text-lg px-8">
-              Start Chatting
-            </Button>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link to="/dashboard/chat">
+                <Button size="lg" className="text-lg px-8">
+                  Start Chatting
+                </Button>
+              </Link>
+              <Link to="/dashboard/mood">
+                <Button size="lg" variant="outline" className="text-lg px-8">
+                  Track Mood
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button size="lg" className="text-lg px-8">
+                  Get Started
+                </Button>
+              </Link>
+              <Link to="/about">
+                <Button size="lg" variant="outline" className="text-lg px-8">
+                  Learn More
+                </Button>
+              </Link>
+            </>
+          )}
         </motion.div>
       </motion.div>
 
@@ -151,6 +181,107 @@ const HomePage: React.FC = () => {
         <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent">Thought of the Day</h2>
         <blockquote className="text-xl italic text-gray-700 dark:text-gray-300">"{quote.text}"</blockquote>
         <p className="mt-4 text-[#6E2B8A] dark:text-[#ba5ac3] font-semibold">— {quote.author}</p>
+      </motion.div>
+
+      {/* How It Works Section */}
+      <motion.div
+        className="mt-20 w-full max-w-5xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 1 }}
+      >
+        <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent">How It Works</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { step: 1, title: "Create Account", description: "Sign up in seconds and start your wellness journey today." },
+            { step: 2, title: "Share Your Feelings", description: "Chat with AI, journal your thoughts, and track your mood daily." },
+            { step: 3, title: "Get Insights", description: "Discover patterns in your emotions and improve your mental health." }
+          ].map((item, index) => (
+            <motion.div
+              key={item.step}
+              className="text-center p-6 bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl border-2 border-[#f4e4f5] dark:border-[#2d1b4e]"
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.1 + index * 0.1 }}
+            >
+              <div className="h-12 w-12 bg-gradient-to-br from-[#6E2B8A] to-[#a323af] text-white rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">
+                {item.step}
+              </div>
+              <h3 className="text-lg font-bold text-[#6E2B8A] dark:text-[#ba5ac3] mb-2">{item.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400">{item.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Benefits Section */}
+      <motion.div
+        className="mt-20 w-full max-w-5xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 1.4 }}
+      >
+        <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent">Why Choose Mindful Journal?</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[
+            { icon: <Shield size={24} />, title: "100% Private", description: "Your data is encrypted and stored locally. Complete privacy guaranteed." },
+            { icon: <Zap size={24} />, title: "AI-Powered Support", description: "Advanced AI therapy tailored to your personal mental wellness needs." },
+            { icon: <TrendingUp size={24} />, title: "Track Progress", description: "Visualize your emotional growth with detailed mood analytics." },
+            { icon: <Users size={24} />, title: "Community Driven", description: "Built with input from mental health professionals and real users." }
+          ].map((benefit, index) => (
+            <motion.div
+              key={benefit.title}
+              className="flex gap-4 p-6 bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl border-2 border-[#f4e4f5] dark:border-[#2d1b4e]"
+              whileHover={{ x: 5 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.5 + index * 0.1 }}
+            >
+              <div className="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-[#6E2B8A] to-[#a323af] text-white rounded-lg flex items-center justify-center">
+                {benefit.icon}
+              </div>
+              <div>
+                <h3 className="font-bold text-[#6E2B8A] dark:text-[#ba5ac3] mb-1">{benefit.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">{benefit.description}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Testimonials Section */}
+      <motion.div
+        className="mt-20 mb-20 w-full max-w-5xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 1.8 }}
+      >
+        <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent">What Users Say</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { name: "Sarah M.", text: "Mindful Journal has been transformative for my mental health. The AI conversations feel so natural and helpful." },
+            { name: "Ahmed K.", text: "Finally found a tool that helps me understand my emotions better. The mood tracking is incredible!" },
+            { name: "Emily R.", text: "This app has become part of my daily routine. It's like having a therapist available 24/7." }
+          ].map((testimonial, index) => (
+            <motion.div
+              key={testimonial.name}
+              className="p-6 bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl border-2 border-[#f4e4f5] dark:border-[#2d1b4e]"
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.9 + index * 0.1 }}
+            >
+              <div className="flex mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={16} className="text-yellow-400 fill-yellow-400" />
+                ))}
+              </div>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">"{testimonial.text}"</p>
+              <p className="font-semibold text-[#6E2B8A] dark:text-[#ba5ac3]">— {testimonial.name}</p>
+            </motion.div>
+          ))}
+        </div>
       </motion.div>
     </div>
   );

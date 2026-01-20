@@ -31,7 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const handleLogout = () => {
     logout();
     setShowDropdown(false);
-    navigate('/login');
+    navigate('/about');
   };
 
   const handleNavigate = (path: string) => {
@@ -56,7 +56,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               <Menu size={24} />
             </button>
             
-            <Link to="/" className="flex-shrink-0 flex items-center ml-4 lg:ml-0">
+            <Link to="/dashboard" className="flex-shrink-0 flex items-center ml-4 lg:ml-0">
               <motion.div
                 className="h-8 w-8 bg-[#6E2B8A] dark:bg-[#a323af] rounded-full flex items-center justify-center"
                 whileHover={{ scale: 1.1 }}
@@ -121,7 +121,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
 
                   {/* Menu Items */}
                   <button
-                    onClick={() => handleNavigate('/profile')}
+                    onClick={() => handleNavigate('/dashboard/profile')}
                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-black dark:text-white bg-gradient-to-r from-white to-[#f9f5fa] dark:from-[#1a1a2e] dark:to-[#2d1b4e] hover:from-[#f4e4f5] hover:to-[#e8c8eb] dark:hover:from-[#2d1b4e] dark:hover:to-[#3a2860] transition-all"
                   >
                     <User size={16} />
@@ -129,7 +129,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                   </button>
 
                   <button
-                    onClick={() => handleNavigate('/settings')}
+                    onClick={() => handleNavigate('/dashboard/settings')}
                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-black dark:text-white bg-gradient-to-r from-white to-[#f9f5fa] dark:from-[#1a1a2e] dark:to-[#2d1b4e] hover:from-[#f4e4f5] hover:to-[#e8c8eb] dark:hover:from-[#2d1b4e] dark:hover:to-[#3a2860] transition-all"
                   >
                     <Settings size={16} />

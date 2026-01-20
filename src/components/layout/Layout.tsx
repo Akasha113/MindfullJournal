@@ -5,7 +5,11 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import { Menu, X } from 'lucide-react';
 
-const Layout: React.FC = () => {
+interface LayoutProps {
+  children?: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   
   const toggleSidebar = () => {
@@ -57,9 +61,9 @@ const Layout: React.FC = () => {
           <div className="lg:hidden absolute right-0 p-2 transform translate-x-full top-0 mt-2">
             <button
               onClick={toggleSidebar}
-              className="p-2 rounded-full bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] dark:from-[#2d1b4e] dark:to-[#3a2860] shadow-md text-black dark:text-[#ba5ac3] hover:from-white hover:to-[#f4e4f5] dark:hover:from-[#3a2860] dark:hover:to-[#4a3570] transition-all"
+              className="p-2 rounded-full bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] dark:from-[#2d1b4e] dark:to-[#3a2860] shadow-md text-black dark:text-white hover:from-white hover:to-[#f4e4f5] dark:hover:from-[#3a2860] dark:hover:to-[#4a3570] transition-all"
             >
-              {sidebarOpen ? <X size={20} className="text-black dark:text-[#ba5ac3]" /> : <Menu size={20} className="text-black dark:text-[#ba5ac3]" />}
+              {sidebarOpen ? <X size={20} className="text-black dark:text-white" /> : <Menu size={20} className="text-black dark:text-white" />}
             </button>
           </div>
           
@@ -74,7 +78,7 @@ const Layout: React.FC = () => {
           transition={{ duration: 0.3 }}
         >
           <div className="max-w-7xl mx-auto w-full h-full">
-            <Outlet />
+            {children || <Outlet />}
           </div>
         </motion.main>
       </div>

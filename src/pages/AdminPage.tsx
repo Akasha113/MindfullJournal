@@ -81,7 +81,7 @@ const AdminPage: React.FC = () => {
       <div className="space-y-4">
         {filteredContent.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-            <AlertTriangle size={32} className="mx-auto mb-4 text-black" />
+            <AlertTriangle size={32} className="mx-auto mb-4 text-black dark:text-white" />
             <p className="text-gray-500">No flagged content found</p>
           </div>
         ) : (
@@ -95,9 +95,9 @@ const AdminPage: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   {item.type === 'chat' ? (
-                    <MessageCircle size={20} className="text-black" />
+                    <MessageCircle size={20} className="text-black dark:text-white" />
                   ) : (
-                    <Book size={20} className="text-black" />
+                    <Book size={20} className="text-black dark:text-white" />
                   )}
                   <span className="text-sm font-medium capitalize">{item.type}</span>
                 </div>

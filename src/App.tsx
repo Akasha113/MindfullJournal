@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 // Layouts
 import Layout from './components/layout/Layout';
+import PublicHeader from './components/layout/PublicHeader';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -30,7 +31,7 @@ export const ThemeContext = React.createContext({
   toggleDarkMode: () => {},
 });
 
-// Protected Route Component
+// Protected Route Component - Redirects to login if not authenticated
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -49,14 +50,26 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
+// Public Layout Component - For public pages without full Layout
+const PublicLayoutWrapper: React.FC<{ children: React.ReactNode; isDarkMode: boolean; toggleDarkMode: () => void }> = ({ children, isDarkMode, toggleDarkMode }) => {
+  return (
+    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+      <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e]">
+        <PublicHeader />
+        {children}
+      </div>
+    </ThemeContext.Provider>
+  );
+};
+
 function AppContent() {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
-  // Initialize storage and theme
+  // Initialize storage and theme for authenticated users
   React.useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !loading) {
       storage.initializeStorage();
       const profile = storage.getUserProfile();
       
@@ -66,7 +79,7 @@ function AppContent() {
       // Initialize notifications
       notificationService.initializeReminders();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loading]);
 
   // Update theme
   React.useEffect(() => {
@@ -85,38 +98,63 @@ function AppContent() {
     setIsDarkMode(!isDarkMode);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6E2B8A]"></div>
+      </div>
+    );
+  }
+
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
-      <Router>
-        <Routes>
-          {/* Auth Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+    <Router>
+      <Routes>
+        {/* Public Routes - Accessible to everyone */}
+        <Route path="/login" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><LoginPage /></PublicLayoutWrapper>} />
+        <Route path="/register" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><RegisterPage /></PublicLayoutWrapper>} />
+        
+        {/* About Page - Shows appropriate header based on auth status */}
+        <Route
+          path="/about"
+          element={
+            isAuthenticated ? (
+              <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+                <Layout>
+                  <AboutPage />
+                </Layout>
+              </ThemeContext.Provider>
+            ) : (
+              <PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><AboutPage /></PublicLayoutWrapper>
+            )
+          }
+        />
+        
+        <Route path="/" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><HomePage /></PublicLayoutWrapper>} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
+        {/* Protected Routes - Only for authenticated users */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
                 <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<HomePage />} />
-            <Route path="chat" element={<ChatPage />} />
-            <Route path="journal" element={<JournalPage />} />
-            <Route path="mood" element={<MoodPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="about" element={<AboutPage />} />
-            {isAdmin && <Route path="admin" element={<AdminPage />} />}
-          </Route>
+              </ThemeContext.Provider>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<HomePage />} />
+          <Route path="chat" element={<ChatPage />} />
+          <Route path="journal" element={<JournalPage />} />
+          <Route path="mood" element={<MoodPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          {isAdmin && <Route path="admin" element={<AdminPage />} />}
+        </Route>
 
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </ThemeContext.Provider>
+        {/* Catch all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
   );
 }
 

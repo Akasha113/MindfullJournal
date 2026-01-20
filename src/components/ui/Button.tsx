@@ -24,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({
   const variantStyles = {
     primary: 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] text-white hover:shadow-lg dark:from-[#ba5ac3] dark:to-[#e8c8eb] focus:ring-2 focus:ring-[#6E2B8A]',
     secondary: 'bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] text-[#6E2B8A] dark:from-[#3a2860] dark:to-[#4a3570] dark:text-[#a323af] hover:shadow-lg focus:ring-2 focus:ring-[#6E2B8A]',
-    outline: 'border-2 border-[#6E2B8A] text-[#6E2B8A] hover:bg-gradient-to-r hover:from-[#f4e4f5] hover:to-[#e8c8eb] dark:hover:from-[#2d1b4e] dark:hover:to-[#3a2860] focus:ring-2 focus:ring-[#6E2B8A]',
+    outline: 'bg-white border-2 border-[#6E2B8A] text-[#6E2B8A] hover:shadow-lg hover:text-white dark:bg-[#16213e] dark:border-[#a323af] dark:text-[#a323af] dark:hover:text-white focus:ring-2 focus:ring-[#6E2B8A]',
     ghost: 'bg-gradient-to-r from-[#E9D5FF] to-[#f3e8ff] dark:from-[#2d1b4e] dark:to-[#3a2860] text-black dark:text-white hover:from-[#6E2B8A] hover:to-[#a323af] dark:hover:from-[#6E2B8A] dark:hover:to-[#a323af] hover:text-white focus:ring-2 focus:ring-[#6E2B8A]',
     link: 'text-[#6E2B8A] dark:text-[#a323af] underline hover:text-[#5a2270] dark:hover:text-[#ba5ac3] p-0 focus:ring-0',
   };

@@ -110,8 +110,8 @@ const ChatPage: React.FC = () => {
                       <span className="truncate">{convo.title}</span>
                     </div>
 
-                    <div className={`flex items-center gap-1 mt-1 text-xs ${activeConversation?.id === convo.id ? 'text-gray-100' : 'text-black dark:text-gray-400'}`}>
-                      <Clock size={12} className={activeConversation?.id === convo.id ? 'text-gray-100' : 'text-black dark:text-gray-400'} />
+                    <div className={`flex items-center gap-1 mt-1 text-xs ${activeConversation?.id === convo.id ? 'text-gray-100' : 'text-black dark:text-white'}`}>
+                      <Clock size={12} className={activeConversation?.id === convo.id ? 'text-gray-100' : 'text-black dark:text-white'} />
                       <span>{new Date(convo.updatedAt).toLocaleDateString()}</span>
                     </div>
                   </div>

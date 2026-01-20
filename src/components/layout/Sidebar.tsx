@@ -30,11 +30,11 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
   }, []);
 
   const navItems = [
-    { to: '/', label: 'Home', icon: <Brain size={20} /> },
-    { to: '/chat', label: 'Chat', icon: <MessageCircle size={20} /> },
-    { to: '/journal', label: 'Journal', icon: <Book size={20} /> },
-    { to: '/mood', label: 'Mood Tracker', icon: <BarChart size={20} /> },
-    { to: '/settings', label: 'Settings', icon: <Settings size={20} /> },
+    { to: '/dashboard', label: 'Home', icon: <Brain size={20} /> },
+    { to: '/dashboard/chat', label: 'Chat', icon: <MessageCircle size={20} /> },
+    { to: '/dashboard/journal', label: 'Journal', icon: <Book size={20} /> },
+    { to: '/dashboard/mood', label: 'Mood Tracker', icon: <BarChart size={20} /> },
+    { to: '/dashboard/settings', label: 'Settings', icon: <Settings size={20} /> },
   ];
 
   const handleNavClick = () => {
@@ -76,11 +76,11 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
                   flex items-center px-4 py-3 rounded-lg font-semibold transition-all duration-200
                   ${isActive 
                     ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] text-white shadow-lg' 
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e]'
+                    : 'text-gray-700 dark:text-white hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e]'
                   }
                 `}>
-                  <span className={isActive ? 'text-white' : ''}>{item.icon}</span>
-                  <span className={`ml-3 ${isActive ? 'text-white' : ''}`}>{item.label}</span>
+                  <span className={isActive ? 'text-white' : 'text-black dark:text-white'}>{item.icon}</span>
+                  <span className={`ml-3 ${isActive ? 'text-white' : 'text-black dark:text-white'}`}>{item.label}</span>
                 </div>
                 
               )}
@@ -99,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
       >
         {/* Quote Section */}
         <motion.div 
-          className="text-xs text-gray-700 dark:text-gray-300 italic mb-4 p-3 rounded-lg bg-white dark:bg-[#1a1a2e] border border-[#f4e4f5] dark:border-[#2d1b4e]"
+          className="text-xs text-gray-700 dark:text-white italic mb-4 p-3 rounded-lg bg-white dark:bg-[#1a1a2e] border border-[#f4e4f5] dark:border-[#2d1b4e]"
           key={quote.text}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -107,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
           transition={{ duration: 1 }}
         >
           <p>"{quote.text}"</p>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">— {quote.author}</p>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">— {quote.author}</p>
         </motion.div>
 
         {/* Logout Button */}

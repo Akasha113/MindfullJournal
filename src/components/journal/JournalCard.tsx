@@ -97,7 +97,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
             size="sm"
             variant="ghost"
             onClick={() => onDelete(journal.id)}
-            icon={<Trash size={16} className="text-black group-hover:text-black" />}
+            icon={<Trash size={16} className="text-black dark:text-white group-hover:text-black dark:group-hover:text-white" />}
             className={`text-black ${deleteHoverBg} group`}
           >
             Delete
@@ -108,7 +108,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
             size="sm"
             variant="outline"
             onClick={() => onEdit(journal)}
-            icon={<Edit size={16} className="text-white group-hover:text-black" />}
+            icon={<Edit size={16} className="text-white group-hover:text-black dark:text-white dark:group-hover:text-black" />}
             className={`${editBg} ${editText} ${editHoverBg} ${editHoverText} group`}
           >
             Edit

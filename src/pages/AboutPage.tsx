@@ -2,8 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useSpring, animated } from '@react-spring/web';
 import { Brain, Heart, Users, Shield } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const AboutPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
   const calc = (x: number, y: number) => {
     const bounds = document.getElementById('card')?.getBoundingClientRect();
     if (!bounds) return [0, 0, 1];
@@ -23,7 +26,7 @@ const AboutPage: React.FC = () => {
   }));
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] py-12 px-4">
+    <div className={`${isAuthenticated ? 'min-h-screen' : 'min-h-[calc(100vh-4rem)]'} py-12 px-4 bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e]`}>
       <motion.div
         className="max-w-4xl mx-auto"
         initial={{ opacity: 0, y: 20 }}
@@ -32,7 +35,7 @@ const AboutPage: React.FC = () => {
       >
         <div className="text-center mb-16">
           <motion.h1
-            className="text-5xl font-semibold mb-6 text-[#6E2B8A]"
+            className="text-5xl font-semibold mb-6 text-[#6E2B8A] dark:text-[#ba5ac3]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}

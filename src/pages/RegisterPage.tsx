@@ -49,7 +49,7 @@ const RegisterPage: React.FC = () => {
       await register(name, email, password);
       setSuccess('Account created successfully!');
       setTimeout(() => {
-        navigate('/');
+        navigate('/dashboard');
       }, 2000);
     } catch (err: any) {
       setError(err.message || 'Registration failed');
