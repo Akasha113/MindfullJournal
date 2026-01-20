@@ -1,23 +1,37 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { JournalEntry } from '../types';
-import storage from '../utils/storage';
+import { journalAPI } from '../utils/api';
 import JournalCard from '../components/journal/JournalCard';
 import JournalForm from '../components/journal/JournalForm';
 import Button from '../components/ui/Button';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Plus, Search, Filter, Loader } from 'lucide-react';
 
 const JournalPage: React.FC = () => {
-  const [journals, setJournals] = React.useState<JournalEntry[]>([]);
+  const [journals, setJournals] = React.useState<any[]>([]);
   const [showForm, setShowForm] = React.useState(false);
-  const [editingJournal, setEditingJournal] = React.useState<JournalEntry | null>(null);
+  const [editingJournal, setEditingJournal] = React.useState<any | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeTag, setActiveTag] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState('');
   
-  // Load journals
+  // Load journals from API
   React.useEffect(() => {
-    const loadedJournals = storage.getJournalEntries();
-    setJournals(loadedJournals);
+    const loadJournals = async () => {
+      try {
+        setLoading(true);
+        const data = await journalAPI.getAll(1, 100);
+        setJournals(data.journals || []);
+      } catch (err: any) {
+        setError(err.message);
+        console.error('Failed to load journals:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadJournals();
   }, []);
   
   const handleCreateJournal = () => {
@@ -25,35 +39,39 @@ const JournalPage: React.FC = () => {
     setShowForm(true);
   };
   
-  const handleEditJournal = (journal: JournalEntry) => {
+  const handleEditJournal = (journal: any) => {
     setEditingJournal(journal);
     setShowForm(true);
   };
   
-  const handleDeleteJournal = (id: string) => {
+  const handleDeleteJournal = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this journal entry?')) {
-      const success = storage.deleteJournalEntry(id);
-      if (success) {
-        setJournals(journals.filter(journal => journal.id !== id));
+      try {
+        await journalAPI.delete(id);
+        setJournals(journals.filter(journal => journal._id !== id));
+      } catch (err: any) {
+        alert('Failed to delete journal: ' + err.message);
       }
     }
   };
   
-  const handleSubmitJournal = (journalData: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingJournal) {
-      const updatedJournal = storage.updateJournalEntry(editingJournal.id, journalData);
-      if (updatedJournal) {
+  const handleSubmitJournal = async (journalData: any) => {
+    try {
+      if (editingJournal) {
+        await journalAPI.update(editingJournal._id, journalData);
         setJournals(journals.map(journal => 
-          journal.id === updatedJournal.id ? updatedJournal : journal
+          journal._id === editingJournal._id ? { ...journal, ...journalData } : journal
         ));
+      } else {
+        const newJournal = await journalAPI.create(journalData);
+        setJournals([...journals, newJournal]);
       }
-    } else {
-      const newJournal = storage.addJournalEntry(journalData);
-      setJournals([...journals, newJournal]);
+      
+      setShowForm(false);
+      setEditingJournal(null);
+    } catch (err: any) {
+      alert('Failed to save journal: ' + err.message);
     }
-    
-    setShowForm(false);
-    setEditingJournal(null);
   };
   
   const handleCancelForm = () => {
@@ -65,7 +83,7 @@ const JournalPage: React.FC = () => {
   const allTags = React.useMemo(() => {
     const tagsSet = new Set<string>();
     journals.forEach(journal => {
-      journal.tags.forEach(tag => tagsSet.add(tag));
+      (journal.tags || []).forEach((tag: string) => tagsSet.add(tag));
     });
     return Array.from(tagsSet);
   }, [journals]);
@@ -78,11 +96,27 @@ const JournalPage: React.FC = () => {
         const matchesSearch = !searchQuery || 
           journal.title.toLowerCase().includes(searchLower) ||
           journal.content.toLowerCase().includes(searchLower);
-        const matchesTag = !activeTag || journal.tags.includes(activeTag);
+        const matchesTag = !activeTag || (journal.tags || []).includes(activeTag);
         return matchesSearch && matchesTag;
       })
-      .sort((a, b) => b.createdAt - a.createdAt);
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [journals, searchQuery, activeTag]);
+
+  if (loading) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#16213e] py-8 px-4 md:px-8 flex items-center justify-center">
+        <Loader className="animate-spin" size={40} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#16213e] py-8 px-4 md:px-8 flex items-center justify-center">
+        <p className="text-red-600 dark:text-red-400">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#16213e] py-8 px-4 md:px-8">

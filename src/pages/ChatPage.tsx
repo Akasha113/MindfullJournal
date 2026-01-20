@@ -2,30 +2,44 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatMessage from '../components/chat/ChatMessage';
 import ChatInput from '../components/chat/ChatInput';
-import storage from '../utils/storage';
+import { chatAPI } from '../utils/api';
 import chatService from '../utils/chat';
 import { ChatMessage as ChatMessageType, Conversation } from '../types';
-import { MessageCircle, Clock, PlusCircle, Trash2, Brain } from 'lucide-react';
+import { MessageCircle, Clock, PlusCircle, Trash2, Brain, Loader } from 'lucide-react';
 import { getRandomQuote } from '../utils/quotes';
 
 const ChatPage: React.FC = () => {
-  const [conversations, setConversations] = React.useState<Conversation[]>([]);
-  const [activeConversation, setActiveConversation] = React.useState<Conversation | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [conversations, setConversations] = React.useState<any[]>([]);
+  const [activeConversation, setActiveConversation] = React.useState<any | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isSending, setIsSending] = React.useState(false);
+  const [error, setError] = React.useState('');
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const loadedConversations = storage.getConversations();
-    setConversations(loadedConversations);
+    const loadChats = async () => {
+      try {
+        setIsLoading(true);
+        const data = await chatAPI.getAll(1, 100);
+        const loadedConversations = data.chats || [];
+        setConversations(loadedConversations);
 
-    if (loadedConversations.length === 0) {
-      const newConversation = storage.createConversation('New Conversation');
-      const initializedConversation = chatService.initializeConversation(newConversation.id);
-      setConversations([initializedConversation ?? newConversation]);
-      setActiveConversation(initializedConversation ?? newConversation);
-    } else {
-      setActiveConversation(loadedConversations[loadedConversations.length - 1]);
-    }
+        if (loadedConversations.length > 0) {
+          setActiveConversation(loadedConversations[loadedConversations.length - 1]);
+        } else {
+          const newChat = await chatAPI.create({ conversationTitle: 'New Conversation' });
+          setConversations([newChat]);
+          setActiveConversation(newChat);
+        }
+      } catch (err: any) {
+        setError(err.message);
+        console.error('Failed to load chats:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadChats();
   }, []);
 
   React.useEffect(() => {
@@ -34,36 +48,45 @@ const ChatPage: React.FC = () => {
 
   const handleSendMessage = async (message: string) => {
     if (!activeConversation) return;
-    setIsLoading(true);
+    setIsSending(true);
 
     try {
-      const updatedConversation = await chatService.sendMessage(activeConversation.id, message);
+      const updatedConversation = await chatAPI.addMessage(activeConversation._id, message, 'user');
       if (updatedConversation) {
         setConversations(prev =>
-          prev.map(c => (c.id === updatedConversation.id ? updatedConversation : c))
+          prev.map(c => (c._id === updatedConversation._id ? updatedConversation : c))
         );
         setActiveConversation(updatedConversation);
       }
+    } catch (err: any) {
+      alert('Failed to send message: ' + err.message);
     } finally {
-      setIsLoading(false);
+      setIsSending(false);
     }
   };
 
-  const handleNewConversation = () => {
-    const newConversation = storage.createConversation('New Chat');
-    const initializedConversation = chatService.initializeConversation(newConversation.id);
-    setConversations([...conversations, initializedConversation ?? newConversation]);
-    setActiveConversation(initializedConversation ?? newConversation);
+  const handleNewConversation = async () => {
+    try {
+      const newConversation = await chatAPI.create({ conversationTitle: 'New Chat' });
+      setConversations([...conversations, newConversation]);
+      setActiveConversation(newConversation);
+    } catch (err: any) {
+      alert('Failed to create conversation: ' + err.message);
+    }
   };
 
-  const handleDeleteConversation = (id: string, e: React.MouseEvent) => {
+  const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!window.confirm('Delete this conversation?')) return;
 
-    storage.deleteConversation(id);
-    const updated = conversations.filter(c => c.id !== id);
-    setConversations(updated);
-    setActiveConversation(updated[updated.length - 1] ?? null);
+    try {
+      await chatAPI.delete(id);
+      const updated = conversations.filter(c => c._id !== id);
+      setConversations(updated);
+      setActiveConversation(updated[updated.length - 1] ?? null);
+    } catch (err: any) {
+      alert('Failed to delete conversation: ' + err.message);
+    }
   };
 
   const getDisplayMessages = (messages: ChatMessageType[]) =>

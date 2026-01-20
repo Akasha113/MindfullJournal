@@ -5,9 +5,10 @@ import { Brain, Mail, Lock, User, AlertCircle, CheckCircle, UserPlus } from 'luc
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,10 +47,28 @@ const RegisterPage: React.FC = () => {
     setLoading(true);
 
     try {
-      await register(name, email, password);
-      setSuccess('Account created successfully!');
+      const response = await fetch(`${API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      setSuccess('Verification code sent to your email!');
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/verify', { state: { email } });
       }, 2000);
     } catch (err: any) {
       setError(err.message || 'Registration failed');

@@ -1,0 +1,29 @@
+{
+  "name": "zenify-backend",
+  "version": "1.0.0",
+  "description": "Backend server for Mindful Journal with MongoDB Integration",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "mindful-journal",
+    "journal",
+    "mindfulness",
+    "mongodb",
+    "authentication"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "nodemailer": "^6.9.3",
+    "jsonwebtoken": "^9.0.0",
+    "uuid": "^9.0.0"
+  }
+}
