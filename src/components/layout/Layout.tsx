@@ -57,9 +57,9 @@ const Layout: React.FC = () => {
           <div className="lg:hidden absolute right-0 p-2 transform translate-x-full top-0 mt-2">
             <button
               onClick={toggleSidebar}
-              className="p-2 rounded-full bg-white dark:bg-[#2d1b4e] shadow-md text-gray-700 dark:text-[#ba5ac3] hover:bg-gray-100 dark:hover:bg-[#3a2860]"
+              className="p-2 rounded-full bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] dark:from-[#2d1b4e] dark:to-[#3a2860] shadow-md text-black dark:text-[#ba5ac3] hover:from-white hover:to-[#f4e4f5] dark:hover:from-[#3a2860] dark:hover:to-[#4a3570] transition-all"
             >
-              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+              {sidebarOpen ? <X size={20} className="text-black dark:text-[#ba5ac3]" /> : <Menu size={20} className="text-black dark:text-[#ba5ac3]" />}
             </button>
           </div>
           
@@ -68,12 +68,12 @@ const Layout: React.FC = () => {
         
         {/* Main content */}
         <motion.main 
-          className="flex-1 overflow-auto"
+          className="flex-1 overflow-auto p-4 md:p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="max-w-7xl mx-auto w-full">
+          <div className="max-w-7xl mx-auto w-full h-full">
             <Outlet />
           </div>
         </motion.main>

@@ -73,7 +73,7 @@ const ChatPage: React.FC = () => {
     <div className="h-[calc(100vh-64px)] flex bg-white dark:bg-[#16213e]">
 
       {/* Sidebar - Conversations */}
-      <div className="hidden md:block w-64 bg-[#FEF3FF] dark:bg-gradient-to-b dark:from-[#2d1b4e] dark:to-[#16213e] border-r border-[#F3E8FF] dark:border-[#2d1b4e] overflow-y-auto">
+      <div className="hidden md:block w-64 bg-[#FEF3FF] dark:bg-gradient-to-b dark:from-[#2d1b4e] dark:to-[#16213e] border-r border-[#F3E8FF] dark:border-[#2d1b4e] overflow-y-auto m-4 ml-0 rounded-lg">
 
         {/* New Chat Button */}
         <div className="p-4 border-b border-[#C4B5FD] dark:border-[#2d1b4e]">
@@ -99,7 +99,7 @@ const ChatPage: React.FC = () => {
                 onClick={() => setActiveConversation(convo)}
                 className={`border-b border-[#C4B5FD] dark:border-[#2d1b4e] cursor-pointer transition-all duration-200 ${
                   activeConversation?.id === convo.id
-                    ? 'bg-[#6E2B8A] dark:bg-gradient-to-r dark:from-[#6E2B8A] dark:to-[#a323af] text-white shadow-md'
+                    ? 'bg-gradient-to-r from-[#ba5ac3] to-[#e8c8eb] dark:bg-gradient-to-r dark:from-[#a323af] dark:to-[#ba5ac3] text-white shadow-md'
                     : 'bg-[#E9D5FF] dark:bg-[#16213e] hover:bg-[#EDE9FE] dark:hover:bg-[#2d1b4e] text-black dark:text-white'
                 }`}
               >
@@ -119,10 +119,14 @@ const ChatPage: React.FC = () => {
                   {/* Delete Button */}
                   <button
                     onClick={(e) => handleDeleteConversation(convo.id, e)}
-                    className={`p-2 m-1 rounded transition-all ${activeConversation?.id === convo.id ? 'bg-[#5a2270] hover:bg-[#4A1860]' : 'hover:bg-red-100 dark:hover:bg-red-900/20'}`}
+                    className={`p-2 m-1 rounded transition-all ${
+                      activeConversation?.id === convo.id 
+                        ? 'hover:bg-[#5a2270]' 
+                        : 'hover:bg-[#d8a4e8] dark:hover:bg-[#4C1D95]'
+                    }`}
                     title="Delete conversation"
                   >
-                    <Trash2 size={16} className={activeConversation?.id === convo.id ? 'text-white' : 'text-red-500'} />
+                    <Trash2 size={16} className={activeConversation?.id === convo.id ? 'text-white' : 'text-black dark:text-white'} />
                   </button>
                 </div>
               </div>
@@ -168,7 +172,7 @@ const ChatPage: React.FC = () => {
         </div>
 
         {/* Chat Input Area */}
-        <div className="p-4 border-t border-[#C4B5FD] dark:border-[#2d1b4e] bg-white dark:bg-[#16213e] flex items-center gap-3">
+        <div className="p-4 border-t border-[#C4B5FD] dark:border-[#2d1b4e] bg-white dark:bg-[#16213e] flex items-center gap-3 m-4 rounded-lg shadow-md">
           <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
           <button
             onClick={() => {

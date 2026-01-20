@@ -71,7 +71,7 @@ const HomePage: React.FC = () => {
         </motion.div>
 
         <motion.h1 
-          className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent"
+          className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}

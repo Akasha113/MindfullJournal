@@ -81,7 +81,7 @@ const AdminPage: React.FC = () => {
       <div className="space-y-4">
         {filteredContent.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-            <AlertTriangle size={32} className="mx-auto mb-4 text-gray-400" />
+            <AlertTriangle size={32} className="mx-auto mb-4 text-black" />
             <p className="text-gray-500">No flagged content found</p>
           </div>
         ) : (
@@ -95,9 +95,9 @@ const AdminPage: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   {item.type === 'chat' ? (
-                    <MessageCircle size={20} className="text-gray-500" />
+                    <MessageCircle size={20} className="text-black" />
                   ) : (
-                    <Book size={20} className="text-gray-500" />
+                    <Book size={20} className="text-black" />
                   )}
                   <span className="text-sm font-medium capitalize">{item.type}</span>
                 </div>
@@ -118,11 +118,11 @@ const AdminPage: React.FC = () => {
               </div>
               
               <div className="mt-4">
-                <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
-                  <p className="text-red-700 text-sm font-medium">
+                <div className="bg-[#f3e8ff] dark:bg-[#2d1b4e] border-l-4 border-[#d8a4e8] dark:border-[#5a2270] p-4 mb-4">
+                  <p className="text-[#6E2B8A] dark:text-[#ba5ac3] text-sm font-medium">
                     Reason for flagging:
                   </p>
-                  <p className="text-red-600">{item.reason}</p>
+                  <p className="text-[#6E2B8A] dark:text-[#ba5ac3]">{item.reason}</p>
                   <p className="text-xs text-gray-500 mt-1">Risk Level: <span className="font-semibold capitalize">{item.riskLevel}</span></p>
                 </div>
                 

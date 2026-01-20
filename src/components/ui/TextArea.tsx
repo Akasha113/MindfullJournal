@@ -80,7 +80,7 @@ const TextArea: React.FC<TextAreaProps> = ({
       </div>
       
       {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
+        <p className="mt-1 text-sm text-[#6E2B8A] dark:text-[#ba5ac3]">{error}</p>
       )}
     </div>
   );

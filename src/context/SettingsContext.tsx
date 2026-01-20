@@ -54,7 +54,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         root.style.fontSize = '16px';
         break;
       case 'large':
-        root.style.fontSize = '18px';
+        root.style.fontSize = '17px';
         break;
     }
   }, [fontSize]);

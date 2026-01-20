@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Brain, Menu, Sun, Moon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Brain, Menu, Sun, Moon, ChevronDown, User, Settings, LogOut } from 'lucide-react';
 import { ThemeContext } from '../../App';
+import { useAuth } from '../../context/AuthContext';
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -10,6 +11,33 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const { isDarkMode, toggleDarkMode } = React.useContext(ThemeContext);
+  const { isAuthenticated, user, logout } = useAuth();
+  const [showDropdown, setShowDropdown] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setShowDropdown(false);
+    navigate('/login');
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setShowDropdown(false);
+  };
 
   return (
     <motion.nav 
@@ -56,17 +84,82 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               About
             </Link>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link
-                to="/profile"
-                className="inline-flex items-center px-4 py-2 border-2 border-[#6E2B8A] text-sm font-semibold rounded-lg text-white bg-[#6E2B8A] dark:bg-[#a323af] hover:bg-[#a323af] dark:hover:bg-[#6E2B8A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6E2B8A]"
+            {isAuthenticated && user ? (
+              <div className="relative" ref={dropdownRef}>
+                <motion.button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white font-semibold hover:shadow-lg transition-all duration-200"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <User size={18} />
+                  <span className="text-sm">{user.name}</span>
+                  <motion.div
+                    animate={{ rotate: showDropdown ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown size={18} />
+                  </motion.div>
+                </motion.button>
+
+                {/* Dropdown Menu */}
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ 
+                    opacity: showDropdown ? 1 : 0, 
+                    y: showDropdown ? 0 : -10,
+                    pointerEvents: showDropdown ? 'auto' : 'none'
+                  }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 mt-2 w-40 bg-white dark:bg-[#1a1a2e] rounded-lg shadow-xl border-2 border-[#f4e4f5] dark:border-[#6E2B8A] z-50"
+                >
+                  {/* User Info */}
+                  <div className="px-4 py-3 border-b border-[#f4e4f5] dark:border-[#6E2B8A]">
+                    <p className="text-sm font-semibold text-black dark:text-white">{user.name}</p>
+                    <p className="text-xs text-gray-600 dark:text-[#ba5ac3]">{user.email}</p>
+                  </div>
+
+                  {/* Menu Items */}
+                  <button
+                    onClick={() => handleNavigate('/profile')}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-black dark:text-white bg-gradient-to-r from-white to-[#f9f5fa] dark:from-[#1a1a2e] dark:to-[#2d1b4e] hover:from-[#f4e4f5] hover:to-[#e8c8eb] dark:hover:from-[#2d1b4e] dark:hover:to-[#3a2860] transition-all"
+                  >
+                    <User size={16} />
+                    <span>Profile</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavigate('/settings')}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-black dark:text-white bg-gradient-to-r from-white to-[#f9f5fa] dark:from-[#1a1a2e] dark:to-[#2d1b4e] hover:from-[#f4e4f5] hover:to-[#e8c8eb] dark:hover:from-[#2d1b4e] dark:hover:to-[#3a2860] transition-all"
+                  >
+                    <Settings size={16} />
+                    <span>Settings</span>
+                  </button>
+
+                  <div className="border-t border-[#f4e4f5] dark:border-[#6E2B8A]">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-white bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] hover:from-[#5a2270] hover:to-[#892c7e] dark:hover:from-[#a323af] dark:hover:to-[#ba5ac3] transition-all"
+                    >
+                      <LogOut size={16} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            ) : (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Profile
-              </Link>
-            </motion.div>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] transition-all"
+                >
+                  Login
+                </Link>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>

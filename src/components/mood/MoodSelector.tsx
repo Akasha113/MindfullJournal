@@ -49,8 +49,8 @@ const MoodSelector: React.FC<MoodSelectorProps> = ({
             flex flex-col items-center justify-center rounded-full 
             ${sizeClasses[size].button}
             ${selectedMood === mood.value 
-              ? 'bg-[#6E2B8A] dark:bg-[#6E2B8A] text-white ring-2 ring-gray-400' 
-              : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white hover:bg-[#6E2B8A] dark:hover:bg-[#6E2B8A] hover:text-white'
+              ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white ring-2 ring-gray-400' 
+              : 'bg-gradient-to-r from-[#E9D5FF] to-[#f3e8ff] dark:from-[#2d1b4e] dark:to-[#3a2860] text-black dark:text-white hover:from-[#6E2B8A] hover:to-[#a323af] dark:hover:from-[#6E2B8A] dark:hover:to-[#a323af] hover:text-white'
             }
             transition-all duration-200
           `}

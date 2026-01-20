@@ -28,31 +28,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleDemoLogin = async () => {
-    setEmail('demo@example.com');
-    setPassword('demo123');
-    setLoading(true);
-    try {
-      // Register demo user if doesn't exist
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      if (!users.some((u: any) => u.email === 'demo@example.com')) {
-        users.push({
-          id: 'demo',
-          name: 'Demo User',
-          email: 'demo@example.com',
-          password: 'demo123',
-        });
-        localStorage.setItem('users', JSON.stringify(users));
-      }
-      await login('demo@example.com', 'demo123');
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e] flex items-center justify-center px-4 py-12">
       <motion.div
@@ -85,7 +60,7 @@ const LoginPage: React.FC = () => {
 
         {/* Login Card */}
         <motion.div
-          className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-xl dark:shadow-2xl border-2 border-[#f4e4f5] dark:border-[#2d1b4e] p-8"
+          className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-xl dark:shadow-2xl border border-[#e8c8eb] dark:border-[#4a3570] p-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
@@ -96,12 +71,12 @@ const LoginPage: React.FC = () => {
           {/* Error Message */}
           {error && (
             <motion.div
-              className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700 rounded-lg flex items-start gap-3"
+              className="mb-6 p-4 bg-[#f3e8ff] dark:bg-[#2d1b4e] border border-[#d8a4e8] dark:border-[#5a2270] rounded-lg flex items-start gap-3"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <AlertCircle size={20} className="text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <span className="text-sm text-red-700 dark:text-red-300">{error}</span>
+              <AlertCircle size={20} className="text-[#6E2B8A] dark:text-[#ba5ac3] flex-shrink-0 mt-0.5" />
+              <span className="text-sm text-[#6E2B8A] dark:text-[#ba5ac3]">{error}</span>
             </motion.div>
           )}
 
@@ -118,7 +93,7 @@ const LoginPage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 border-2 border-[#f4e4f5] dark:border-[#2d1b4e] dark:bg-[#0f0f1e] dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:ring-offset-2 dark:focus:ring-offset-[#16213e] transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 border border-[#e8c8eb] dark:border-[#4a3570] dark:bg-[#0f0f1e] dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:ring-offset-2 dark:focus:ring-offset-[#16213e] transition-all"
                   required
                 />
               </div>
@@ -136,7 +111,7 @@ const LoginPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 border-2 border-[#f4e4f5] dark:border-[#2d1b4e] dark:bg-[#0f0f1e] dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:ring-offset-2 dark:focus:ring-offset-[#16213e] transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 border border-[#e8c8eb] dark:border-[#4a3570] dark:bg-[#0f0f1e] dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:ring-offset-2 dark:focus:ring-offset-[#16213e] transition-all"
                   required
                 />
               </div>
@@ -157,32 +132,12 @@ const LoginPage: React.FC = () => {
             <Button
               type="submit"
               loading={loading}
-              className="w-full bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all"
+              className="w-full bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] font-bold py-2.5 rounded-lg hover:shadow-lg transition-all"
             >
               <LogIn size={18} />
               Sign In
             </Button>
           </form>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t-2 border-[#f4e4f5] dark:border-[#2d1b4e]"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-[#16213e] text-gray-500 dark:text-gray-400">Or</span>
-            </div>
-          </div>
-
-          {/* Demo Login */}
-          <button
-            type="button"
-            onClick={handleDemoLogin}
-            disabled={loading}
-            className="w-full px-4 py-2.5 border-2 border-[#6E2B8A] dark:border-[#ba5ac3] text-[#6E2B8A] dark:text-[#ba5ac3] font-semibold rounded-lg hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] transition-all disabled:opacity-50"
-          >
-            Try Demo Account
-          </button>
 
           {/* Register Link */}
           <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">

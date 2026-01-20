@@ -1,4 +1,4 @@
-# ✨ Zenify Settings Page - Full Implementation Complete
+# ✨ Mindful Journal Settings Page - Full Implementation Complete
 
 ## 🎯 Features Implemented
 

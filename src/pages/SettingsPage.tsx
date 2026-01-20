@@ -4,7 +4,7 @@ import storage from '../utils/storage';
 import notificationService from '../utils/notificationService';
 import { useSettings } from '../context/SettingsContext';
 import Button from '../components/ui/Button';
-import { Check, X, Download, Upload, Info, Bell, TestTube } from 'lucide-react';
+import { Check, X, Download, Upload, Info, Bell } from 'lucide-react';
 
 const SettingsPage: React.FC = () => {
   const [name, setName] = React.useState('');
@@ -69,12 +69,6 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleTestNotification = () => {
-    notificationService.sendNotification('Test Notification', {
-      body: 'This is a test notification from Zenify! Your daily reminders are working.',
-    });
-  };
-
   const handleNotificationToggle = () => {
     if (!notifications && notificationPermission !== 'granted') {
       handleRequestNotificationPermission();
@@ -101,7 +95,7 @@ const SettingsPage: React.FC = () => {
       const dataStr = JSON.stringify(profile, null, 2);
       const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
       
-      const exportFileDefaultName = `Zenify-data-${new Date().toISOString().slice(0, 10)}.json`;
+      const exportFileDefaultName = `Mindful Journal-data-${new Date().toISOString().slice(0, 10)}.json`;
       
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
@@ -161,13 +155,13 @@ const SettingsPage: React.FC = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent mb-2">Settings</h1>
-        <p className="text-slate-600 dark:text-slate-300">Customize your Zenify experience to match your preferences</p>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent mb-2">Settings</h1>
+        <p className="text-slate-600 dark:text-slate-300">Customize your Mindful journalexperience to match your preferences</p>
       </motion.div>
       
       {/* Profile Settings */}
       <motion.div
-        className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-lg dark:shadow-2xl border-2 border-[#f4e4f5] dark:border-[#2d1b4e] p-8 mb-8 hover:shadow-xl dark:hover:shadow-2xl transition-shadow"
+        className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-lg dark:shadow-2xl border border-[#e8c8eb] dark:border-[#4a3570] p-8 mb-8 hover:shadow-xl dark:hover:shadow-2xl transition-shadow"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -182,7 +176,7 @@ const SettingsPage: React.FC = () => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-[#f4e4f5] dark:border-[#2d1b4e] dark:bg-[#0f0f1e] dark:text-white dark:placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:ring-offset-2 dark:focus:ring-offset-[#16213e] transition-all"
+            className="w-full px-4 py-3 border border-[#e8c8eb] dark:border-[#4a3570] dark:bg-[#0f0f1e] dark:text-white dark:placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:ring-offset-2 dark:focus:ring-offset-[#16213e] transition-all"
             placeholder="Enter your name"
           />
         </div>
@@ -190,7 +184,7 @@ const SettingsPage: React.FC = () => {
       
       {/* Appearance Settings */}
       <motion.div
-        className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-lg dark:shadow-2xl border-2 border-[#f4e4f5] dark:border-[#2d1b4e] p-8 mb-8 hover:shadow-xl dark:hover:shadow-2xl transition-shadow"
+        className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-lg dark:shadow-2xl border border-[#e8c8eb] dark:border-[#4a3570] p-8 mb-8 hover:shadow-xl dark:hover:shadow-2xl transition-shadow"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -211,15 +205,15 @@ const SettingsPage: React.FC = () => {
             <button
               onClick={() => setDarkMode(!darkMode)}
               className={`
-                relative inline-flex items-center h-8 rounded-full w-14 flex-shrink-0
+                relative inline-flex items-center h-7 rounded-full w-12 flex-shrink-0
                 ${darkMode ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af]' : 'bg-gradient-to-r from-gray-300 to-gray-400'}
-                transition-all duration-300 shadow-md hover:shadow-lg
+                transition-all duration-300 shadow-md hover:shadow-lg p-1
               `}
             >
               <span
                 className={`
-                  inline-block w-6 h-6 transform rounded-full bg-white shadow-md
-                  ${darkMode ? 'translate-x-7' : 'translate-x-1'}
+                  inline-block w-5 h-5 transform rounded-full bg-white shadow-md
+                  ${darkMode ? 'translate-x-5' : 'translate-x-0'}
                   transition-all duration-300
                 `}
               />
@@ -241,7 +235,7 @@ const SettingsPage: React.FC = () => {
                   px-6 py-2 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105
                   ${fontSize === size 
                     ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white shadow-lg' 
-                    : 'bg-white dark:bg-[#0f0f1e] text-[#6E2B8A] dark:text-[#ba5ac3] border-2 border-[#f4e4f5] dark:border-[#2d1b4e] hover:border-[#6E2B8A] dark:hover:border-[#ba5ac3]'
+                    : 'bg-white dark:bg-[#0f0f1e] text-[#6E2B8A] dark:text-[#ba5ac3] border border-[#e8c8eb] dark:border-[#4a3570] hover:border-[#6E2B8A] dark:hover:border-[#ba5ac3]'
                   }
                 `}
               >
@@ -253,9 +247,9 @@ const SettingsPage: React.FC = () => {
           </div>
 
           {/* Font Size Preview */}
-          <div className="p-6 bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] dark:from-[#2d1b4e] dark:to-[#1a1a2e] rounded-lg border-2 border-[#6E2B8A] dark:border-[#6E2B8A]">
+          <div className="p-6 bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] dark:from-[#2d1b4e] dark:to-[#1a1a2e] rounded-lg border border-[#d8a4e8] dark:border-[#5a2270]">
             <p className="text-[#6E2B8A] dark:text-[#ba5ac3] leading-relaxed">
-              Preview: This is how your text will look with <span className="font-bold">{fontSize}</span> font size. The interface will automatically adjust all text throughout Zenify.
+              Preview: This is how your text will look with <span className="font-bold">{fontSize}</span> font size. The interface will automatically adjust all text throughout Mindful Journal.
             </p>
           </div>
         </div>
@@ -263,7 +257,7 @@ const SettingsPage: React.FC = () => {
       
       {/* Notifications Settings */}
       <motion.div
-        className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-lg dark:shadow-2xl border-2 border-[#f4e4f5] dark:border-[#2d1b4e] p-8 mb-8 hover:shadow-xl dark:hover:shadow-2xl transition-shadow"
+        className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-lg dark:shadow-2xl border border-[#e8c8eb] dark:border-[#4a3570] p-8 mb-8 hover:shadow-xl dark:hover:shadow-2xl transition-shadow"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
@@ -279,7 +273,7 @@ const SettingsPage: React.FC = () => {
 
         {/* Daily Reminders Toggle */}
         <div className="mb-8">
-          <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] dark:from-[#2d1b4e] dark:to-[#1a1a2e] border-2 border-[#f4e4f5] dark:border-[#2d1b4e]">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] dark:from-[#2d1b4e] dark:to-[#1a1a2e] border border-[#e8c8eb] dark:border-[#4a3570]">
             <div>
               <label className="text-base font-semibold text-[#6E2B8A] dark:text-[#ba5ac3]">
                 Daily Mood Reminders
@@ -291,15 +285,15 @@ const SettingsPage: React.FC = () => {
             <button
               onClick={handleNotificationToggle}
               className={`
-                relative inline-flex items-center h-8 rounded-full w-14 flex-shrink-0
-                ${notifications ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gradient-to-r from-gray-300 to-gray-400'}
-                transition-all duration-300 shadow-md hover:shadow-lg
+                relative inline-flex items-center h-7 rounded-full w-12 flex-shrink-0
+                ${notifications ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af]' : 'bg-gradient-to-r from-gray-300 to-gray-400'}
+                transition-all duration-300 shadow-md hover:shadow-lg p-1
               `}
             >
               <span
                 className={`
-                  inline-block w-6 h-6 transform rounded-full bg-white shadow-md
-                  ${notifications ? 'translate-x-7' : 'translate-x-1'}
+                  inline-block w-5 h-5 transform rounded-full bg-white shadow-md
+                  ${notifications ? 'translate-x-5' : 'translate-x-0'}
                   transition-all duration-300
                 `}
               />
@@ -317,7 +311,7 @@ const SettingsPage: React.FC = () => {
               type="time"
               value={notificationTime}
               onChange={(e) => handleNotificationTimeChange(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-[#f4e4f5] dark:border-[#2d1b4e] dark:bg-[#0f0f1e] dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:ring-offset-2 dark:focus:ring-offset-[#16213e] transition-all"
+              className="w-full px-4 py-3 border border-[#e8c8eb] dark:border-[#4a3570] dark:bg-[#0f0f1e] dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:ring-offset-2 dark:focus:ring-offset-[#16213e] transition-all"
             />
             <p className="text-xs text-[#6E2B8A] dark:text-[#8ba5af] mt-3 flex items-center gap-2">
               <span>📅</span>
@@ -328,8 +322,8 @@ const SettingsPage: React.FC = () => {
 
         {/* Permission Request */}
         {notificationPermission === 'denied' && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-2 border-red-300 dark:border-red-700 rounded-lg">
-            <p className="text-xs text-red-700 dark:text-red-300 flex items-center gap-2">
+          <div className="mb-6 p-4 bg-gradient-to-r from-[#f3e8ff] to-[#ede9fe] dark:from-[#2d1b4e] dark:to-[#3d2560] border border-[#d8a4e8] dark:border-[#5a2270] rounded-lg">
+            <p className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3] flex items-center gap-2">
               <span>⚠️</span>
               <span>Notifications are blocked in your browser settings. Enable them to receive reminders.</span>
             </p>
@@ -345,23 +339,11 @@ const SettingsPage: React.FC = () => {
             Enable Notification Permission
           </Button>
         )}
-
-        {/* Test Notification */}
-        {notificationPermission === 'granted' && (
-          <Button
-            variant="primary"
-            onClick={handleTestNotification}
-            icon={<TestTube size={16} />}
-            className="w-full bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb]"
-          >
-            Send Test Notification
-          </Button>
-        )}
       </motion.div>
       
       {/* Data Management */}
       <motion.div
-        className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-lg dark:shadow-2xl border-2 border-[#f4e4f5] dark:border-[#2d1b4e] p-8 mb-8 hover:shadow-xl dark:hover:shadow-2xl transition-shadow"
+        className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-lg dark:shadow-2xl border border-[#e8c8eb] dark:border-[#4a3570] p-8 mb-8 hover:shadow-xl dark:hover:shadow-2xl transition-shadow"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
@@ -399,12 +381,7 @@ const SettingsPage: React.FC = () => {
           </div>
         </div>
         
-        <div className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-lg border-2 border-amber-300 dark:border-amber-700 flex items-start gap-3">
-          <Info size={18} className="text-amber-700 dark:text-amber-300 mt-1 flex-shrink-0" />
-          <p className="text-sm text-amber-700 dark:text-amber-200">
-            💾 <span className="font-semibold">Backup your data regularly!</span> All your data is stored locally in your browser. Clearing browser data will remove all Zenify information.
-          </p>
-        </div>
+
       </motion.div>
       
       {/* Save Button and Status */}
@@ -424,7 +401,7 @@ const SettingsPage: React.FC = () => {
         
         {saved && (
           <motion.div
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border-2 border-green-300 dark:border-green-700"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border border-green-300 dark:border-green-700"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0 }}
@@ -436,7 +413,7 @@ const SettingsPage: React.FC = () => {
         
         {error && (
           <motion.div
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 rounded-lg border-2 border-red-300 dark:border-red-700"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#f3e8ff] to-[#ede9fe] dark:from-[#2d1b4e] dark:to-[#3d2560] rounded-lg border border-[#d8a4e8] dark:border-[#5a2270]"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0 }}

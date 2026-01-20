@@ -82,7 +82,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
             {journal.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-xs bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white px-2 py-1 rounded-full"
+                className="text-xs bg-[#E9D5FF] dark:bg-[#2d1b4e] text-gray-700 dark:text-white px-2 py-1 rounded-full"
               >
                 #{tag}
               </span>

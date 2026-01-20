@@ -89,17 +89,17 @@ const AboutPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           {[
             {
-              icon: <Heart size={32} />,
+              icon: <Heart size={32} className="text-#6E2B8A" />,
               title: "Empathetic Support",
               description: "Our AI is designed to provide understanding and compassionate responses."
             },
             {
-              icon: <Shield size={32} />,
+              icon: <Shield size={32} className="text-#6E2B8A" />,
               title: "Privacy First",
               description: "Your data is stored locally and never shared with third parties."
             },
             {
-              icon: <Users size={32} />,
+              icon: <Users size={32} className="text-#6E2B8A" />,
               title: "Community Driven",
               description: "Built with input from mental health professionals and users."
             }
