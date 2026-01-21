@@ -14,19 +14,10 @@ interface JournalCardProps {
 const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
-  // Edit button colors - Purple theme with hover to white
-  const editBg = 'bg-[#6E2B8A] dark:bg-[#a323af]';
-  const editText = 'text-white dark:text-white';
-  const editHoverBg = 'hover:bg-white dark:hover:bg-white';
-  const editHoverText = 'hover:text-[#6E2B8A] dark:hover:text-[#6E2B8A]';
-
-  // Delete button hover color (match Edit hover)
-  const deleteHoverBg = 'hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3]';
-
   const moodColors = {
-    great: `${editBg} ${editText}`,
-    good: `${editBg} ${editText}`,
-    neutral: `${editBg} ${editText}`,
+    great: 'bg-[#6E2B8A] text-white',
+    good: 'bg-[#6E2B8A] text-white',
+    neutral: 'bg-[#6E2B8A] text-white',
     bad: 'bg-[#d191d7] dark:bg-[#e8c8eb] text-black',
     awful: 'bg-[#e8c8eb] dark:bg-[#f4f5f7] text-black',
   };
@@ -92,26 +83,24 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
 
         {/* Buttons */}
         <div className="mt-4 flex justify-end gap-2">
-          {/* Delete button: text + icon black, hover bg like Edit */}
+          {/* Edit button: purple bg with white icon, hover to white bg with purple icon */}
           <Button
             size="sm"
-            variant="ghost"
-            onClick={() => onDelete(journal.id)}
-            icon={<Trash size={16} className="text-black dark:text-white group-hover:text-black dark:group-hover:text-white" />}
-            className={`text-black ${deleteHoverBg} group`}
-          >
-            Delete
-          </Button>
-
-          {/* Edit button: purple bg with white hover and dark text */}
-          <Button
-            size="sm"
-            variant="outline"
             onClick={() => onEdit(journal)}
-            icon={<Edit size={16} className="text-white group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-white" />}
-            className={`${editBg} ${editText} ${editHoverBg} ${editHoverText} group`}
+            icon={<Edit size={16} className="text-white group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#6E2B8A] transition-colors" />}
+            className="bg-[#6E2B8A] dark:bg-[#a323af] text-white dark:text-white hover:bg-white dark:hover:bg-white hover:text-[#6E2B8A] dark:hover:text-[#6E2B8A] border-2 border-[#6E2B8A] dark:border-[#a323af] transition-all duration-300 group"
           >
             Edit
+          </Button>
+
+          {/* Delete button: white bg on hover with purple text and icon */}
+          <Button
+            size="sm"
+            onClick={() => onDelete(journal.id)}
+            icon={<Trash size={16} className="text-black group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
+            className="bg-white dark:bg-[#2d1b4e] text-black dark:text-white border-2 border-[#E9D5FF] dark:border-[#2d1b4e] hover:bg-white dark:hover:bg-white hover:text-[#6E2B8A] dark:hover:text-[#a323af] hover:border-[#6E2B8A] dark:hover:border-[#a323af] transition-all duration-300 group"
+          >
+            Delete
           </Button>
         </div>
       </div>

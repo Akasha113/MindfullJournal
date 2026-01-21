@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { JournalEntry } from '../types';
-import { journalAPI } from '../utils/api';
 import JournalCard from '../components/journal/JournalCard';
 import JournalForm from '../components/journal/JournalForm';
 import Button from '../components/ui/Button';
 import { Plus, Search, Filter } from 'lucide-react';
+
+const STORAGE_KEY = 'journals';
 
 const JournalPage: React.FC = () => {
   const [journals, setJournals] = React.useState<JournalEntry[]>([]);
@@ -15,89 +16,71 @@ const JournalPage: React.FC = () => {
   const [activeTag, setActiveTag] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState('');
-  
-  // Load journals from API
+
   React.useEffect(() => {
-    const loadJournals = async () => {
-      try {
-        setLoading(true);
-        const data = await journalAPI.getAll(1, 100);
-        const journalsArray = Array.isArray(data) ? data : (data?.journals || []);
-        setJournals(journalsArray);
-      } catch (err: any) {
-        console.error('Failed to load journals:', err);
-        setError(err.message);
-        setJournals([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadJournals();
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) setJournals(JSON.parse(saved));
+    setLoading(false);
   }, []);
-  
+
+  React.useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(journals));
+  }, [journals]);
+
   const handleCreateJournal = () => {
     setEditingJournal(null);
     setShowForm(true);
   };
-  
+
   const handleEditJournal = (journal: JournalEntry) => {
     setEditingJournal(journal);
     setShowForm(true);
   };
-  
-  const handleDeleteJournal = async (id: string) => {
+
+  const handleDeleteJournal = (id: string) => {
     if (window.confirm('Are you sure you want to delete this journal entry?')) {
-      try {
-        await journalAPI.delete(id);
-        setJournals(journals.filter(journal => journal.id !== id));
-      } catch (err: any) {
-        alert('Failed to delete journal: ' + err.message);
-      }
+      setJournals(journals.filter(journal => journal.id !== id));
     }
   };
-  
-  const handleSubmitJournal = async (journalData: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
-    try {
-      if (editingJournal) {
-        const updated = await journalAPI.update(editingJournal.id, journalData);
-        setJournals(journals.map(journal => 
-          journal.id === updated.id ? updated : journal
-        ));
-      } else {
-        const newJournal = await journalAPI.create(journalData);
-        setJournals([...journals, newJournal]);
-      }
-      setShowForm(false);
-      setEditingJournal(null);
-    } catch (err: any) {
-      alert('Failed to save journal: ' + err.message);
+
+  const handleSubmitJournal = (journalData: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (editingJournal) {
+      const updated = {
+        ...editingJournal,
+        ...journalData,
+        updatedAt: Date.now(),
+      };
+      setJournals(journals.map(j => (j.id === updated.id ? updated : j)));
+    } else {
+      const newJournal: JournalEntry = {
+        ...journalData,
+        id: Date.now().toString(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      setJournals([...journals, newJournal]);
     }
+    setShowForm(false);
+    setEditingJournal(null);
   };
-  
+
   const handleCancelForm = () => {
     setShowForm(false);
     setEditingJournal(null);
   };
-  
-  // Get all unique tags
+
   const allTags = React.useMemo(() => {
     const tagsSet = new Set<string>();
-    if (journals && Array.isArray(journals)) {
-      journals.forEach(journal => {
-        if (journal.tags && Array.isArray(journal.tags)) {
-          journal.tags.forEach(tag => tagsSet.add(tag));
-        }
-      });
-    }
+    journals.forEach(journal => journal.tags.forEach(tag => tagsSet.add(tag)));
     return Array.from(tagsSet);
   }, [journals]);
-  
-  // Filter journals based on search and tags
+
   const filteredJournals = React.useMemo(() => {
     return journals
       .filter(journal => {
         const searchLower = searchQuery.toLowerCase();
-        const matchesSearch = !searchQuery || 
+        const matchesSearch =
+          !searchQuery ||
           journal.title.toLowerCase().includes(searchLower) ||
           journal.content.toLowerCase().includes(searchLower);
         const matchesTag = !activeTag || journal.tags.includes(activeTag);
@@ -119,37 +102,18 @@ const JournalPage: React.FC = () => {
       ) : (
         <AnimatePresence mode="wait">
           {showForm ? (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-            >
-              <JournalForm
-                onSubmit={handleSubmitJournal}
-                onCancel={handleCancelForm}
-                initialValues={editingJournal || undefined}
-                isEditing={!!editingJournal}
-              />
+            <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}>
+              <JournalForm onSubmit={handleSubmitJournal} onCancel={handleCancelForm} initialValues={editingJournal || undefined} isEditing={!!editingJournal} />
             </motion.div>
           ) : (
-            <motion.div
-              key="list"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+            <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-semibold text-black dark:text-white">Journal</h1>
-                <Button
-                  onClick={handleCreateJournal}
-                  icon={<Plus size={18} className="text-white dark:text-white" />}
-                  className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white dark:text-white"
-                >
+                <Button onClick={handleCreateJournal} icon={<Plus size={18} className="text-white dark:text-white" />} className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white dark:text-white">
                   New Entry
                 </Button>
               </div>
-              
+
               {/* Search and filter */}
               <div className="mb-6 flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
@@ -160,56 +124,33 @@ const JournalPage: React.FC = () => {
                     type="text"
                     placeholder="Search journals..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={e => setSearchQuery(e.target.value)}
                     className="pl-10 w-full p-2 border-2 border-[#6E2B8A] dark:border-[#6E2B8A] bg-white dark:bg-[#2d1b4e] text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent"
                   />
                 </div>
-                
+
                 {allTags.length > 0 && (
                   <div className="flex items-center gap-2 overflow-x-auto pb-2">
                     <Filter size={18} className="text-black dark:text-white flex-shrink-0" />
-                    
-                    <button
-                      onClick={() => setActiveTag(null)}
-                      className={`px-2 py-1 rounded-full text-sm font-medium transition-colors
-                        ${!activeTag
-                          ? 'bg-[#6E2B8A] text-white'
-                          : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white hover:bg-[#E8D5F2] dark:hover:bg-[#3a2860]'
-                        }
-                      `}
-                    >
+
+                    <button onClick={() => setActiveTag(null)} className={`px-2 py-1 rounded-full text-sm font-medium transition-colors ${!activeTag ? 'bg-[#6E2B8A] text-white' : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white'}`}>
                       All
                     </button>
-                    
+
                     {allTags.map(tag => (
-                      <button
-                        key={tag}
-                        onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                        className={`px-2 py-1 rounded-full text-sm font-medium transition-colors flex items-center gap-1
-                          ${activeTag === tag
-                            ? 'bg-[#6E2B8A] text-white'
-                            : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white hover:bg-[#E8D5F2] dark:hover:bg-[#3a2860]'
-                          }
-                        `}
-                      >
-                        <Filter size={14} className={`${activeTag === tag ? 'text-white' : 'text-black dark:text-white'}`} />
+                      <button key={tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)} className={`px-2 py-1 rounded-full text-sm font-medium transition-colors ${activeTag === tag ? 'bg-[#6E2B8A] text-white' : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white'}`}>
                         #{tag}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
-              
+
               {/* Journal list */}
               {filteredJournals.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-black dark:text-white mb-4">No journal entries found</p>
-                  <Button
-                    variant="outline"
-                    onClick={handleCreateJournal}
-                    icon={<Plus size={18} className="text-black dark:text-white" />}
-                    className="border border-[#6E2B8A] dark:border-[#6E2B8A] text-black dark:text-white hover:bg-[#E8D5F2] dark:hover:bg-[#3a2860]"
-                  >
+                  <Button variant="outline" onClick={handleCreateJournal} icon={<Plus size={18} className="text-black dark:text-white" />} className="border border-[#6E2B8A] text-black dark:text-white">
                     Create your first entry
                   </Button>
                 </div>
@@ -217,12 +158,7 @@ const JournalPage: React.FC = () => {
                 <div className="grid grid-cols-1 gap-4">
                   <AnimatePresence>
                     {filteredJournals.map(journal => (
-                      <JournalCard
-                        key={journal.id}
-                        journal={journal}
-                        onEdit={handleEditJournal}
-                        onDelete={handleDeleteJournal}
-                      />
+                      <JournalCard key={journal.id} journal={journal} onEdit={handleEditJournal} onDelete={handleDeleteJournal} />
                     ))}
                   </AnimatePresence>
                 </div>
