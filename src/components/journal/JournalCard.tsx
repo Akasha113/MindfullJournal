@@ -14,11 +14,11 @@ interface JournalCardProps {
 const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
-  // Edit button colors - Dark background with white hover
-  const editBg = 'bg-[#1a1a2e] dark:bg-[#16213e]';
+  // Edit button colors - Purple theme with hover to white
+  const editBg = 'bg-[#6E2B8A] dark:bg-[#a323af]';
   const editText = 'text-white dark:text-white';
   const editHoverBg = 'hover:bg-white dark:hover:bg-white';
-  const editHoverText = 'hover:text-black dark:hover:text-black';
+  const editHoverText = 'hover:text-[#6E2B8A] dark:hover:text-[#6E2B8A]';
 
   // Delete button hover color (match Edit hover)
   const deleteHoverBg = 'hover:bg-[#5a2270] dark:hover:bg-[#ba5ac3]';
@@ -103,12 +103,12 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
             Delete
           </Button>
 
-          {/* Edit button: hover text black + icon matches */}
+          {/* Edit button: purple bg with white hover and dark text */}
           <Button
             size="sm"
             variant="outline"
             onClick={() => onEdit(journal)}
-            icon={<Edit size={16} className="text-white group-hover:text-black dark:text-white dark:group-hover:text-black" />}
+            icon={<Edit size={16} className="text-white group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-white" />}
             className={`${editBg} ${editText} ${editHoverBg} ${editHoverText} group`}
           >
             Edit
