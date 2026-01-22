@@ -191,7 +191,7 @@ export const getMoodEntries = (): MoodEntry[] => {
   const profile = getUserProfile();
   return profile.mood.history.map(entry => ({
     ...entry,
-    date: entry.date ?? new Date(entry.timestamp).toISOString(),
+    date: typeof entry.date === 'number' ? entry.date : new Date(entry.timestamp || entry.date).getTime(),
     note: entry.note ?? '',
   }));
 };

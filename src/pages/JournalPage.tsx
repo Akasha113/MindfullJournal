@@ -30,9 +30,11 @@ const JournalPage: React.FC = () => {
 
   React.useEffect(() => {
     // Update profile with journal entries (user-specific)
+    if (!user || loading) return; // Don't save while loading or no user
+    
     const profile = storage.getUserProfile();
     storage.updateUserProfile({ ...profile, journals });
-  }, [journals]);
+  }, [journals, user, loading]);
 
   const handleCreateJournal = () => {
     setEditingJournal(null);

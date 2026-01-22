@@ -90,16 +90,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    // Clear auth tokens
+    // Clear only auth tokens (keep user data safe)
     localStorage.removeItem('authToken');
     localStorage.removeItem('authData');
     
-    // Clear all user-specific data from localStorage
-    Object.keys(localStorage).forEach(key => {
-      if (key.includes('MindFul_Journal') || key.includes('mindful_conversations')) {
-        localStorage.removeItem(key);
-      }
-    });
+    // ✅ DO NOT clear user data - it remains safe
+    // When user logs back in with same account, they'll see their data
+    // Data stays private with user-specific keys
     
     setUser(null);
     setToken(null);

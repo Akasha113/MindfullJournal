@@ -50,9 +50,17 @@ const MoodPage: React.FC = () => {
 
   // Save to storage whenever entries change (user-specific)
   React.useEffect(() => {
+    if (loading || authLoading || !user) return; // Don't save while loading or no user
+    
     const profile = storage.getUserProfile();
-    storage.updateUserProfile({ ...profile, mood: { current: currentMood, history: moodEntries } });
-  }, [moodEntries]);
+    storage.updateUserProfile({ 
+      ...profile, 
+      mood: { 
+        current: currentMood, 
+        history: moodEntries 
+      } 
+    });
+  }, [moodEntries, currentMood, loading, authLoading, user]);
 
   const hasTrackedToday = React.useMemo(() => {
     const todayStr = new Date().toDateString();
