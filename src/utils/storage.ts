@@ -53,13 +53,11 @@ const getStorageKeys = (userId?: string) => {
 
 // Initialize storage
 export const initializeStorage = (): UserProfile => {
-  const storedProfile = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
+  const keys = getStorageKeys();
+  const storedProfile = localStorage.getItem(keys.USER_PROFILE);
 
   if (!storedProfile) {
-    localStorage.setItem(
-      STORAGE_KEYS.USER_PROFILE,
-      JSON.stringify(defaultProfile)
-    );
+    localStorage.setItem(keys.USER_PROFILE, JSON.stringify(defaultProfile));
     return defaultProfile;
   }
 
@@ -68,31 +66,32 @@ export const initializeStorage = (): UserProfile => {
 
 // User profile
 export const getUserProfile = (): UserProfile => {
-  const storedProfile = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
+  const keys = getStorageKeys();
+  const storedProfile = localStorage.getItem(keys.USER_PROFILE);
   return storedProfile ? JSON.parse(storedProfile) : initializeStorage();
 };
 
 export const updateUserProfile = (
   profile: Partial<UserProfile>
 ): UserProfile => {
+  const keys = getStorageKeys();
   const currentProfile = getUserProfile();
   const updatedProfile = { ...currentProfile, ...profile };
-  localStorage.setItem(
-    STORAGE_KEYS.USER_PROFILE,
-    JSON.stringify(updatedProfile)
-  );
+  localStorage.setItem(keys.USER_PROFILE, JSON.stringify(updatedProfile));
   return updatedProfile;
 };
 
 // Flagged content
 export const getFlaggedContent = (): FlaggedContent[] => {
-  const stored = localStorage.getItem(STORAGE_KEYS.FLAGGED_CONTENT);
+  const keys = getStorageKeys();
+  const stored = localStorage.getItem(keys.FLAGGED_CONTENT);
   return stored ? JSON.parse(stored) : [];
 };
 
 export const addFlaggedContent = (
   content: Omit<FlaggedContent, 'id' | 'timestamp'>
 ): FlaggedContent => {
+  const keys = getStorageKeys();
   const flaggedContent = getFlaggedContent();
   const newEntry: FlaggedContent = {
     id: Date.now().toString(),
@@ -101,10 +100,7 @@ export const addFlaggedContent = (
     riskLevel: content.riskLevel || 'low',
   };
   const updated = [...flaggedContent, newEntry];
-  localStorage.setItem(
-    STORAGE_KEYS.FLAGGED_CONTENT,
-    JSON.stringify(updated)
-  );
+  localStorage.setItem(keys.FLAGGED_CONTENT, JSON.stringify(updated));
   return newEntry;
 };
 
@@ -112,6 +108,7 @@ export const updateFlaggedContent = (
   id: string,
   updates: Partial<FlaggedContent>
 ): FlaggedContent | null => {
+  const keys = getStorageKeys();
   const flaggedContent = getFlaggedContent();
   const index = flaggedContent.findIndex(item => item.id === id);
 
@@ -119,10 +116,7 @@ export const updateFlaggedContent = (
 
   const updatedItem = { ...flaggedContent[index], ...updates };
   flaggedContent[index] = updatedItem;
-  localStorage.setItem(
-    STORAGE_KEYS.FLAGGED_CONTENT,
-    JSON.stringify(flaggedContent)
-  );
+  localStorage.setItem(keys.FLAGGED_CONTENT, JSON.stringify(flaggedContent));
   return updatedItem;
 };
 

@@ -90,8 +90,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    // Clear auth tokens
     localStorage.removeItem('authToken');
     localStorage.removeItem('authData');
+    
+    // Clear all user-specific data from localStorage
+    Object.keys(localStorage).forEach(key => {
+      if (key.includes('MindFul_Journal') || key.includes('mindful_conversations')) {
+        localStorage.removeItem(key);
+      }
+    });
+    
     setUser(null);
     setToken(null);
     setIsAuthenticated(false);

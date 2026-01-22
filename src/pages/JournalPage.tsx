@@ -5,10 +5,11 @@ import JournalCard from '../components/journal/JournalCard';
 import JournalForm from '../components/journal/JournalForm';
 import Button from '../components/ui/Button';
 import { Plus, Search, Filter } from 'lucide-react';
-
-const STORAGE_KEY = 'journals';
+import storage from '../utils/storage';
+import { useAuth } from '../context/AuthContext';
 
 const JournalPage: React.FC = () => {
+  const { user, loading: authLoading } = useAuth();
   const [journals, setJournals] = React.useState<JournalEntry[]>([]);
   const [showForm, setShowForm] = React.useState(false);
   const [editingJournal, setEditingJournal] = React.useState<JournalEntry | null>(null);
@@ -18,13 +19,19 @@ const JournalPage: React.FC = () => {
   const [error, setError] = React.useState('');
 
   React.useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setJournals(JSON.parse(saved));
+    if (authLoading) return; // Wait for auth to load
+    
+    // Load journals from storage (user-specific)
+    storage.initializeStorage(); // Ensure storage is initialized with correct user
+    const entries = storage.getJournalEntries();
+    setJournals(entries);
     setLoading(false);
-  }, []);
+  }, [authLoading, user]);
 
   React.useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(journals));
+    // Update profile with journal entries (user-specific)
+    const profile = storage.getUserProfile();
+    storage.updateUserProfile({ ...profile, journals });
   }, [journals]);
 
   const handleCreateJournal = () => {

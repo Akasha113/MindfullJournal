@@ -6,16 +6,20 @@ import localChat from '../utils/localChat';
 import { Conversation as ConversationType } from '../types';
 import { PlusCircle, Trash2, Brain } from 'lucide-react';
 import { getRandomQuote } from '../utils/quotes';
+import { useAuth } from '../context/AuthContext';
 
 const ChatPage: React.FC = () => {
+  const { loading: authLoading } = useAuth();
   const [conversations, setConversations] = React.useState<ConversationType[]>([]);
   const [activeConversation, setActiveConversation] = React.useState<ConversationType | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [pageLoading, setPageLoading] = React.useState(true);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
-  // Load conversations from localStorage on mount
+  // Load conversations from localStorage on mount - ONLY after auth loads
   React.useEffect(() => {
+    if (authLoading) return; // Wait for auth to load
+    
     const loadConversations = () => {
       try {
         const allConversations = localChat.getAllConversations();
@@ -36,7 +40,7 @@ const ChatPage: React.FC = () => {
     };
     
     loadConversations();
-  }, []);
+  }, [authLoading]);
 
   React.useEffect(() => {
     if (activeConversation?.messages) {

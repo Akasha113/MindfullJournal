@@ -6,23 +6,27 @@ import MoodChart from '../components/mood/MoodChart';
 import Button from '../components/ui/Button';
 import { format } from 'date-fns';
 import { Trash2, Plus } from 'lucide-react';
-
-const MOOD_STORAGE_KEY = 'mindful_mood_entries';
+import storage from '../utils/storage';
+import { useAuth } from '../context/AuthContext';
 
 const MoodPage: React.FC = () => {
+  const { user, loading: authLoading } = useAuth();
   const [moodEntries, setMoodEntries] = React.useState<MoodEntry[]>([]);
   const [currentMood, setCurrentMood] = React.useState<Mood>('neutral');
   const [optionalThought, setOptionalThought] = React.useState('');
   const [timeframe, setTimeframe] = React.useState<7 | 14 | 30>(7);
   const [loading, setLoading] = React.useState(true);
+  const [isEditing, setIsEditing] = React.useState(false);
 
-  // Load mood entries from localStorage
+  // Load mood entries from storage (user-specific) - ONLY after user is loaded
   React.useEffect(() => {
+    if (authLoading) return; // Wait for auth to load
+    
     const loadMoods = () => {
       try {
         setLoading(true);
-        const stored = localStorage.getItem(MOOD_STORAGE_KEY);
-        const entries = stored ? JSON.parse(stored) : [];
+        storage.initializeStorage(); // Ensure storage is initialized with correct user
+        const entries = storage.getMoodEntries();
         setMoodEntries(entries);
 
         // Load today's mood if exists
@@ -42,11 +46,12 @@ const MoodPage: React.FC = () => {
       }
     };
     loadMoods();
-  }, []);
+  }, [authLoading, user]);
 
-  // Save to localStorage whenever entries change
+  // Save to storage whenever entries change (user-specific)
   React.useEffect(() => {
-    localStorage.setItem(MOOD_STORAGE_KEY, JSON.stringify(moodEntries));
+    const profile = storage.getUserProfile();
+    storage.updateUserProfile({ ...profile, mood: { current: currentMood, history: moodEntries } });
   }, [moodEntries]);
 
   const hasTrackedToday = React.useMemo(() => {
@@ -56,7 +61,7 @@ const MoodPage: React.FC = () => {
 
   // Track today's mood
   const handleTrackMood = () => {
-    if (hasTrackedToday) {
+    if (hasTrackedToday && !isEditing) {
       alert('You have already tracked your mood today. Edit or delete the existing entry to track again.');
       return;
     }
@@ -68,19 +73,51 @@ const MoodPage: React.FC = () => {
       date: Date.now(),
     };
 
-    setMoodEntries(prev => [...prev, newEntry]);
+    if (isEditing) {
+      // Update existing entry
+      const todayStr = new Date().toDateString();
+      const updated = moodEntries.map(e => 
+        new Date(e.date).toDateString() === todayStr ? newEntry : e
+      );
+      setMoodEntries(updated);
+      setIsEditing(false);
+      alert('Mood updated successfully! ✨');
+    } else {
+      // Create new entry
+      setMoodEntries(prev => [...prev, newEntry]);
+      alert('Mood tracked successfully! ✨');
+    }
+    
     setCurrentMood('neutral');
     setOptionalThought('');
-    alert('Mood tracked successfully! ✨');
   };
 
   // Edit today's mood
   const handleEditTodayMood = () => {
     const todayStr = new Date().toDateString();
-    const filtered = moodEntries.filter(e => new Date(e.date).toDateString() !== todayStr);
-    setMoodEntries(filtered);
+    const todayEntry = moodEntries.find(e => new Date(e.date).toDateString() === todayStr);
+    
+    if (todayEntry) {
+      // Load the mood data into the form
+      setCurrentMood(todayEntry.mood);
+      setOptionalThought(todayEntry.note || '');
+      setIsEditing(true);
+    }
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setIsEditing(false);
     setCurrentMood('neutral');
     setOptionalThought('');
+    
+    // Reload today's mood if it exists
+    const todayStr = new Date().toDateString();
+    const todayEntry = moodEntries.find(e => new Date(e.date).toDateString() === todayStr);
+    if (todayEntry) {
+      setCurrentMood(todayEntry.mood);
+      setOptionalThought(todayEntry.note || '');
+    }
   };
 
   // Delete mood entry
@@ -113,7 +150,7 @@ const MoodPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
           >
             <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">
-              {hasTrackedToday ? "Today's Mood" : 'How are you feeling today?'}
+              {hasTrackedToday && !isEditing ? "Today's Mood" : isEditing ? "Edit Today's Mood" : 'How are you feeling today?'}
             </h2>
 
             <div className="mb-6">
@@ -125,7 +162,7 @@ const MoodPage: React.FC = () => {
             </div>
 
             {/* Track / Edit Buttons */}
-            {!hasTrackedToday ? (
+            {!hasTrackedToday || isEditing ? (
               <>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-[#6E2B8A] dark:text-[#a323af] mb-2">
@@ -139,13 +176,24 @@ const MoodPage: React.FC = () => {
                     rows={3}
                   />
                 </div>
-                <Button
-                  onClick={handleTrackMood}
-                  className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white"
-                  icon={<Plus size={18} />}
-                >
-                  Track Today's Mood
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleTrackMood}
+                    className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white"
+                    icon={<Plus size={18} />}
+                  >
+                    {isEditing ? 'Update Mood' : "Track Today's Mood"}
+                  </Button>
+                  {isEditing && (
+                    <Button
+                      onClick={handleCancelEdit}
+                      variant="outline"
+                      className="border-[#6E2B8A] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e]"
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               </>
             ) : (
               <>

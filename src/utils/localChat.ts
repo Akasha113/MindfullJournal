@@ -1,7 +1,22 @@
 // src/utils/localChat.ts - Local storage with GitHub Models API
 import { ChatMessage, Conversation } from '../types';
 
-const STORAGE_KEY = 'mindful_conversations';
+// Get current user ID from localStorage
+const getCurrentUserId = (): string => {
+  const authData = localStorage.getItem('authData');
+  if (!authData) return 'default';
+  try {
+    const parsed = JSON.parse(authData);
+    return parsed.id || parsed.email || 'default';
+  } catch {
+    return 'default';
+  }
+};
+
+// User-specific storage key
+const getStorageKey = (): string => {
+  return `mindful_conversations_${getCurrentUserId()}`;
+};
 const GITHUB_ENDPOINT = "https://models.inference.ai.azure.com";
 const GITHUB_MODEL = "gpt-4o-mini"; // Fast model: gpt-4o-mini or gpt-4o for better quality
 
@@ -139,7 +154,7 @@ export const fetchGitHubResponse = async (messages: ChatMessage[]): Promise<stri
 
 // Get all conversations from localStorage
 export const getAllConversations = (): Conversation[] => {
-  const stored = localStorage.getItem(STORAGE_KEY);
+  const stored = localStorage.getItem(getStorageKey());
   return stored ? JSON.parse(stored) : [];
 };
 
@@ -158,7 +173,7 @@ const saveConversation = (conversation: Conversation) => {
   } else {
     conversations.push(conversation);
   }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+  localStorage.setItem(getStorageKey(), JSON.stringify(conversations));
 };
 
 // Create new conversation
@@ -258,7 +273,7 @@ export const sendMessage = async (
 export const deleteConversation = (id: string): void => {
   const conversations = getAllConversations();
   const filtered = conversations.filter(c => c.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+  localStorage.setItem(getStorageKey(), JSON.stringify(filtered));
 };
 
 // Clear messages in conversation
