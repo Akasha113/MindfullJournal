@@ -14,6 +14,9 @@ import SettingsPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
 import AboutPage from './pages/AboutPage';
 import AdminPage from './pages/AdminPage';
+import AdminLoginPage from './pages/AdminLoginPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import CrisisAlertDetailPage from './pages/CrisisAlertDetailPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VerificationPage from './pages/VerificationPage';
@@ -110,6 +113,11 @@ function AppContent() {
   return (
     <Router>
       <Routes>
+        {/* ADMIN PORTAL - Completely Separate */}
+        <Route path="/admin" element={<AdminLoginPage />} />
+        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+        <Route path="/admin/crisis-alerts/:alertId" element={<CrisisAlertDetailPage />} />
+
         {/* Public Routes - Accessible to everyone */}
         <Route path="/login" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><LoginPage /></PublicLayoutWrapper>} />
         <Route path="/register" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><RegisterPage /></PublicLayoutWrapper>} />

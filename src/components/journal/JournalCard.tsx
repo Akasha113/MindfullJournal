@@ -83,22 +83,22 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
 
         {/* Buttons */}
         <div className="mt-4 flex justify-end gap-2">
-          {/* Edit button: purple bg with white icon, hover to white bg with purple icon */}
+          {/* Edit button: purple bg with white icon, hover gradient from white to light purple */}
           <Button
             size="sm"
             onClick={() => onEdit(journal)}
-            icon={<Edit size={16} className="text-white group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#6E2B8A] transition-colors" />}
-            className="bg-[#6E2B8A] dark:bg-[#a323af] text-white dark:text-white hover:bg-white dark:hover:bg-white hover:text-[#6E2B8A] dark:hover:text-[#6E2B8A] border-2 border-[#6E2B8A] dark:border-[#a323af] transition-all duration-300 group"
+            icon={<Edit size={16} className="text-white group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
+            className="bg-[#6E2B8A] dark:bg-[#a323af] text-white dark:text-white hover:bg-gradient-to-r hover:from-white hover:to-[#e8c8eb] dark:hover:bg-gradient-to-r dark:hover:from-[#3d2860] dark:hover:to-[#2d1b4e] hover:text-[#6E2B8A] dark:hover:text-[#a323af] border-2 border-[#6E2B8A] dark:border-[#a323af] transition-all duration-300 group"
           >
             Edit
           </Button>
 
-          {/* Delete button: white bg on hover with purple text and icon */}
+          {/* Delete button: gradient hover from light purple to white */}
           <Button
             size="sm"
             onClick={() => onDelete(journal.id)}
             icon={<Trash size={16} className="text-black group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
-            className="bg-white dark:bg-[#2d1b4e] text-black dark:text-white border-2 border-[#E9D5FF] dark:border-[#2d1b4e] hover:bg-white dark:hover:bg-white hover:text-[#6E2B8A] dark:hover:text-[#a323af] hover:border-[#6E2B8A] dark:hover:border-[#a323af] transition-all duration-300 group"
+            className="bg-white dark:bg-[#2d1b4e] text-black dark:text-white border-2 border-[#E9D5FF] dark:border-[#2d1b4e] hover:bg-gradient-to-r hover:from-[#e8c8eb] hover:to-white dark:hover:bg-gradient-to-r dark:hover:from-[#2d1b4e] dark:hover:to-[#3d2860] hover:text-[#6E2B8A] dark:hover:text-[#a323af] hover:border-[#6E2B8A] dark:hover:border-[#a323af] transition-all duration-300 group"
           >
             Delete
           </Button>

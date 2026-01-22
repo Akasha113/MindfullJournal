@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
     avatar: {
       type: String,
       default: null,

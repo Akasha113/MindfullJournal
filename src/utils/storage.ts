@@ -27,13 +27,28 @@ const defaultProfile: UserProfile = {
   },
 };
 
-// Storage keys
-const STORAGE_KEYS = {
-  USER_PROFILE: 'MindFul Journal_user_profile',
-  JOURNALS: 'MindFul Journal_journals',
-  MOOD_ENTRIES: 'MindFul Journal_mood_entries',
-  CONVERSATIONS: 'MindFul Journal_conversations',
-  FLAGGED_CONTENT: 'MindFul Journal_flagged_content',
+// Get current user ID from localStorage
+const getCurrentUserId = (): string => {
+  const authData = localStorage.getItem('authData');
+  if (!authData) return 'default';
+  try {
+    const parsed = JSON.parse(authData);
+    return parsed.id || parsed.email || 'default';
+  } catch {
+    return 'default';
+  }
+};
+
+// Storage keys with user isolation
+const getStorageKeys = (userId?: string) => {
+  const uid = userId || getCurrentUserId();
+  return {
+    USER_PROFILE: `MindFul_Journal_user_profile_${uid}`,
+    JOURNALS: `MindFul_Journal_journals_${uid}`,
+    MOOD_ENTRIES: `MindFul_Journal_mood_entries_${uid}`,
+    CONVERSATIONS: `MindFul_Journal_conversations_${uid}`,
+    FLAGGED_CONTENT: `MindFul_Journal_flagged_content_${uid}`,
+  };
 };
 
 // Initialize storage

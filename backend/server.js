@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import User from './models/User.js';
 import VerificationCode from './models/VerificationCode.js';
+import CrisisAlert from './models/CrisisAlert.js';
 import { hashPassword, verifyPassword, generateToken, generateVerificationCode } from './utils/crypto.js';
 import { initializeEmailService, sendVerificationEmail, sendPasswordResetEmail } from './utils/email.js';
 import { authMiddleware, errorHandler } from './middleware/auth.js';
@@ -328,6 +329,326 @@ app.get('/api/stats/overview', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Stats fetch error:', error);
     res.status(500).json({ error: error.message || 'Failed to fetch statistics' });
+  }
+});
+
+// =====================
+// ADMIN ROUTES
+// =====================
+
+// Admin login
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+
+    if (!user || !user.isAdmin) {
+      return res.status(401).json({ error: 'Invalid admin credentials' });
+    }
+
+    const isPasswordValid = await verifyPassword(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid admin credentials' });
+    }
+
+    const token = generateToken(user._id);
+    res.status(200).json({
+      message: 'Admin logged in successfully',
+      token,
+      admin: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Admin login failed' });
+  }
+});
+
+// Get all users (admin only)
+app.get('/api/admin/users', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user || !user.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const users = await User.find({}).select('-password');
+    res.status(200).json({
+      message: 'Users fetched successfully',
+      count: users.length,
+      users: users.map(u => ({
+        id: u._id,
+        name: u.name,
+        email: u.email,
+        verified: u.verified,
+        createdAt: u.createdAt,
+        isAdmin: u.isAdmin,
+      })),
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to fetch users' });
+  }
+});
+
+// Get user details (admin only)
+app.get('/api/admin/users/:userId', authMiddleware, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.userId);
+    if (!adminUser || !adminUser.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const user = await User.findById(req.params.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'User details fetched',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        verified: user.verified,
+        verifiedAt: user.verifiedAt,
+        createdAt: user.createdAt,
+        bio: user.bio,
+        isAdmin: user.isAdmin,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to fetch user' });
+  }
+});
+
+// =====================
+// CRISIS MONITORING ROUTES
+// =====================
+
+// Create crisis alert (called from detection system)
+app.post('/api/admin/crisis-alerts', authMiddleware, async (req, res) => {
+  try {
+    const { userId, content, contentType, riskLevel, riskScore, detectedKeywords, riskFactors, conversationId, journalId } = req.body;
+
+    const alert = new CrisisAlert({
+      userId,
+      content,
+      contentType,
+      riskLevel,
+      riskScore,
+      detectedKeywords: detectedKeywords || [],
+      riskFactors: riskFactors || [],
+      conversationId,
+      journalId,
+      urgencyLevel: riskLevel === 'critical' ? 'emergency' : riskLevel === 'high' ? 'urgent' : 'routine',
+    });
+
+    await alert.save();
+
+    res.status(201).json({
+      message: 'Crisis alert created',
+      alert: alert,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to create crisis alert' });
+  }
+});
+
+// Get all crisis alerts (admin only)
+app.get('/api/admin/crisis-alerts', authMiddleware, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.userId);
+    if (!adminUser || !adminUser.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const { status, riskLevel, sort } = req.query;
+    const filter = {};
+
+    if (status) filter.status = status;
+    if (riskLevel) filter.riskLevel = riskLevel;
+
+    const alerts = await CrisisAlert.find(filter)
+      .populate('userId', 'name email')
+      .populate('reviewedBy', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(100);
+
+    res.status(200).json({
+      message: 'Crisis alerts fetched',
+      count: alerts.length,
+      alerts: alerts,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to fetch crisis alerts' });
+  }
+});
+
+// Get specific crisis alert
+app.get('/api/admin/crisis-alerts/:alertId', authMiddleware, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.userId);
+    if (!adminUser || !adminUser.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const alert = await CrisisAlert.findById(req.params.alertId)
+      .populate('userId', 'name email bio')
+      .populate('reviewedBy', 'name email');
+
+    if (!alert) {
+      return res.status(404).json({ error: 'Alert not found' });
+    }
+
+    res.status(200).json({
+      message: 'Alert details fetched',
+      alert: alert,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to fetch alert' });
+  }
+});
+
+// Update crisis alert status and add intervention
+app.patch('/api/admin/crisis-alerts/:alertId', authMiddleware, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.userId);
+    if (!adminUser || !adminUser.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const { status, adminNotes, interventionTaken, interventionDetails, followUpRequired, followUpDate } = req.body;
+
+    const alert = await CrisisAlert.findByIdAndUpdate(
+      req.params.alertId,
+      {
+        status,
+        adminNotes,
+        interventionTaken,
+        interventionDetails,
+        followUpRequired,
+        followUpDate,
+        reviewedAt: new Date(),
+        reviewedBy: adminUser._id,
+      },
+      { new: true }
+    ).populate('userId', 'name email').populate('reviewedBy', 'name email');
+
+    res.status(200).json({
+      message: 'Alert updated successfully',
+      alert: alert,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to update alert' });
+  }
+});
+
+// Get crisis alerts for a specific user
+app.get('/api/admin/users/:userId/crisis-alerts', authMiddleware, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.userId);
+    if (!adminUser || !adminUser.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const alerts = await CrisisAlert.find({ userId: req.params.userId })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: 'User crisis alerts fetched',
+      count: alerts.length,
+      alerts: alerts,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to fetch user alerts' });
+  }
+});
+
+// Get crisis statistics
+app.get('/api/admin/crisis-stats', authMiddleware, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.userId);
+    if (!adminUser || !adminUser.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const totalAlerts = await CrisisAlert.countDocuments();
+    const pendingAlerts = await CrisisAlert.countDocuments({ status: 'pending' });
+    const criticalAlerts = await CrisisAlert.countDocuments({ riskLevel: 'critical' });
+    const highRiskAlerts = await CrisisAlert.countDocuments({ riskLevel: 'high' });
+    const emergencyAlerts = await CrisisAlert.countDocuments({ urgencyLevel: 'emergency' });
+
+    const alertsByStatus = await CrisisAlert.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const alertsByRisk = await CrisisAlert.aggregate([
+      {
+        $group: {
+          _id: '$riskLevel',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      message: 'Crisis statistics fetched',
+      stats: {
+        totalAlerts,
+        pendingAlerts,
+        criticalAlerts,
+        highRiskAlerts,
+        emergencyAlerts,
+        byStatus: alertsByStatus,
+        byRiskLevel: alertsByRisk,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to fetch crisis stats' });
+  }
+});
+
+// Get admin dashboard stats
+app.get('/api/admin/stats', authMiddleware, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.userId);
+    if (!adminUser || !adminUser.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const totalUsers = await User.countDocuments();
+    const verifiedUsers = await User.countDocuments({ verified: true });
+    const unverifiedUsers = await User.countDocuments({ verified: false });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const newUsersToday = await User.countDocuments({ createdAt: { $gte: today } });
+
+    res.status(200).json({
+      message: 'Dashboard stats fetched',
+      stats: {
+        totalUsers,
+        verifiedUsers,
+        unverifiedUsers,
+        newUsersToday,
+        adminCount: await User.countDocuments({ isAdmin: true }),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Failed to fetch stats' });
   }
 });
 
