@@ -23,29 +23,30 @@ export const sendVerificationEmail = async (email, code) => {
 
   try {
     await transporter.sendMail({
-      from: process.env.GMAIL_USER,
+      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
       to: email,
-      subject: 'Mindful Journal - Email Verification Code',
+      subject: 'Verify Your Email - Mindful Journal',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #6E2B8A 0%, #a323af 100%); padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
-            <h1 style="color: white; margin: 0;">Mindful Journal</h1>
-            <p style="color: white; margin: 5px 0 0 0;">Mindful Journal</p>
+          <div style="padding: 20px; text-align: center; border-bottom: 1px solid #cccccc;">
+            <h1 style="color: #000000; margin: 0; font-size: 24px;">Mindful Journal</h1>
           </div>
-          <div style="background: #f9f5fa; padding: 30px; border-radius: 0 0 10px 10px;">
-            <h2 style="color: #6E2B8A; margin-bottom: 10px;">Email Verification</h2>
-            <p style="color: #333; line-height: 1.6;">
-              Thank you for registering with Mindful Journal! To complete your registration, please use the following verification code:
+          <div style="padding: 30px;">
+            <p style="color: #333333; line-height: 1.6; font-size: 14px;">
+              Thank you for signing up with Mindful Journal. To complete your registration, please use the following verification code:
             </p>
-            <div style="background: white; border: 2px solid #e8c8eb; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
-              <p style="font-size: 36px; font-weight: bold; color: #6E2B8A; letter-spacing: 5px; margin: 0;">${code}</p>
+            <div style="background: #f5f5f5; border: 1px solid #cccccc; border-radius: 4px; padding: 20px; text-align: center; margin: 20px 0;">
+              <p style="font-size: 36px; font-weight: bold; color: #000000; letter-spacing: 8px; margin: 0; font-family: monospace;">${code}</p>
             </div>
-            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
-              This code will expire in 1 minute.
+            <p style="color: #666666; font-size: 13px; margin: 15px 0;">
+              This verification code will expire in 10 minutes.
             </p>
-            <p style="color: #999; font-size: 12px;">
-              If you did not register for a Mindful Journal account, please ignore this email.
+            <p style="color: #999999; font-size: 12px;">
+              If you did not create this account, please ignore this email.
             </p>
+          </div>
+          <div style="padding: 15px; text-align: center; border-top: 1px solid #cccccc; font-size: 11px; color: #999999;">
+            <p style="margin: 0;">© 2026 Mindful Journal. All rights reserved.</p>
           </div>
         </div>
       `,
@@ -62,31 +63,37 @@ export const sendPasswordResetEmail = async (email, resetLink) => {
 
   try {
     await transporter.sendMail({
-      from: process.env.GMAIL_USER,
+      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
       to: email,
-      subject: 'Mindful Journal - Password Reset Request',
+      subject: 'Reset Your Password - Mindful Journal',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #6E2B8A 0%, #a323af 100%); padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
-            <h1 style="color: white; margin: 0;">Mindful Journal</h1>
-            <p style="color: white; margin: 5px 0 0 0;">Password Reset Request</p>
+          <div style="padding: 20px; text-align: center; border-bottom: 1px solid #cccccc;">
+            <h1 style="color: #000000; margin: 0; font-size: 24px;">Mindful Journal</h1>
           </div>
-          <div style="background: #f9f5fa; padding: 30px; border-radius: 0 0 10px 10px;">
-            <h2 style="color: #6E2B8A; margin-bottom: 10px;">Password Reset Request</h2>
-            <p style="color: #333; line-height: 1.6;">
-              We received a request to reset your password. Click the link below to create a new password:
+          <div style="padding: 30px;">
+            <h2 style="color: #333333; margin-bottom: 15px; font-size: 18px;">Password Reset Request</h2>
+            <p style="color: #333333; line-height: 1.6; font-size: 14px;">
+              We received a request to reset your password. Click the button below to create a new password:
             </p>
-            <div style="margin: 20px 0;">
-              <a href="${resetLink}" style="background: linear-gradient(135deg, #6E2B8A 0%, #a323af 100%); color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; display: inline-block; font-weight: bold;">
+            <div style="text-align: center; margin: 25px 0;">
+              <a href="${resetLink}" style="background: #333333; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px; display: inline-block;">
                 Reset Password
               </a>
             </div>
-            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
+            <p style="color: #666666; font-size: 13px; margin: 15px 0;">
+              Or copy and paste this link: <br/>
+              <span style="word-break: break-all; font-family: monospace; font-size: 12px; color: #333333;">${resetLink}</span>
+            </p>
+            <p style="color: #666666; font-size: 13px; margin: 15px 0;">
               This link will expire in 1 hour.
             </p>
-            <p style="color: #999; font-size: 12px;">
+            <p style="color: #999999; font-size: 12px;">
               If you did not request a password reset, please ignore this email.
             </p>
+          </div>
+          <div style="padding: 15px; text-align: center; border-top: 1px solid #cccccc; font-size: 11px; color: #999999;">
+            <p style="margin: 0;">© 2026 Mindful Journal. All rights reserved.</p>
           </div>
         </div>
       `,
@@ -107,67 +114,51 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
     console.log('📧 User:', userDetails.name, '(' + userDetails.email + ')');
     console.log('📧 Transporter initialized:', !!transporter);
 
-    const riskColors = {
-      critical: '#dc2626',
-      high: '#ea580c',
-      medium: '#eab308',
-      low: '#16a34a',
-    };
-
-    const riskColor = riskColors[crisisAlert.riskLevel] || '#dc2626';
-
     const mailOptions = {
-      from: process.env.GMAIL_USER,
+      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
       to: adminEmail,
-      subject: `🚨 CRISIS ALERT - ${crisisAlert.riskLevel.toUpperCase()} RISK - ${userDetails.name}`,
+      subject: `CRISIS ALERT - ${crisisAlert.riskLevel.toUpperCase()} RISK - ${userDetails.name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #6E2B8A 0%, #a323af 100%); padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
-            <h1 style="color: white; margin: 0;">🚨 Crisis Alert Notification</h1>
-            <p style="color: white; margin: 5px 0 0 0;">Mindful Journal Admin</p>
+          <div style="padding: 20px; text-align: center; border-bottom: 1px solid #cccccc;">
+            <h1 style="color: #000000; margin: 0; font-size: 24px;">CRISIS ALERT NOTIFICATION</h1>
+            <p style="color: #666666; margin: 5px 0 0 0; font-size: 13px;">Mindful Journal - Admin Dashboard</p>
           </div>
           
-          <div style="background: #fff5f5; padding: 20px; border-left: 5px solid ${riskColor};">
-            <h2 style="color: ${riskColor}; margin: 0 0 15px 0;">Risk Level: ${crisisAlert.riskLevel.toUpperCase()}</h2>
-            
-            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #fee2e2;">
-              <h3 style="color: #333; margin-top: 0;">User Information</h3>
-              <p><strong>Name:</strong> ${userDetails.name}</p>
-              <p><strong>Email:</strong> ${userDetails.email}</p>
-              <p><strong>User ID:</strong> ${userDetails._id}</p>
-              <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
-            </div>
+          <div style="padding: 30px;">
+            <h2 style="color: #cc0000; margin: 0 0 20px 0; font-size: 18px;">Risk Level: ${crisisAlert.riskLevel.toUpperCase()}</h2>
+            <p style="color: #333333; margin: 0 0 10px 0; font-size: 13px;"><strong>Risk Score:</strong> ${(crisisAlert.riskScore * 100).toFixed(1)}%</p>
 
-            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #fee2e2;">
-              <h3 style="color: #333; margin-top: 0;">Crisis Message</h3>
-              <p style="background: #f5f5f5; padding: 10px; border-radius: 5px; border-left: 3px solid ${riskColor}; color: #333; font-style: italic;">
-                "${crisisAlert.content}"
-              </p>
-            </div>
+            <h3 style="color: #333333; margin: 20px 0 10px 0; font-size: 14px; border-bottom: 1px solid #cccccc; padding-bottom: 5px;">User Information</h3>
+            <p style="color: #333333; margin: 5px 0; font-size: 13px;"><strong>Name:</strong> ${userDetails.name}</p>
+            <p style="color: #333333; margin: 5px 0; font-size: 13px;"><strong>Email:</strong> ${userDetails.email}</p>
+            <p style="color: #333333; margin: 5px 0; font-size: 13px;"><strong>Time:</strong> ${new Date().toLocaleString()}</p>
 
-            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #fee2e2;">
-              <h3 style="color: #333; margin-top: 0;">Alert Details</h3>
-              <p><strong>Content Type:</strong> ${crisisAlert.contentType}</p>
-              <p><strong>Risk Score:</strong> ${(crisisAlert.riskScore * 100).toFixed(1)}%</p>
-              <p><strong>Detected Keywords:</strong> ${crisisAlert.detectedKeywords.join(', ') || 'None'}</p>
-              <p><strong>Risk Factors:</strong> ${crisisAlert.riskFactors.join(', ') || 'None'}</p>
-            </div>
+            <h3 style="color: #333333; margin: 20px 0 10px 0; font-size: 14px; border-bottom: 1px solid #cccccc; padding-bottom: 5px;">Crisis Message</h3>
+            <p style="color: #333333; margin: 0; font-size: 13px; background: #f5f5f5; padding: 10px; border-left: 2px solid #cc0000; font-style: italic;">
+              "${crisisAlert.content}"
+            </p>
 
-            <div style="margin-top: 20px; text-align: center;">
-              <a href="http://localhost:5173/admin/dashboard" style="background: linear-gradient(135deg, #6E2B8A 0%, #a323af 100%); color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; display: inline-block; font-weight: bold; font-size: 16px;">
+            <h3 style="color: #333333; margin: 20px 0 10px 0; font-size: 14px; border-bottom: 1px solid #cccccc; padding-bottom: 5px;">Alert Details</h3>
+            <p style="color: #333333; margin: 5px 0; font-size: 13px;"><strong>Type:</strong> ${crisisAlert.contentType}</p>
+            <p style="color: #333333; margin: 5px 0; font-size: 13px;"><strong>Keywords:</strong> ${crisisAlert.detectedKeywords.join(', ') || 'None'}</p>
+            <p style="color: #333333; margin: 5px 0; font-size: 13px;"><strong>Risk Factors:</strong> ${crisisAlert.riskFactors.join(', ') || 'None'}</p>
+
+            <div style="text-align: center; margin: 25px 0;">
+              <a href="http://localhost:5173/admin/dashboard" style="background: #333333; color: white; padding: 10px 25px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; display: inline-block;">
                 View in Admin Dashboard
               </a>
             </div>
 
-            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #f59e0b;">
-              <p style="margin: 0; color: #92400e; font-size: 14px;">
-                <strong>⚠️ ACTION REQUIRED:</strong> Please review this alert immediately and take appropriate action. Contact the user, escalate to emergency services if necessary, or mark as false alarm.
+            <div style="background: #ffffcc; padding: 15px; margin-top: 20px; border-left: 2px solid #ffcc00;">
+              <p style="margin: 0; color: #333333; font-size: 13px;">
+                <strong>ACTION REQUIRED:</strong> Please review this alert immediately. Contact the user, escalate to emergency services if necessary, or mark as false alarm.
               </p>
             </div>
           </div>
 
-          <div style="background: #f3f4f6; padding: 15px; border-radius: 0 0 10px 10px; font-size: 12px; color: #666; text-align: center;">
-            <p>Mindful Journal Crisis Alert System | Auto-generated notification</p>
+          <div style="padding: 15px; text-align: center; border-top: 1px solid #cccccc; font-size: 11px; color: #999999;">
+            <p style="margin: 0;">© 2026 Mindful Journal. Crisis Alert System - Auto-generated</p>
           </div>
         </div>
       `,
@@ -193,69 +184,69 @@ export const sendAdminContactEmail = async (userEmail, userName, message) => {
     console.log('📧 Sending admin contact message to:', userEmail);
 
     const mailOptions = {
-      from: `Akasha Iqbal - Mindful Journal <${process.env.GMAIL_USER}>`,
+      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
       to: userEmail,
-      subject: '🤝 Mindful Journal - Support Message From Akasha Iqbal',
+      subject: 'Support Message - Mindful Journal',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #6E2B8A 0%, #a323af 100%); padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
-            <h1 style="color: white; margin: 0;">💜 Mindful Journal</h1>
-            <p style="color: white; margin: 5px 0 0 0;">We Care About Your Wellbeing</p>
+          <div style="padding: 20px; text-align: center; border-bottom: 1px solid #cccccc;">
+            <h1 style="color: #000000; margin: 0; font-size: 24px;">Mindful Journal</h1>
+            <p style="color: #666666; margin: 5px 0 0 0; font-size: 13px;">Your Mental Health Companion</p>
           </div>
           
-          <div style="background: #f9f5fa; padding: 30px; border-radius: 0 0 10px 10px;">
-            <h2 style="color: #6E2B8A; margin-top: 0;">Hello ${userName},</h2>
+          <div style="padding: 30px;">
+            <h2 style="color: #333333; margin-top: 0; margin-bottom: 15px; font-size: 18px;">Hello ${userName},</h2>
             
-            <p style="color: #333; line-height: 1.8; margin: 20px 0;">
-              We noticed you may be going through a difficult time, and we want you to know that <strong>we care about your wellbeing</strong>.
+            <p style="color: #333333; line-height: 1.6; margin-bottom: 15px; font-size: 14px;">
+              We noticed you may be going through a difficult time, and we want you to know that we care about your wellbeing.
             </p>
 
-            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #6E2B8A;">
-              <p style="color: #333; line-height: 1.8; margin: 0; font-style: italic;">
+            <div style="background: #f5f5f5; padding: 15px; margin: 20px 0; border-left: 2px solid #333333;">
+              <p style="color: #333333; line-height: 1.6; margin: 0; font-style: italic; font-size: 13px;">
                 ${message}
               </p>
             </div>
 
-            <h3 style="color: #6E2B8A; margin-top: 25px; margin-bottom: 15px;">🆘 Immediate Support Resources:</h3>
+            <h3 style="color: #333333; margin: 20px 0 15px 0; font-size: 14px; border-bottom: 1px solid #cccccc; padding-bottom: 5px;">Support Resources Available:</h3>
             
-            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #dc2626;">
-              <p style="margin: 5px 0; color: #333;">
-                <strong>National Suicide Prevention Lifeline:</strong> <span style="font-size: 18px; color: #6E2B8A; font-weight: bold;">988</span>
+            <div style="background: #f5f5f5; padding: 12px; margin-bottom: 12px; border-left: 2px solid #cc0000;">
+              <p style="margin: 5px 0; color: #333333; font-weight: bold; font-size: 13px;">
+                National Suicide Prevention Lifeline: <span style="font-size: 16px; color: #cc0000; font-weight: bold;">988</span>
               </p>
-              <p style="margin: 5px 0; font-size: 12px; color: #666;">Available 24/7 • Free and Confidential</p>
+              <p style="margin: 5px 0; font-size: 12px; color: #666666;">Available 24/7 • Free and Confidential</p>
             </div>
 
-            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ea580c;">
-              <p style="margin: 5px 0; color: #333;">
-                <strong>Crisis Text Line:</strong> Text <span style="background: #f5f5f5; padding: 2px 8px; border-radius: 4px; font-weight: bold;">HOME</span> to <span style="background: #f5f5f5; padding: 2px 8px; border-radius: 4px; font-weight: bold;">741741</span>
+            <div style="background: #f5f5f5; padding: 12px; margin-bottom: 12px; border-left: 2px solid #ff6600;">
+              <p style="margin: 5px 0; color: #333333; font-weight: bold; font-size: 13px;">
+                Crisis Text Line: Text <span style="background: white; padding: 1px 4px; font-family: monospace; font-weight: bold;">HOME</span> to <span style="background: white; padding: 1px 4px; font-family: monospace; font-weight: bold;">741741</span>
               </p>
-              <p style="margin: 5px 0; font-size: 12px; color: #666;">Available 24/7 • Free Confidential Support</p>
+              <p style="margin: 5px 0; font-size: 12px; color: #666666;">Available 24/7 • Free Confidential Support</p>
             </div>
 
-            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #eab308;">
-              <p style="margin: 5px 0; color: #333;">
-                <strong>International Association for Suicide Prevention:</strong>
+            <div style="background: #f5f5f5; padding: 12px; border-left: 2px solid #333333;">
+              <p style="margin: 5px 0; color: #333333; font-weight: bold; font-size: 13px;">
+                International Association for Suicide Prevention
               </p>
-              <p style="margin: 5px 0; font-size: 12px; color: #666;">Visit: <a href="https://www.iasp.info/resources/Crisis_Centres/" style="color: #6E2B8A;">iasp.info/resources/Crisis_Centres</a></p>
+              <p style="margin: 5px 0; font-size: 12px; color: #666666;">Visit: <a href="https://www.iasp.info/resources/Crisis_Centres/" style="color: #333333; text-decoration: none;">iasp.info/resources/Crisis_Centres</a></p>
             </div>
 
-            <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin-top: 25px; border-left: 4px solid #6E2B8A;">
-              <p style="color: #0369a1; margin: 0;">
-                <strong>💚 Remember:</strong> Your life matters. You are not alone. Help is available right now, and recovery is possible. Please reach out to someone you trust or call the numbers above.
+            <div style="background: #ffffcc; padding: 15px; margin-top: 20px; border-left: 2px solid #ffcc00;">
+              <p style="color: #333333; margin: 0; font-size: 13px; line-height: 1.6;">
+                <strong>Remember:</strong> Your life matters. You are not alone. Help is available right now. Please reach out to someone you trust or call one of the numbers above.
               </p>
             </div>
 
-            <p style="color: #666; line-height: 1.8; margin-top: 25px;">
-              The Mindful Journal team cares about your wellbeing and is here to support you on your mental health journey.
+            <p style="color: #333333; line-height: 1.6; margin-top: 20px; font-size: 13px;">
+              The Mindful Journal team cares about your wellbeing and is here to support you. We're always listening.
             </p>
 
-            <p style="color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+            <p style="color: #999999; font-size: 12px; margin-top: 20px; border-top: 1px solid #cccccc; padding-top: 15px;">
               <strong>Need more help?</strong> You can reply to this email, and our team will read your message. Your safety and wellbeing are our top priority.
             </p>
           </div>
 
-          <div style="background: #f3f4f6; padding: 15px; border-radius: 0; font-size: 11px; color: #666; text-align: center;">
-            <p style="margin: 0;">Mindful Journal - Supporting Your Mental Health</p>
+          <div style="padding: 15px; text-align: center; border-top: 1px solid #cccccc; font-size: 11px; color: #999999;">
+            <p style="margin: 0;">© 2026 Mindful Journal. All rights reserved.</p>
           </div>
         </div>
       `,

@@ -44,11 +44,37 @@ if (debugToken) {
 }
 
 // Crisis detection and resources
+// Includes English AND Roman Urdu (phonetic Urdu) keywords for better detection
 const CRISIS_KEYWORDS = [
+  // English - Original keywords
   'suicide', 'suicidal', 'kill myself', 'hurt myself', 'harm myself',
   'end my life', 'end it', 'don\'t want to live', 'want to die',
   'self harm', 'self-harm', 'cutting myself', 'overdose', 'hang myself',
-  'jump', 'i can\'t take it anymore', 'can\'t go on', 'give up'
+  'jump', 'i can\'t take it anymore', 'can\'t go on', 'give up',
+  
+  // English - Additional critical keywords
+  'no reason to live', 'worthless', 'nobody cares', 'everyone would be better off',
+  'life is meaningless', 'tired of living', 'end everything', 'take my life',
+  'step in front', 'slash my wrists', 'poison myself', 'drown myself',
+  'i want to disappear', 'nobody needs me', 'better off dead', 'fatal dose',
+  'final goodbye', 'last goodbye', 'saying goodbye', 'permanent solution',
+  'can\'t handle this', 'too much pain', 'unbearable pain', 'rope', 'noose',
+  'sleeping pills', 'razors', 'cut myself', 'break bones', 'bleed out',
+  
+  // Roman Urdu (Phonetic Urdu) - Critical phrases
+  'khud ko marna hai', 'apne aap ko marna', 'mujhe mar jana', 'mujhe suicide krna',
+  'jeevan khatam krna', 'apne aap ko nuksan', 'apne aap ko kaatna', 'apne aap se hate',
+  'apne aap se nfrat', 'zyada bardasht nahi', 'kuch nahi raha', 'sab khatam',
+  'jeevan se thaka', 'maut', 'mar ja', 'mun mar ja', 'khud ko zehreela',
+  'apne aap ko zyada', 'apne se pyar nahi', 'insaan se befeeda', 'sab bekar',
+  'jeevan bekaar', 'koi matlab nahi', 'koi fayda nahi', 'zehreela khana',
+  'gla kaatna', 'pehlhan kaatna', 'zyada dard', 'zyada kasak', 'zyada takleef',
+  'khud ko hurt', 'apne aap ko chot', 'apne aap ko nayak', 'khud ko tabah',
+  'khud tabahi', 'apne aap ko nist', 'apne aap ko khatam', 'khud ko khatm',
+  'mera kuch nahi', 'mujhe nahi chahiye', 'mar jana theek hai', 'mar ja betar hai',
+  'rassi', 'gala', 'pehlwan', 'zehaar', 'tablet', 'ilaj', 'zyada tanhai',
+  'akela hoon', 'kisi ko parwah nahi', 'kisi ne dhikaar nahi', 'sab bekaar soch',
+  'khud gina nahi', 'apne aap ko nasuksan', 'apne aap ko zalim', 'apne aap ko zyulm'
 ];
 
 export const isCrisisMessage = (message: string): boolean => {

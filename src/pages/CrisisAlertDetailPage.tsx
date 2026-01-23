@@ -427,87 +427,14 @@ const CrisisAlertDetailPage: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="followUp"
-                checked={followUpRequired}
-                onChange={(e) => setFollowUpRequired(e.target.checked)}
-                className="w-4 h-4 text-purple-600 border-gray-300 rounded"
-              />
-              <label htmlFor="followUp" className="text-sm font-medium text-gray-700">
-                Follow-up required
-              </label>
-            </div>
-
-            {followUpRequired && (
-              <div>
-                <label className="block text-sm font-semibold text-gray-600 mb-2">Schedule Follow-up Date</label>
-                <input
-                  type="datetime-local"
-                  value={followUpDate}
-                  onChange={(e) => setFollowUpDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <p className="text-xs text-gray-500 mt-1">When should admin follow up with this user?</p>
-              </div>
-            )}
-
-            <div className="flex gap-3 pt-4 flex-wrap">
+            <div className="flex gap-3 pt-4">
               <Button
                 onClick={() => setShowContactModal(true)}
-                className="flex-1 min-w-[200px] bg-blue-600 hover:bg-blue-700 !text-white"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 !text-white"
                 disabled={contactingUser}
               >
                 {contactingUser ? 'Sending...' : '📧 Contact User'}
               </Button>
-            </div>
-
-            {showMessages && alert.conversationId && (
-              <div className="mt-4 p-4 bg-gray-100 rounded-lg border border-gray-300">
-                <h4 className="font-semibold text-gray-700 mb-2">Conversation History</h4>
-                <p className="text-sm text-gray-600 mb-4">Conversation ID: {alert.conversationId}</p>
-
-                {conversation && conversation.messages.length > 0 ? (
-                  <div className="bg-white rounded-lg max-h-96 overflow-y-auto space-y-3 p-3 border border-gray-200">
-                    {conversation.messages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div
-                          className={`max-w-xs px-4 py-2 rounded-lg ${
-                            msg.role === 'user'
-                              ? 'bg-blue-600 text-white rounded-br-none'
-                              : msg.role === 'system'
-                              ? 'bg-gray-300 text-gray-800 rounded-bl-none'
-                              : 'bg-gray-200 text-gray-800 rounded-bl-none'
-                          }`}
-                        >
-                          <p className="text-sm break-words">{msg.content}</p>
-                          {msg.timestamp && (
-                            <p className={`text-xs mt-1 ${
-                              msg.role === 'user' ? 'text-blue-100' : 'text-gray-500'
-                            }`}>
-                              {new Date(msg.timestamp).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-600 p-3 bg-white rounded-lg border border-gray-200">
-                    {loadingMessages ? 'Loading messages...' : 'No messages found in this conversation.'}
-                  </p>
-                )}
-              </div>
-            )}
-
-            <div className="flex gap-3 pt-4">
               <Button
                 onClick={handleUpdate}
                 disabled={updating}
