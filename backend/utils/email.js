@@ -185,3 +185,87 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
     throw new Error('Failed to send crisis alert notification email: ' + error.message);
   }
 };
+
+export const sendAdminContactEmail = async (userEmail, userName, message) => {
+  if (!transporter) initializeEmailService();
+
+  try {
+    console.log('📧 Sending admin contact message to:', userEmail);
+
+    const mailOptions = {
+      from: `Akasha Iqbal - Mindful Journal <${process.env.GMAIL_USER}>`,
+      to: userEmail,
+      subject: '🤝 Mindful Journal - Support Message From Akasha Iqbal',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #6E2B8A 0%, #a323af 100%); padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
+            <h1 style="color: white; margin: 0;">💜 Mindful Journal</h1>
+            <p style="color: white; margin: 5px 0 0 0;">We Care About Your Wellbeing</p>
+          </div>
+          
+          <div style="background: #f9f5fa; padding: 30px; border-radius: 0 0 10px 10px;">
+            <h2 style="color: #6E2B8A; margin-top: 0;">Hello ${userName},</h2>
+            
+            <p style="color: #333; line-height: 1.8; margin: 20px 0;">
+              We noticed you may be going through a difficult time, and we want you to know that <strong>we care about your wellbeing</strong>.
+            </p>
+
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #6E2B8A;">
+              <p style="color: #333; line-height: 1.8; margin: 0; font-style: italic;">
+                ${message}
+              </p>
+            </div>
+
+            <h3 style="color: #6E2B8A; margin-top: 25px; margin-bottom: 15px;">🆘 Immediate Support Resources:</h3>
+            
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #dc2626;">
+              <p style="margin: 5px 0; color: #333;">
+                <strong>National Suicide Prevention Lifeline:</strong> <span style="font-size: 18px; color: #6E2B8A; font-weight: bold;">988</span>
+              </p>
+              <p style="margin: 5px 0; font-size: 12px; color: #666;">Available 24/7 • Free and Confidential</p>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ea580c;">
+              <p style="margin: 5px 0; color: #333;">
+                <strong>Crisis Text Line:</strong> Text <span style="background: #f5f5f5; padding: 2px 8px; border-radius: 4px; font-weight: bold;">HOME</span> to <span style="background: #f5f5f5; padding: 2px 8px; border-radius: 4px; font-weight: bold;">741741</span>
+              </p>
+              <p style="margin: 5px 0; font-size: 12px; color: #666;">Available 24/7 • Free Confidential Support</p>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #eab308;">
+              <p style="margin: 5px 0; color: #333;">
+                <strong>International Association for Suicide Prevention:</strong>
+              </p>
+              <p style="margin: 5px 0; font-size: 12px; color: #666;">Visit: <a href="https://www.iasp.info/resources/Crisis_Centres/" style="color: #6E2B8A;">iasp.info/resources/Crisis_Centres</a></p>
+            </div>
+
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin-top: 25px; border-left: 4px solid #6E2B8A;">
+              <p style="color: #0369a1; margin: 0;">
+                <strong>💚 Remember:</strong> Your life matters. You are not alone. Help is available right now, and recovery is possible. Please reach out to someone you trust or call the numbers above.
+              </p>
+            </div>
+
+            <p style="color: #666; line-height: 1.8; margin-top: 25px;">
+              The Mindful Journal team cares about your wellbeing and is here to support you on your mental health journey.
+            </p>
+
+            <p style="color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+              <strong>Need more help?</strong> You can reply to this email, and our team will read your message. Your safety and wellbeing are our top priority.
+            </p>
+          </div>
+
+          <div style="background: #f3f4f6; padding: 15px; border-radius: 0; font-size: 11px; color: #666; text-align: center;">
+            <p style="margin: 0;">Mindful Journal - Supporting Your Mental Health</p>
+          </div>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Admin contact email sent successfully to:', userEmail);
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to send admin contact email:', error);
+    throw new Error('Failed to send contact message: ' + error.message);
+  }
+};

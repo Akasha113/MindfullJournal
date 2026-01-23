@@ -7,7 +7,7 @@ import User from './models/User.js';
 import VerificationCode from './models/VerificationCode.js';
 import CrisisAlert from './models/CrisisAlert.js';
 import { hashPassword, verifyPassword, generateToken, generateVerificationCode } from './utils/crypto.js';
-import { initializeEmailService, sendVerificationEmail, sendPasswordResetEmail, sendCrisisAlertEmail } from './utils/email.js';
+import { initializeEmailService, sendVerificationEmail, sendPasswordResetEmail, sendCrisisAlertEmail, sendAdminContactEmail } from './utils/email.js';
 import { authMiddleware, errorHandler } from './middleware/auth.js';
 
 dotenv.config();
@@ -498,13 +498,20 @@ app.get('/api/admin/users/:userId', authMiddleware, async (req, res) => {
 // =====================
 
 // Create crisis alert (called from detection system)
-app.post('/api/admin/crisis-alerts', authMiddleware, async (req, res) => {
+// Create crisis alert (called from detection system) - Optional auth
+app.post('/api/admin/crisis-alerts', async (req, res) => {
   try {
     const { userId, content, contentType, riskLevel, riskScore, detectedKeywords, riskFactors, conversationId, journalId } = req.body;
 
     console.log('📝 Creating crisis alert for user:', userId);
     console.log('📝 Alert content:', content);
     console.log('📝 Risk level:', riskLevel);
+
+    // Validate required fields
+    if (!userId || !content) {
+      console.error('❌ Missing required fields - userId or content');
+      return res.status(400).json({ error: 'User ID and content are required' });
+    }
 
     // Create crisis alert
     const alert = new CrisisAlert({
@@ -532,6 +539,7 @@ app.post('/api/admin/crisis-alerts', authMiddleware, async (req, res) => {
       if (userDetails) {
         const adminEmail = process.env.ADMIN_EMAIL || 'akashaqbl@gmail.com';
         console.log('📧 Sending crisis alert email to:', adminEmail);
+        console.log('   From:', process.env.GMAIL_USER);
         
         await sendCrisisAlertEmail(
           adminEmail,
@@ -545,6 +553,7 @@ app.post('/api/admin/crisis-alerts', authMiddleware, async (req, res) => {
     } catch (emailError) {
       console.error('❌ Failed to send crisis alert email:', emailError.message);
       console.error('Email error details:', emailError);
+      console.error('Email error stack:', emailError.stack);
     }
 
     res.status(201).json({
@@ -713,6 +722,66 @@ app.get('/api/admin/crisis-stats', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message || 'Failed to fetch crisis stats' });
+  }
+});
+
+// Contact user from crisis alert
+app.post('/api/admin/crisis-alerts/:alertId/contact-user', authMiddleware, async (req, res) => {
+  try {
+    console.log('📧 Contact user endpoint called');
+    console.log('   Alert ID:', req.params.alertId);
+    console.log('   Admin User ID:', req.userId);
+
+    const adminUser = await User.findById(req.userId);
+    if (!adminUser || !adminUser.isAdmin) {
+      console.error('❌ Not authorized - user is not admin');
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const { alertId } = req.params;
+    const { message } = req.body;
+
+    if (!message || message.trim() === '') {
+      console.error('❌ Message is empty');
+      return res.status(400).json({ error: 'Message is required' });
+    }
+
+    // Get the crisis alert
+    const alert = await CrisisAlert.findById(alertId).populate('userId');
+    if (!alert) {
+      console.error('❌ Alert not found:', alertId);
+      return res.status(404).json({ error: 'Alert not found' });
+    }
+
+    if (!alert.userId || !alert.userId.email) {
+      console.error('❌ User email not found for alert:', alertId);
+      return res.status(400).json({ error: 'User email not found' });
+    }
+
+    console.log('✅ Sending contact email to:', alert.userId.email);
+    console.log('   User name:', alert.userId.name);
+    console.log('   Message length:', message.length);
+
+    // Send email to user
+    await sendAdminContactEmail(
+      alert.userId.email,
+      alert.userId.name || 'User',
+      message
+    );
+
+    // Update alert to mark that contact was sent
+    alert.interventionTaken = 'message_sent';
+    alert.interventionDetails = message;
+    await alert.save();
+    console.log('✅ Alert updated with contact intervention');
+
+    res.status(200).json({
+      message: 'Email sent successfully to user',
+      userEmail: alert.userId.email,
+    });
+  } catch (error) {
+    console.error('Contact user error:', error);
+    res.status(500).json({ error: error.message || 'Failed to send email' });
   }
 });
 

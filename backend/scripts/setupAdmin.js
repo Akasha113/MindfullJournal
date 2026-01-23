@@ -31,7 +31,7 @@ const setupAdmin = async () => {
   try {
     await connectDB();
 
-    const adminEmail = 'aqudoos126@gmail.com';
+    const adminEmail = 'mindfuljounralofficial@gmail.com';
     const adminPassword = 'Akasha@114'; // Change this!
 
     // Delete existing admin to recreate fresh

@@ -63,6 +63,11 @@ const CrisisAlertDetailPage: React.FC = () => {
   const [showMessages, setShowMessages] = useState(false);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [contactingUser, setContactingUser] = useState(false);
+  const [contactMessage, setContactMessage] = useState(
+    'Dear User,\n\nWe noticed you may be going through a difficult time. We want you to know that we care about your wellbeing.\n\nIf you\'re having thoughts of self-harm or suicide, please reach out for support:\n\n🆘 National Suicide Prevention Lifeline: 988\n🆘 Crisis Text Line: Text HOME to 741741\n\nYou\'re not alone. Help is available.\n\nBest regards,\nMindful Journal Team'
+  );
+  const [showContactModal, setShowContactModal] = useState(false);
 
   useEffect(() => {
     fetchAlert();
@@ -191,19 +196,39 @@ const CrisisAlertDetailPage: React.FC = () => {
     }
 
     try {
-      // Open email client
-      const subject = encodeURIComponent('Mindful Journal - We Care About You');
-      const body = encodeURIComponent(
-        `Dear ${alert.userId?.name || 'User'},\n\nWe noticed you may be going through a difficult time. We want you to know that we care about your wellbeing.\n\nIf you're having thoughts of self-harm or suicide, please reach out for support:\n\n🆘 National Suicide Prevention Lifeline: 988\n🆘 Crisis Text Line: Text HOME to 741741\n\nYou're not alone. Help is available.\n\nBest regards,\nMindful Journal Team`
+      setContactingUser(true);
+      const token = localStorage.getItem('adminToken');
+
+      const response = await fetch(
+        `http://localhost:3001/api/admin/crisis-alerts/${alertId}/contact-user`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            message: contactMessage,
+          }),
+        }
       );
-      
-      window.location.href = `mailto:${alert.userId.email}?subject=${subject}&body=${body}`;
-      
-      // Log the contact attempt
-      setAdminNotes(prev => `${prev}\n\n[${new Date().toLocaleString()}] Attempted to contact user via email at ${alert.userId.email}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to send email');
+      }
+
+      const data = await response.json();
+      window.alert(`✅ Email sent successfully to ${data.userEmail}`);
+      setShowContactModal(false);
+      setContactMessage(
+        'Dear User,\n\nWe noticed you may be going through a difficult time. We want you to know that we care about your wellbeing.\n\nIf you\'re having thoughts of self-harm or suicide, please reach out for support:\n\n🆘 National Suicide Prevention Lifeline: 988\n🆘 Crisis Text Line: Text HOME to 741741\n\nYou\'re not alone. Help is available.\n\nBest regards,\nMindful Journal Team'
+      );
     } catch (error) {
       console.error('Error contacting user:', error);
-      setError('Could not open email client. User email: ' + alert.userId.email);
+      setError(error instanceof Error ? error.message : 'Could not send email');
+    } finally {
+      setContactingUser(false);
     }
   };
 
@@ -430,23 +455,11 @@ const CrisisAlertDetailPage: React.FC = () => {
 
             <div className="flex gap-3 pt-4 flex-wrap">
               <Button
-                onClick={() => {
-                  if (!showMessages) {
-                    loadConversationMessages();
-                  }
-                  setShowMessages(!showMessages);
-                }}
-                variant="secondary"
-                className="flex-1 min-w-[200px]"
-                disabled={loadingMessages}
+                onClick={() => setShowContactModal(true)}
+                className="flex-1 min-w-[200px] bg-blue-600 hover:bg-blue-700 !text-white"
+                disabled={contactingUser}
               >
-                {loadingMessages ? 'Loading...' : showMessages ? 'Hide' : 'View'} Conversation
-              </Button>
-              <Button
-                onClick={handleContactUser}
-                className="flex-1 min-w-[200px] bg-blue-600 hover:bg-blue-700"
-              >
-                📧 Contact User
+                {contactingUser ? 'Sending...' : '📧 Contact User'}
               </Button>
             </div>
 
@@ -508,6 +521,72 @@ const CrisisAlertDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Contact User Modal */}
+        {showContactModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={() => setShowContactModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-lg shadow-xl max-w-2xl w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-gradient-to-r from-[#6E2B8A] to-[#a323af] px-6 py-4">
+                <h2 className="text-xl font-bold text-white">Send Support Message to User</h2>
+                <p className="text-purple-100 text-sm">
+                  Email will be sent to: <strong>{alert?.userId?.email}</strong>
+                </p>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Message to Send
+                  </label>
+                  <TextArea
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    placeholder="Enter the message to send to the user..."
+                    rows={8}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    This message will be sent as an HTML email with crisis resources
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                  <p className="text-sm text-blue-800">
+                    <strong>📧 Tip:</strong> The email will include emergency resources like the National Suicide Prevention Lifeline (988) and Crisis Text Line.
+                  </p>
+                </div>
+
+                <div className="flex gap-3 justify-end pt-4">
+                  <Button
+                    onClick={() => setShowContactModal(false)}
+                    variant="secondary"
+                    disabled={contactingUser}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleContactUser}
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 !text-white"
+                    disabled={contactingUser || !contactMessage.trim()}
+                  >
+                    {contactingUser ? '📧 Sending...' : '📧 Send Email'}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </motion.div>
     </div>
   );

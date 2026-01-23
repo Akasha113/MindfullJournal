@@ -255,7 +255,17 @@ export const sendMessage = async (
     try {
       // Get user ID and token from localStorage
       const authData = localStorage.getItem('authData');
-      const authToken = localStorage.getItem('authToken');
+      let authToken = localStorage.getItem('authToken');
+      
+      // Fallback to token from authData if authToken not found
+      if (!authToken && authData) {
+        try {
+          const parsed = JSON.parse(authData);
+          authToken = parsed.token || null;
+        } catch (e) {
+          console.error('Failed to parse token from authData:', e);
+        }
+      }
       
       let userId = 'unknown';
       if (authData) {
@@ -267,10 +277,11 @@ export const sendMessage = async (
         }
       }
       
-      console.log('📤 Sending crisis alert with:');
+      console.log('🚨 CRISIS DETECTED - Sending alert to admin');
+      console.log('📤 Crisis alert details:');
       console.log('   userId:', userId);
-      console.log('   token:', authToken ? '***SET***' : '⚠️ NOT SET');
-      console.log('   message:', userMessage);
+      console.log('   message:', userMessage.substring(0, 50) + '...');
+      console.log('   token exists:', !!authToken);
       
       // Send crisis alert to backend
       const alertResponse = await fetch('http://localhost:3001/api/admin/crisis-alerts', {
@@ -296,14 +307,16 @@ export const sendMessage = async (
       
       if (alertResponse.ok) {
         const data = await alertResponse.json();
-        console.log('✅ Crisis alert sent successfully:', data);
+        console.log('✅ Crisis alert sent successfully to admin dashboard');
+        console.log('   Alert ID:', data.alert?._id);
       } else {
         const errorText = await alertResponse.text();
-        console.error('❌ Failed to send crisis alert - Status:', alertResponse.status);
-        console.error('❌ Error response:', errorText);
+        console.error('❌ Failed to send crisis alert');
+        console.error('   Status:', alertResponse.status);
+        console.error('   Response:', errorText);
       }
     } catch (error) {
-      console.error('❌ Error sending crisis alert:', error);
+      console.error('❌ Error sending crisis alert to admin:', error);
     }
     
     // Show crisis response to user
