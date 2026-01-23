@@ -7,7 +7,7 @@ import User from './models/User.js';
 import VerificationCode from './models/VerificationCode.js';
 import CrisisAlert from './models/CrisisAlert.js';
 import { hashPassword, verifyPassword, generateToken, generateVerificationCode } from './utils/crypto.js';
-import { initializeEmailService, sendVerificationEmail, sendPasswordResetEmail } from './utils/email.js';
+import { initializeEmailService, sendVerificationEmail, sendPasswordResetEmail, sendCrisisAlertEmail } from './utils/email.js';
 import { authMiddleware, errorHandler } from './middleware/auth.js';
 
 dotenv.config();
@@ -226,6 +226,70 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Forgot Password - Send reset link
+app.post('/api/auth/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Check if user exists
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      // Don't reveal if user exists (security best practice)
+      return res.status(200).json({ 
+        message: 'If an account exists with this email, a reset link has been sent.' 
+      });
+    }
+
+    // Generate reset token and code
+    const resetCode = generateVerificationCode();
+    const resetToken = jwt.sign({ userId: user._id, resetCode }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    // Store reset code in verification collection
+    let verificationData = await VerificationCode.findOne({ email });
+
+    if (!verificationData) {
+      verificationData = new VerificationCode({
+        email,
+        code: resetCode,
+        type: 'password_reset',
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+      });
+    } else {
+      verificationData.code = resetCode;
+      verificationData.type = 'password_reset';
+      verificationData.expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+    }
+
+    await verificationData.save();
+
+    // Send reset link email
+    try {
+      await sendPasswordResetEmail(
+        email,
+        `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}&code=${resetCode}`
+      );
+      console.log('✅ Password reset email sent to:', email);
+    } catch (emailError) {
+      console.error('Failed to send reset email:', emailError);
+      // Still return success to user (don't leak email errors)
+    }
+
+    res.status(200).json({ 
+      message: 'If an account exists with this email, a reset link has been sent.' 
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: error.message || 'Failed to process password reset' });
+  }
+});
+
 // Resend verification code
 app.post('/api/auth/resend-code', async (req, res) => {
   try {
@@ -438,6 +502,11 @@ app.post('/api/admin/crisis-alerts', authMiddleware, async (req, res) => {
   try {
     const { userId, content, contentType, riskLevel, riskScore, detectedKeywords, riskFactors, conversationId, journalId } = req.body;
 
+    console.log('📝 Creating crisis alert for user:', userId);
+    console.log('📝 Alert content:', content);
+    console.log('📝 Risk level:', riskLevel);
+
+    // Create crisis alert
     const alert = new CrisisAlert({
       userId,
       content,
@@ -452,12 +521,38 @@ app.post('/api/admin/crisis-alerts', authMiddleware, async (req, res) => {
     });
 
     await alert.save();
+    console.log('✅ Crisis alert saved to database:', alert._id);
+
+    // Fetch user details for email
+    const userDetails = await User.findById(userId);
+    console.log('👤 User details fetched:', userDetails?.name, userDetails?.email);
+
+    // Send email notification to admin
+    try {
+      if (userDetails) {
+        const adminEmail = process.env.ADMIN_EMAIL || 'akashaqbl@gmail.com';
+        console.log('📧 Sending crisis alert email to:', adminEmail);
+        
+        await sendCrisisAlertEmail(
+          adminEmail,
+          userDetails,
+          alert
+        );
+        console.log('✅ Crisis alert email sent successfully!');
+      } else {
+        console.error('❌ User details not found for ID:', userId);
+      }
+    } catch (emailError) {
+      console.error('❌ Failed to send crisis alert email:', emailError.message);
+      console.error('Email error details:', emailError);
+    }
 
     res.status(201).json({
       message: 'Crisis alert created',
       alert: alert,
     });
   } catch (error) {
+    console.error('❌ Error creating crisis alert:', error);
     res.status(500).json({ error: error.message || 'Failed to create crisis alert' });
   }
 });
@@ -656,6 +751,40 @@ app.get('/api/admin/stats', authMiddleware, async (req, res) => {
 app.use(errorHandler);
 
 // 404 handler
+// Test email endpoint
+app.post('/api/test-email', async (req, res) => {
+  try {
+    console.log('📧 TEST EMAIL ENDPOINT CALLED');
+    console.log('GMAIL_USER:', process.env.GMAIL_USER);
+    console.log('GMAIL_APP_PASSWORD:', process.env.GMAIL_APP_PASSWORD ? '***SET***' : 'NOT SET');
+    console.log('ADMIN_EMAIL:', process.env.ADMIN_EMAIL);
+
+    await sendCrisisAlertEmail(
+      process.env.ADMIN_EMAIL || 'aqudoos126@gmail.com',
+      {
+        name: 'Test User',
+        email: 'testuser@example.com',
+        _id: 'test123'
+      },
+      {
+        _id: 'alert123',
+        content: 'Test crisis message',
+        contentType: 'chat',
+        riskLevel: 'critical',
+        riskScore: 0.95,
+        detectedKeywords: ['test'],
+        riskFactors: ['testing'],
+        conversationId: 'conv123'
+      }
+    );
+
+    res.status(200).json({ message: '✅ Test email sent successfully!' });
+  } catch (error) {
+    console.error('❌ Test email failed:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });

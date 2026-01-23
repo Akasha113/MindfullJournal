@@ -33,6 +33,20 @@ interface CrisisAlert {
   reviewedBy: { name: string; email: string } | null;
 }
 
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp?: number;
+}
+
+interface Conversation {
+  id: string;
+  messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
+}
+
 const CrisisAlertDetailPage: React.FC = () => {
   const { alertId } = useParams();
   const navigate = useNavigate();
@@ -45,6 +59,10 @@ const CrisisAlertDetailPage: React.FC = () => {
   const [intervention, setIntervention] = useState('none');
   const [adminNotes, setAdminNotes] = useState('');
   const [followUpRequired, setFollowUpRequired] = useState(true);
+  const [followUpDate, setFollowUpDate] = useState('');
+  const [showMessages, setShowMessages] = useState(false);
+  const [conversation, setConversation] = useState<Conversation | null>(null);
+  const [loadingMessages, setLoadingMessages] = useState(false);
 
   useEffect(() => {
     fetchAlert();
@@ -90,6 +108,7 @@ const CrisisAlertDetailPage: React.FC = () => {
           interventionTaken: intervention,
           adminNotes,
           followUpRequired,
+          followUpDate: followUpDate || null,
         }),
       });
 
@@ -97,11 +116,94 @@ const CrisisAlertDetailPage: React.FC = () => {
 
       const data = await response.json();
       setAlert(data.alert);
-      alert && alert._id && navigate('/admin/dashboard/crisis');
-    } catch (err) {
-      setError('Failed to update alert');
+      
+      // Show success and navigate back to admin dashboard
+      window.alert('Alert updated successfully!');
+      navigate('/admin/dashboard');
+    } catch (err: any) {
+      console.error('Update error:', err);
+      setError(err.message || 'Failed to update alert. Please try again.');
+      // Clear error after 5 seconds
+      setTimeout(() => setError(''), 5000);
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const loadConversationMessages = async () => {
+    if (!alert?.conversationId || !alert?.userId?._id) {
+      setError('Cannot load conversation - missing data');
+      return;
+    }
+
+    try {
+      setLoadingMessages(true);
+      const userId = alert.userId?._id;
+      const conversationId = alert.conversationId;
+
+      // Get conversation from localStorage
+      const storageKey = `MindFul_chat_conversations_${userId}`;
+      const conversationsData = localStorage.getItem(storageKey);
+
+      if (!conversationsData) {
+        setError('No conversations found for this user');
+        setLoadingMessages(false);
+        return;
+      }
+
+      const conversations = JSON.parse(conversationsData);
+      const foundConversation = conversations.find((conv: any) => conv.id === conversationId);
+
+      if (!foundConversation) {
+        setError('Conversation not found');
+        setLoadingMessages(false);
+        return;
+      }
+
+      // Extract and format messages
+      const messages: ChatMessage[] = (foundConversation.messages || []).map((msg: any) => ({
+        id: msg.id || Math.random().toString(),
+        role: msg.role || 'user',
+        content: msg.content || '',
+        timestamp: msg.timestamp || Date.now(),
+      }));
+
+      setConversation({
+        id: conversationId,
+        messages,
+        createdAt: foundConversation.createdAt || Date.now(),
+        updatedAt: foundConversation.updatedAt || Date.now(),
+      });
+
+      setError('');
+    } catch (error) {
+      console.error('Error loading conversation:', error);
+      setError('Failed to load conversation messages');
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  const handleContactUser = async () => {
+    if (!alert?.userId?.email) {
+      setError('User email not found');
+      return;
+    }
+
+    try {
+      // Open email client
+      const subject = encodeURIComponent('Mindful Journal - We Care About You');
+      const body = encodeURIComponent(
+        `Dear ${alert.userId?.name || 'User'},\n\nWe noticed you may be going through a difficult time. We want you to know that we care about your wellbeing.\n\nIf you're having thoughts of self-harm or suicide, please reach out for support:\n\n🆘 National Suicide Prevention Lifeline: 988\n🆘 Crisis Text Line: Text HOME to 741741\n\nYou're not alone. Help is available.\n\nBest regards,\nMindful Journal Team`
+      );
+      
+      window.location.href = `mailto:${alert.userId.email}?subject=${subject}&body=${body}`;
+      
+      // Log the contact attempt
+      setAdminNotes(prev => `${prev}\n\n[${new Date().toLocaleString()}] Attempted to contact user via email at ${alert.userId.email}`);
+    } catch (error) {
+      console.error('Error contacting user:', error);
+      setError('Could not open email client. User email: ' + alert.userId.email);
     }
   };
 
@@ -150,9 +252,19 @@ const CrisisAlertDetailPage: React.FC = () => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
-            {error}
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6 text-red-700 flex items-start gap-3"
+          >
+            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold">Update Failed</p>
+              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-xs text-red-500 mt-1">This message will disappear in 5 seconds</p>
+            </div>
+          </motion.div>
         )}
 
         {/* Alert Content */}
@@ -175,8 +287,8 @@ const CrisisAlertDetailPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 border-b border-gray-200">
             <div>
               <h3 className="text-sm font-semibold text-gray-600 mb-2">User</h3>
-              <p className="font-semibold text-gray-900">{alert.userId.name}</p>
-              <p className="text-sm text-gray-600">{alert.userId.email}</p>
+              <p className="font-semibold text-gray-900">{alert.userId?.name || 'Unknown User'}</p>
+              <p className="text-sm text-gray-600">{alert.userId?.email || 'No email'}</p>
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-600 mb-2">Alert Details</h3>
@@ -303,11 +415,90 @@ const CrisisAlertDetailPage: React.FC = () => {
               </label>
             </div>
 
+            {followUpRequired && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-600 mb-2">Schedule Follow-up Date</label>
+                <input
+                  type="datetime-local"
+                  value={followUpDate}
+                  onChange={(e) => setFollowUpDate(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">When should admin follow up with this user?</p>
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-4 flex-wrap">
+              <Button
+                onClick={() => {
+                  if (!showMessages) {
+                    loadConversationMessages();
+                  }
+                  setShowMessages(!showMessages);
+                }}
+                variant="secondary"
+                className="flex-1 min-w-[200px]"
+                disabled={loadingMessages}
+              >
+                {loadingMessages ? 'Loading...' : showMessages ? 'Hide' : 'View'} Conversation
+              </Button>
+              <Button
+                onClick={handleContactUser}
+                className="flex-1 min-w-[200px] bg-blue-600 hover:bg-blue-700"
+              >
+                📧 Contact User
+              </Button>
+            </div>
+
+            {showMessages && alert.conversationId && (
+              <div className="mt-4 p-4 bg-gray-100 rounded-lg border border-gray-300">
+                <h4 className="font-semibold text-gray-700 mb-2">Conversation History</h4>
+                <p className="text-sm text-gray-600 mb-4">Conversation ID: {alert.conversationId}</p>
+
+                {conversation && conversation.messages.length > 0 ? (
+                  <div className="bg-white rounded-lg max-h-96 overflow-y-auto space-y-3 p-3 border border-gray-200">
+                    {conversation.messages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-xs px-4 py-2 rounded-lg ${
+                            msg.role === 'user'
+                              ? 'bg-blue-600 text-white rounded-br-none'
+                              : msg.role === 'system'
+                              ? 'bg-gray-300 text-gray-800 rounded-bl-none'
+                              : 'bg-gray-200 text-gray-800 rounded-bl-none'
+                          }`}
+                        >
+                          <p className="text-sm break-words">{msg.content}</p>
+                          {msg.timestamp && (
+                            <p className={`text-xs mt-1 ${
+                              msg.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                            }`}>
+                              {new Date(msg.timestamp).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-600 p-3 bg-white rounded-lg border border-gray-200">
+                    {loadingMessages ? 'Loading messages...' : 'No messages found in this conversation.'}
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className="flex gap-3 pt-4">
               <Button
                 onClick={handleUpdate}
                 disabled={updating}
-                className="flex-1 bg-purple-600 hover:bg-purple-700"
+                className="flex-1 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] hover:from-[#5a2270] hover:to-[#8b1b8f] !text-white"
               >
                 {updating ? 'Updating...' : 'Save & Update Alert'}
               </Button>

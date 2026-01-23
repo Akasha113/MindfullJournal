@@ -130,30 +130,30 @@ const AdminDashboardPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e] flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#6E2B8A] mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e]">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-white dark:bg-[#16213e] border-b border-[#f4e4f5] dark:border-[#2d1b4e] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Shield className="w-6 h-6 text-purple-600" />
+            <h1 className="text-2xl font-bold text-[#6E2B8A] dark:text-[#a323af] flex items-center gap-2">
+              <Shield className="w-6 h-6" />
               Admin Dashboard
             </h1>
-            <p className="text-sm text-gray-600">Welcome, {admin?.name}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Welcome, {admin?.name}</p>
           </div>
           <Button
             onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 flex items-center gap-2"
+            className="bg-[#6E2B8A] hover:bg-[#5a2270] dark:bg-[#a323af] dark:hover:bg-[#8b1b8f] !text-white flex items-center gap-2"
           >
             <LogOut className="w-4 h-4" />
             Logout
@@ -164,29 +164,29 @@ const AdminDashboardPage: React.FC = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         {error && (
-          <motion.div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8 text-red-700">
+          <motion.div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-8 text-red-700 dark:text-red-400">
             {error}
           </motion.div>
         )}
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-gray-200">
+        <div className="flex gap-4 mb-8 border-b border-[#f4e4f5] dark:border-[#2d1b4e]">
           <button
             onClick={() => setSelectedTab('overview')}
-            className={`px-4 py-2 font-medium border-b-2 transition ${
+            className={`px-4 py-2 font-medium border-b-2 transition !text-white ${
               selectedTab === 'overview'
-                ? 'text-purple-600 border-purple-600'
-                : 'text-gray-600 border-transparent hover:text-gray-900'
+                ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] border-[#6E2B8A] dark:border-[#a323af] px-4 py-2 rounded-t-lg'
+                : 'bg-[#8B5BA5] dark:bg-[#2d1b4e] border-transparent hover:bg-[#7a4a94] dark:hover:bg-[#3a2860]'
             }`}
           >
             Overview
           </button>
           <button
             onClick={() => setSelectedTab('crisis')}
-            className={`px-4 py-2 font-medium border-b-2 transition flex items-center gap-2 ${
+            className={`px-4 py-2 font-medium border-b-2 transition flex items-center gap-2 !text-white ${
               selectedTab === 'crisis'
-                ? 'text-purple-600 border-purple-600'
-                : 'text-gray-600 border-transparent hover:text-gray-900'
+                ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] border-[#6E2B8A] dark:border-[#a323af] px-4 py-2 rounded-t-lg'
+                : 'bg-[#8B5BA5] dark:bg-[#2d1b4e] border-transparent hover:bg-[#7a4a94] dark:hover:bg-[#3a2860]'
             }`}
           >
             <AlertTriangle className="w-4 h-4" />
@@ -199,10 +199,10 @@ const AdminDashboardPage: React.FC = () => {
           </button>
           <button
             onClick={() => setSelectedTab('users')}
-            className={`px-4 py-2 font-medium border-b-2 transition ${
+            className={`px-4 py-2 font-medium border-b-2 transition !text-white ${
               selectedTab === 'users'
-                ? 'text-purple-600 border-purple-600'
-                : 'text-gray-600 border-transparent hover:text-gray-900'
+                ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] border-[#6E2B8A] dark:border-[#a323af] px-4 py-2 rounded-t-lg'
+                : 'bg-[#8B5BA5] dark:bg-[#2d1b4e] border-transparent hover:bg-[#7a4a94] dark:hover:bg-[#3a2860]'
             }`}
           >
             Users
@@ -218,45 +218,45 @@ const AdminDashboardPage: React.FC = () => {
           >
             {/* User Stats */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">User Statistics</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">User Statistics</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-[#6E2B8A]">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm">Total Users</p>
-                      <p className="text-3xl font-bold text-gray-900">{stats.totalUsers}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">Total Users</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalUsers}</p>
                     </div>
-                    <Users className="w-12 h-12 text-blue-500 opacity-20" />
+                    <Users className="w-12 h-12 text-[#6E2B8A] opacity-20" />
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-green-500">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm">Verified Users</p>
-                      <p className="text-3xl font-bold text-gray-900">{stats.verifiedUsers}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">Verified Users</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.verifiedUsers}</p>
                     </div>
                     <CheckCircle className="w-12 h-12 text-green-500 opacity-20" />
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-orange-500">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm">Unverified Users</p>
-                      <p className="text-3xl font-bold text-gray-900">{stats.unverifiedUsers}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">Unverified Users</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.unverifiedUsers}</p>
                     </div>
                     <Clock className="w-12 h-12 text-orange-500 opacity-20" />
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-[#a323af]">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm">New Today</p>
-                      <p className="text-3xl font-bold text-gray-900">{stats.newUsersToday}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">New Today</p>
+                      <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.newUsersToday}</p>
                     </div>
-                    <TrendingUp className="w-12 h-12 text-purple-500 opacity-20" />
+                    <TrendingUp className="w-12 h-12 text-[#a323af] opacity-20" />
                   </div>
                 </div>
               </div>
@@ -265,39 +265,39 @@ const AdminDashboardPage: React.FC = () => {
             {/* Crisis Stats */}
             {crisisStats && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Crisis Monitoring</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Crisis Monitoring</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-red-500">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-600 text-sm">Critical Alerts</p>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">Critical Alerts</p>
                         <p className="text-3xl font-bold text-red-600">{crisisStats.criticalAlerts}</p>
                       </div>
                       <AlertTriangle className="w-12 h-12 text-red-500 opacity-20" />
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6 border-l-4 border-orange-500">
+                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-orange-500">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-600 text-sm">High Risk Alerts</p>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">High Risk Alerts</p>
                         <p className="text-3xl font-bold text-orange-600">{crisisStats.highRiskAlerts}</p>
                       </div>
                       <AlertCircle className="w-12 h-12 text-orange-500 opacity-20" />
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-[#6E2B8A]">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-600 text-sm">Pending Review</p>
-                        <p className="text-3xl font-bold text-purple-600">{crisisStats.pendingAlerts}</p>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">Pending Review</p>
+                        <p className="text-3xl font-bold text-[#6E2B8A]">{crisisStats.pendingAlerts}</p>
                       </div>
-                      <Clock className="w-12 h-12 text-purple-500 opacity-20" />
+                      <Clock className="w-12 h-12 text-[#6E2B8A] opacity-20" />
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-lg shadow p-6 border-l-4 border-red-700">
+                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-red-700">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-gray-600 text-sm">Emergency Alerts</p>
@@ -350,7 +350,7 @@ const AdminDashboardPage: React.FC = () => {
                     <tbody className="divide-y divide-gray-200">
                       {crisisAlerts.map((alert) => (
                         <tr key={alert._id} className="hover:bg-gray-50 transition">
-                          <td className="px-6 py-4 text-sm text-gray-900">{alert.userId.name}</td>
+                          <td className="px-6 py-4 text-sm text-gray-900">{alert.userId?.name || 'Unknown User'}</td>
                           <td className="px-6 py-4 text-sm">
                             <span
                               className={`inline-block px-3 py-1 rounded-full text-xs font-medium capitalize ${getRiskColor(
@@ -380,7 +380,7 @@ const AdminDashboardPage: React.FC = () => {
                           <td className="px-6 py-4 text-sm">
                             <Button
                               onClick={() => navigate(`/admin/crisis-alerts/${alert._id}`)}
-                              className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1"
+                              className="bg-gradient-to-r from-[#6E2B8A] to-[#a323af] hover:from-[#5a2270] hover:to-[#8b1b8f] !text-white text-xs px-3 py-1"
                             >
                               Review
                             </Button>
@@ -400,30 +400,30 @@ const AdminDashboardPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-lg shadow overflow-hidden"
+            className="bg-white dark:bg-[#16213e] rounded-lg shadow overflow-hidden border border-[#f4e4f5] dark:border-[#2d1b4e]"
           >
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-[#f4e4f5] dark:bg-[#2d1b4e] border-b border-[#e8c8eb] dark:border-[#3a2860]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Role</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Joined</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#6E2B8A] dark:text-[#a323af]">Name</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#6E2B8A] dark:text-[#a323af]">Email</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#6E2B8A] dark:text-[#a323af]">Status</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#6E2B8A] dark:text-[#a323af]">Role</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-[#6E2B8A] dark:text-[#a323af]">Joined</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-[#f4e4f5] dark:divide-[#2d1b4e]">
                   {users.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4 text-sm text-gray-900">{user.name}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
+                    <tr key={user.id} className="hover:bg-[#f9f5fa] dark:hover:bg-[#2d1b4e] transition">
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{user.name}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{user.email}</td>
                       <td className="px-6 py-4 text-sm">
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
                             user.verified
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                              : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
                           }`}
                         >
                           {user.verified ? 'Verified' : 'Pending'}
@@ -433,14 +433,14 @@ const AdminDashboardPage: React.FC = () => {
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
                             user.isAdmin
-                              ? 'bg-purple-100 text-purple-800'
-                              : 'bg-gray-100 text-gray-800'
+                              ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#6E2B8A] dark:text-[#a323af]'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300'
                           }`}
                         >
                           {user.isAdmin ? 'Admin' : 'User'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                     </tr>
@@ -448,8 +448,8 @@ const AdminDashboardPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
-            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <p className="text-sm text-gray-600">Total: {users.length} users</p>
+            <div className="px-6 py-4 bg-[#f9f5fa] dark:bg-[#2d1b4e] border-t border-[#f4e4f5] dark:border-[#2d1b4e]">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total: {users.length} users</p>
             </div>
           </motion.div>
         )}

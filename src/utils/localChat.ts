@@ -118,10 +118,17 @@ export const fetchGitHubResponse = async (messages: ChatMessage[]): Promise<stri
 
     if (!response.ok) {
       let errorDetails = `Status: ${response.status} ${response.statusText}`;
+      let isContentFilter = false;
       try {
         const errorData = await response.json();
         console.error('GitHub API Error Response:', errorData);
         errorDetails = `${errorDetails} - ${JSON.stringify(errorData)}`;
+        
+        // Check if it's a content filter error
+        if (errorData?.error?.code === 'content_filter' || 
+            errorData?.error?.innererror?.code === 'ResponsibleAIPolicyViolation') {
+          isContentFilter = true;
+        }
       } catch {
         const errorText = await response.text();
         console.error('GitHub API Error Text:', errorText);
@@ -129,6 +136,13 @@ export const fetchGitHubResponse = async (messages: ChatMessage[]): Promise<stri
       }
       
       console.error('Full error details:', errorDetails);
+      
+      // Return specific message for content filter errors
+      if (isContentFilter) {
+        const error = new Error('content_filter');
+        throw error;
+      }
+      
       throw new Error(`GitHub API Error: ${errorDetails}`);
     }
 
@@ -140,6 +154,11 @@ export const fetchGitHubResponse = async (messages: ChatMessage[]): Promise<stri
     return responseText;
   } catch (error: any) {
     console.error('GitHub Models API error:', error.message || error);
+    
+    // Handle content filter errors gracefully
+    if (error.message === 'content_filter') {
+      return "I understand you're going through something difficult. Your wellbeing matters deeply to me. 💜\n\nIf you're having thoughts of self-harm, please reach out for immediate support:\n\n🆘 **Crisis Hotlines:**\n• National Suicide Prevention Lifeline: 988 (US)\n• Crisis Text Line: Text HOME to 741741\n• International Association for Suicide Prevention: https://www.iasp.info/resources/Crisis_Centres/\n\nYou don't have to face this alone. Please reach out to someone you trust or contact a professional. 💙";
+    }
     
     // Check token validity
     const token = import.meta.env.VITE_GITHUB_API_TOKEN;
@@ -231,8 +250,63 @@ export const sendMessage = async (
   const afterUser = addMessage(conversationId, userMsg);
   if (!afterUser) return null;
 
-  // If crisis detected, send crisis resources immediately
+  // If crisis detected, send crisis alert to admin dashboard
   if (hasCrisisContent) {
+    try {
+      // Get user ID and token from localStorage
+      const authData = localStorage.getItem('authData');
+      const authToken = localStorage.getItem('authToken');
+      
+      let userId = 'unknown';
+      if (authData) {
+        try {
+          const parsed = JSON.parse(authData);
+          userId = parsed.id || parsed.email || 'unknown';
+        } catch (e) {
+          console.error('Failed to parse authData:', e);
+        }
+      }
+      
+      console.log('📤 Sending crisis alert with:');
+      console.log('   userId:', userId);
+      console.log('   token:', authToken ? '***SET***' : '⚠️ NOT SET');
+      console.log('   message:', userMessage);
+      
+      // Send crisis alert to backend
+      const alertResponse = await fetch('http://localhost:3001/api/admin/crisis-alerts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authToken && { 'Authorization': `Bearer ${authToken}` }),
+        },
+        body: JSON.stringify({
+          userId,
+          content: userMessage,
+          contentType: 'chat',
+          riskLevel: 'critical',
+          riskScore: 0.95,
+          detectedKeywords: ['suicide', 'die', 'kill myself', 'self-harm'],
+          riskFactors: ['direct_self_harm_statement'],
+          conversationId,
+          urgencyLevel: 'emergency',
+        }),
+      });
+      
+      console.log('📥 Crisis alert response status:', alertResponse.status);
+      
+      if (alertResponse.ok) {
+        const data = await alertResponse.json();
+        console.log('✅ Crisis alert sent successfully:', data);
+      } else {
+        const errorText = await alertResponse.text();
+        console.error('❌ Failed to send crisis alert - Status:', alertResponse.status);
+        console.error('❌ Error response:', errorText);
+      }
+    } catch (error) {
+      console.error('❌ Error sending crisis alert:', error);
+    }
+    
+    // Show crisis response to user
     const crisisMsg: ChatMessage = {
       id: 'msg-' + (Date.now() + 1) + '-' + Math.random().toString(36).substr(2, 9),
       role: 'assistant',

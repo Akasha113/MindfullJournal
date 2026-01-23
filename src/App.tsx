@@ -20,6 +20,7 @@ import CrisisAlertDetailPage from './pages/CrisisAlertDetailPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VerificationPage from './pages/VerificationPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 // Services
 import storage from './utils/storage';
@@ -122,6 +123,7 @@ function AppContent() {
         <Route path="/login" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><LoginPage /></PublicLayoutWrapper>} />
         <Route path="/register" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><RegisterPage /></PublicLayoutWrapper>} />
         <Route path="/verify" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><VerificationPage /></PublicLayoutWrapper>} />
+        <Route path="/forgot-password" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><ForgotPasswordPage /></PublicLayoutWrapper>} />
         
         {/* About Page - Shows appropriate header based on auth status */}
         <Route
@@ -139,7 +141,23 @@ function AppContent() {
           }
         />
         
-        <Route path="/" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><HomePage /></PublicLayoutWrapper>} />
+        {/* Home Page - Landing page for everyone (logged in or not) */}
+        <Route 
+          path="/" 
+          element={
+            isAuthenticated ? (
+              <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+                <Layout>
+                  <HomePage />
+                </Layout>
+              </ThemeContext.Provider>
+            ) : (
+              <PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}>
+                <HomePage />
+              </PublicLayoutWrapper>
+            )
+          } 
+        />
 
         {/* Protected Routes - Only for authenticated users */}
         <Route
@@ -162,7 +180,7 @@ function AppContent() {
         </Route>
 
         {/* Catch all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
       </Routes>
     </Router>
   );

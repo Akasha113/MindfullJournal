@@ -44,15 +44,15 @@ const AdminLoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e] flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md"
+        className="bg-white dark:bg-[#1a1a2e] rounded-xl shadow-2xl dark:shadow-lg p-8 w-full max-w-md border-2 border-[#f4e4f5] dark:border-[#2d1b4e]"
       >
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Admin Portal</h1>
-          <p className="text-gray-600 mt-2">Mindful Journal Administration</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent">Admin Portal</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Mindful Journal Administration</p>
         </div>
 
         {error && (
@@ -68,7 +68,7 @@ const AdminLoginPage: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
             <Input
               type="email"
               value={email}
@@ -79,7 +79,7 @@ const AdminLoginPage: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
             <Input
               type="password"
               value={password}
@@ -92,14 +92,14 @@ const AdminLoginPage: React.FC = () => {
           <Button
             type="submit"
             disabled={loading || !email || !password}
-            className="w-full bg-purple-600 hover:bg-purple-700"
+            className="w-full bg-gradient-to-r from-[#6E2B8A] to-[#a323af] hover:from-[#5a2270] hover:to-[#8a1b8f] text-white"
           >
             {loading ? 'Logging in...' : 'Login as Admin'}
           </Button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <p className="text-xs text-gray-600 text-center">
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-[#2d1b4e]">
+          <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
             This is a restricted admin area. Only authorized administrators can access.
           </p>
         </div>

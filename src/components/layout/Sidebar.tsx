@@ -30,7 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
   }, []);
 
   const navItems = [
-    { to: '/dashboard', label: 'Home', icon: <Brain size={20} /> },
+    { to: '/dashboard', label: 'Home', icon: <Brain size={20} />, exact: true },
     { to: '/dashboard/chat', label: 'Chat', icon: <MessageCircle size={20} /> },
     { to: '/dashboard/journal', label: 'Journal', icon: <Book size={20} /> },
     { to: '/dashboard/mood', label: 'Mood Tracker', icon: <BarChart size={20} /> },
@@ -71,6 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
           >
             <NavLink
               to={item.to}
+              end={item.exact}
               children={({ isActive }) => (
                 <div className={`
                   flex items-center px-4 py-3 rounded-lg font-semibold transition-all duration-200

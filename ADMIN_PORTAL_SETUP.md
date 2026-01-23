@@ -17,7 +17,7 @@ node scripts/setupAdmin.js
 ```
 
 This will create an admin account with:
-- **Email:** `admin@mindfuljournal.com`
+- **Email:** `aqudoos126@gmail.com`
 - **Password:** `AdminPassword123`
 
 ⚠️ **Important:** Change this password after your first login!
@@ -85,7 +85,7 @@ POST /api/admin/login
 Content-Type: application/json
 
 {
-  "email": "admin@mindfuljournal.com",
+  "email": "aqudoos126@gmail.com",
   "password": "AdminPassword123"
 }
 
@@ -96,7 +96,7 @@ Response:
   "admin": {
     "id": "...",
     "name": "Administrator",
-    "email": "admin@mindfuljournal.com",
+    "email": "aqudoos126@gmail.com",
     "isAdmin": true
   }
 }

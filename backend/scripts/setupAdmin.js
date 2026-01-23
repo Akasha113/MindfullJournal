@@ -31,15 +31,16 @@ const setupAdmin = async () => {
   try {
     await connectDB();
 
-    const adminEmail = 'admin@mindfuljournal.com';
-    const adminPassword = 'AdminPassword123'; // Change this!
+    const adminEmail = 'aqudoos126@gmail.com';
+    const adminPassword = 'Akasha@114'; // Change this!
 
-    // Check if admin already exists
+    // Delete existing admin to recreate fresh
+    console.log('Checking for existing admin account...');
     const existingAdmin = await User.findOne({ email: adminEmail });
     if (existingAdmin) {
-      console.log('Admin account already exists!');
-      console.log(`Email: ${existingAdmin.email}`);
-      process.exit(0);
+      console.log('Found existing admin, deleting to recreate...');
+      await User.deleteOne({ email: adminEmail });
+      console.log('Deleted old admin account');
     }
 
     // Create admin account

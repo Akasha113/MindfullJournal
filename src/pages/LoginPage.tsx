@@ -123,9 +123,9 @@ const LoginPage: React.FC = () => {
                 <input type="checkbox" className="w-4 h-4 accent-[#6E2B8A]" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">Remember me</span>
               </label>
-              <a href="#" className="text-sm font-semibold text-[#6E2B8A] dark:text-[#ba5ac3] hover:text-[#a323af]">
+              <Link to="/forgot-password" className="text-sm font-semibold text-[#6E2B8A] dark:text-[#ba5ac3] hover:text-[#a323af]">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {/* Login Button */}

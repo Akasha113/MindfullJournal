@@ -139,14 +139,14 @@ const MoodPage: React.FC = () => {
     <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#16213e] py-8 px-4 md:px-8 space-y-6">
       {loading ? (
         <div className="text-center py-12">
-          <p className="text-black dark:text-white">Loading mood data...</p>
+          <p className="text-gray-600 dark:text-gray-300">Loading mood data...</p>
         </div>
       ) : (
         <>
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-[#6E2B8A] mb-2">Mood Tracker</h1>
-            <p className="text-black dark:text-white">
+            <p className="text-gray-600 dark:text-gray-300">
               Track your daily mood to see patterns and trends over time
             </p>
           </div>
@@ -180,7 +180,7 @@ const MoodPage: React.FC = () => {
                     value={optionalThought}
                     onChange={e => setOptionalThought(e.target.value)}
                     placeholder="What's on your mind? What triggered this mood?"
-                    className="w-full p-3 border-2 border-[#f4e4f5] dark:border-[#6E2B8A] bg-white dark:bg-[#2d1b4e] text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent resize-none"
+                    className="w-full p-3 border-2 border-[#f4e4f5] dark:border-[#6E2B8A] bg-white dark:bg-[#2d1b4e] text-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent resize-none"
                     rows={3}
                   />
                 </div>
@@ -296,10 +296,10 @@ const MoodPage: React.FC = () => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.05 + index * 0.02 }}
                             >
-                              <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-black dark:text-white">
+                              <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-white">
                                 {format(new Date(entry.date), 'MMM d, yyyy')}
                               </td>
-                              <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-black dark:text-white font-medium">
+                              <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-white font-medium">
                                 {moodEmojis[entry.mood]} {entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}
                               </td>
                               <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-gray-300 max-w-xs truncate">
