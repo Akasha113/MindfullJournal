@@ -290,6 +290,108 @@ app.post('/api/auth/forgot-password', async (req, res) => {
   }
 });
 
+// Reset Password - Actually change the password
+app.post('/api/auth/reset-password', async (req, res) => {
+  try {
+    const { token, code, newPassword, confirmPassword } = req.body;
+
+    console.log('🔐 Reset password request received');
+    console.log('Request body:', JSON.stringify({ token: !!token, code, newPassword: !!newPassword, confirmPassword: !!confirmPassword }));
+
+    if (!token || !code || !newPassword || !confirmPassword) {
+      console.error('❌ Missing fields:', { token: !!token, code: !!code, newPassword: !!newPassword, confirmPassword: !!confirmPassword });
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    if (newPassword !== confirmPassword) {
+      console.error('❌ Passwords do not match');
+      return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    if (newPassword.length < 6) {
+      console.error('❌ Password too short:', newPassword.length);
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    // Verify JWT token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('✅ JWT verified successfully');
+      console.log('Decoded JWT:', { userId: decoded.userId, hasResetCode: !!decoded.resetCode });
+    } catch (err) {
+      console.error('❌ JWT verification failed:', err.message);
+      return res.status(400).json({ error: 'Invalid or expired reset link' });
+    }
+
+    const { userId, resetCode } = decoded;
+
+    // Find user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.error('❌ User not found for ID:', userId);
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    console.log('✅ User found:', user.email);
+
+    // Verify the reset code matches what we sent
+    // The code sent in the request should match the resetCode in the JWT
+    console.log('Comparing codes:');
+    console.log('  Code from URL:', code);
+    console.log('  ResetCode from JWT:', resetCode);
+    console.log('  Match:', code === resetCode);
+
+    if (code !== resetCode) {
+      console.error('❌ Code mismatch. Sent:', code, 'Expected:', resetCode);
+      return res.status(400).json({ error: 'Invalid reset code' });
+    }
+
+    // Find verification record to check expiration
+    console.log('Looking for verification record with email:', user.email, 'and code:', code);
+    const verificationData = await VerificationCode.findOne({
+      email: user.email,
+      code: code,
+    });
+
+    if (!verificationData) {
+      console.error('❌ Verification record not found for email:', user.email);
+      console.error('Searching with:', { email: user.email, code });
+      return res.status(400).json({ error: 'Verification record not found' });
+    }
+
+    console.log('✅ Verification record found');
+
+    // Check if code is expired
+    if (verificationData.expiresAt < new Date()) {
+      console.error('❌ Reset code expired at:', verificationData.expiresAt);
+      await VerificationCode.deleteOne({ _id: verificationData._id });
+      return res.status(400).json({ error: 'Reset link has expired. Please request a new one.' });
+    }
+
+    console.log('✅ Code is valid and not expired');
+
+    // Hash new password
+    const hashedPassword = await hashPassword(newPassword);
+    user.password = hashedPassword;
+    await user.save();
+
+    console.log('✅ Password updated successfully');
+
+    // Delete verification code
+    await VerificationCode.deleteOne({ _id: verificationData._id });
+
+    res.status(200).json({
+      message: 'Password has been reset successfully. You can now login with your new password.',
+      success: true,
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: error.message || 'Failed to reset password' });
+  }
+});
+
 // Resend verification code
 app.post('/api/auth/resend-code', async (req, res) => {
   try {

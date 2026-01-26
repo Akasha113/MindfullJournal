@@ -21,6 +21,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VerificationPage from './pages/VerificationPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 // Services
 import storage from './utils/storage';
@@ -124,6 +125,7 @@ function AppContent() {
         <Route path="/register" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><RegisterPage /></PublicLayoutWrapper>} />
         <Route path="/verify" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><VerificationPage /></PublicLayoutWrapper>} />
         <Route path="/forgot-password" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><ForgotPasswordPage /></PublicLayoutWrapper>} />
+        <Route path="/reset-password" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><ResetPasswordPage /></PublicLayoutWrapper>} />
         
         {/* About Page - Shows appropriate header based on auth status */}
         <Route

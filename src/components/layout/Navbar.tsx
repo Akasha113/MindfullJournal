@@ -31,7 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const handleLogout = () => {
     logout();
     setShowDropdown(false);
-    navigate('/about');
+    navigate('/home');
   };
 
   const handleNavigate = (path: string) => {
