@@ -1,25 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Brain, Mail, AlertCircle, CheckCircle, Lock } from 'lucide-react';
-import Button from '../components/ui/Button';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Brain, Mail, AlertCircle, CheckCircle, Lock } from "lucide-react";
+import Button from "../components/ui/Button";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const VerificationPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+
+  const [code, setCode] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // 1 minute in seconds
+
+  const [timeLeft, setTimeLeft] = useState(60);
   const [canResend, setCanResend] = useState(false);
-  const email = (location.state as any)?.email || '';
+
+  const email = (location.state as any)?.email || "";
 
   useEffect(() => {
     if (!email) {
-      navigate('/register');
+      navigate("/register");
       return;
     }
 
@@ -27,7 +30,8 @@ const VerificationPage: React.FC = () => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          setError('Verification code has expired. Please register again.');
+          setCanResend(true);
+          setError("Verification code has expired. Please resend the code.");
           return 0;
         }
         return prev - 1;
@@ -40,16 +44,16 @@ const VerificationPage: React.FC = () => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     if (!code || code.length !== 6) {
-      setError('Please enter a valid 6-digit code');
+      setError("Please enter a valid 6-digit code");
       return;
     }
 
@@ -57,9 +61,9 @@ const VerificationPage: React.FC = () => {
 
     try {
       const response = await fetch(`${API_URL}/api/auth/verify`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email,
@@ -70,30 +74,31 @@ const VerificationPage: React.FC = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Verification failed');
+        throw new Error(data.error || "Verification failed");
       }
 
-      setSuccess('Email verified successfully! Redirecting to login...');
+      setSuccess("Email verified successfully! Redirecting to login...");
+
       setTimeout(() => {
-        navigate('/login');
+        navigate("/login");
       }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Verification failed');
+      setError(err.message || "Verification failed");
     } finally {
       setLoading(false);
     }
   };
 
   const handleResend = async () => {
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
     setCanResend(false);
 
     try {
       const response = await fetch(`${API_URL}/api/auth/resend-code`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email,
@@ -103,15 +108,14 @@ const VerificationPage: React.FC = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to resend code');
+        throw new Error(data.error || "Failed to resend code");
       }
 
-      setSuccess('New verification code sent to your email!');
-      setCode('');
-      setTimeLeft(60); // Reset timer to 1 minute
+      setSuccess("New verification code sent to your email!");
+      setCode("");
+      setTimeLeft(60);
       setCanResend(false);
 
-      // Start timer again
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
@@ -123,7 +127,7 @@ const VerificationPage: React.FC = () => {
         });
       }, 1000);
     } catch (err: any) {
-      setError(err.message || 'Failed to resend code');
+      setError(err.message || "Failed to resend code");
       setCanResend(true);
     }
   };
@@ -152,10 +156,14 @@ const VerificationPage: React.FC = () => {
               <Brain size={32} className="text-white" />
             </motion.div>
           </div>
+
           <h1 className="text-4xl font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent mb-2">
             Verify Email
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">Complete your registration</p>
+
+          <p className="text-gray-600 dark:text-gray-300">
+            Complete your registration
+          </p>
         </motion.div>
 
         {/* Verification Card */}
@@ -168,12 +176,15 @@ const VerificationPage: React.FC = () => {
           {/* Email Display */}
           <div className="mb-6 p-4 bg-[#f9f5fa] dark:bg-[#0f0f1e] border border-[#e8c8eb] dark:border-[#4a3570] rounded-lg flex items-center gap-3">
             <Mail size={20} className="text-[#6E2B8A]" />
-            <span className="text-sm text-gray-700 dark:text-gray-300 break-all">{email}</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300 break-all">
+              {email}
+            </span>
           </div>
 
           {/* Instructions */}
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-            We've sent a 6-digit verification code to your email. Please enter it below to complete your registration.
+            We've sent a 6-digit verification code to your email. Please enter
+            it below to complete your registration.
           </p>
 
           {/* Error Message */}
@@ -183,8 +194,13 @@ const VerificationPage: React.FC = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <AlertCircle size={20} className="text-[#6E2B8A] dark:text-[#ba5ac3] flex-shrink-0 mt-0.5" />
-              <span className="text-sm text-[#6E2B8A] dark:text-[#ba5ac3]">{error}</span>
+              <AlertCircle
+                size={20}
+                className="text-[#6E2B8A] dark:text-[#ba5ac3] flex-shrink-0 mt-0.5"
+              />
+              <span className="text-sm text-[#6E2B8A] dark:text-[#ba5ac3]">
+                {error}
+              </span>
             </motion.div>
           )}
 
@@ -195,8 +211,13 @@ const VerificationPage: React.FC = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <CheckCircle size={20} className="text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-              <span className="text-sm text-green-700 dark:text-green-300">{success}</span>
+              <CheckCircle
+                size={20}
+                className="text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
+              />
+              <span className="text-sm text-green-700 dark:text-green-300">
+                {success}
+              </span>
             </motion.div>
           )}
 
@@ -207,14 +228,17 @@ const VerificationPage: React.FC = () => {
               <label className="block text-sm font-semibold text-[#6E2B8A] dark:text-[#ba5ac3] mb-2">
                 Verification Code
               </label>
+
               <div className="relative">
-                <Lock size={18} className="absolute left-3 top-3 text-[#6E2B8A] dark:text-[#ba5ac3]" />
+                <Lock
+                  size={18}
+                  className="absolute left-3 top-3 text-[#6E2B8A] dark:text-[#ba5ac3]"
+                />
                 <input
                   type="text"
                   value={code}
                   onChange={(e) => {
-                    // Only allow digits
-                    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
                     setCode(value);
                   }}
                   placeholder="000000"
@@ -224,15 +248,21 @@ const VerificationPage: React.FC = () => {
                   autoFocus
                 />
               </div>
+
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Check your email for the 6-digit code
               </p>
             </div>
 
-            {/* Timer and Resend */}
+            {/* Timer */}
             <div className="flex items-center justify-between text-sm">
-              <span className={`font-semibold ${timeLeft > 60 ? 'text-gray-600' : 'text-red-600'} dark:text-gray-400`}>
-                Code expires in: <span className="font-bold">{formatTime(timeLeft)}</span>
+              <span
+                className={`font-semibold ${
+                  timeLeft > 10 ? "text-gray-600" : "text-red-600"
+                } dark:text-gray-400`}
+              >
+                Code expires in:{" "}
+                <span className="font-bold">{formatTime(timeLeft)}</span>
               </span>
             </div>
 
@@ -252,24 +282,29 @@ const VerificationPage: React.FC = () => {
             <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-3">
               Didn't receive the code?
             </p>
-            <button
+
+            <Button
               onClick={handleResend}
               disabled={!canResend && timeLeft > 0}
-              className="w-full py-2 text-sm font-semibold text-[#6E2B8A] dark:text-[#ba5ac3] hover:bg-[#f9f5fa] dark:hover:bg-[#2d1b4e] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
             >
-              {canResend ? 'Resend Code' : timeLeft > 0 ? 'Resend Code Later' : 'Resend Code'}
-            </button>
-          </div>
+              {canResend
+                ? "Resend Code"
+                : timeLeft > 0
+                ? "Resend Code Later"
+                : "Resend Code"}
+            </Button>
 
-          {/* Back to Register */}
-          <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-6">
-            <button
-              onClick={() => navigate('/register')}
-              className="text-[#6E2B8A] dark:text-[#ba5ac3] hover:underline font-semibold"
-            >
-              Back to Register
-            </button>
-          </p>
+            {/* Back to Register - NOW SAME BUTTON STYLE */}
+            <div className="mt-4">
+              <Button
+                onClick={() => navigate("/register")}
+                className="w-full bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all"
+              >
+                Back to Register
+              </Button>
+            </div>
+          </div>
         </motion.div>
 
         {/* Footer Text */}
@@ -287,3 +322,4 @@ const VerificationPage: React.FC = () => {
 };
 
 export default VerificationPage;
+

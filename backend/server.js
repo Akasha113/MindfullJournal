@@ -94,7 +94,14 @@ app.post('/api/auth/register', async (req, res) => {
     });
 
     // Send verification email
-    await sendVerificationEmail(email, verificationCode);
+    try {
+      await sendVerificationEmail(email, verificationCode);
+      console.log('✅ Verification email sent to:', email);
+    } catch (emailError) {
+      console.error('❌ Email send failed:', emailError.message);
+      // Continue anyway - user can see the code in console for testing
+      console.log('🔐 Verification code (for testing):', verificationCode);
+    }
 
     res.status(200).json({
       message: 'Verification code sent to your email',
@@ -110,6 +117,8 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/verify', async (req, res) => {
   try {
     const { email, code } = req.body;
+
+    console.log('🔍 Verify request - Email:', email, 'Code:', code);
 
     if (!email || !code) {
       return res.status(400).json({ error: 'Email and code are required' });
