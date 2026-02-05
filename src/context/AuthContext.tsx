@@ -1,13 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import storage from '../utils/storage';
-import { authAPI } from '../utils/api';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export interface AuthContextType {
   isAuthenticated: boolean;
   user: any | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (token: string, userData: any) => void;
   logout: () => void;
   loading: boolean;
   token: string | null;
@@ -18,89 +17,32 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'));
+  const [loading] = useState(false);
 
-  // Check if user is already logged in
-  useEffect(() => {
-    const authToken = localStorage.getItem('authToken');
-    const authData = localStorage.getItem('authData');
+  // Login handler
+  const login = (authToken: string, userData: any) => {
+    localStorage.setItem('authToken', authToken);
+    setToken(authToken);
+    setUser(userData);
+    setIsAuthenticated(true);
     
-    if (authToken && authData) {
-      const parsed = JSON.parse(authData);
-      setUser(parsed);
-      setToken(authToken);
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
-      // Store token and user data
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('authData', JSON.stringify(data.user));
-      
-      setUser(data.user);
-      setToken(data.token);
-      setIsAuthenticated(true);
-
-      // Initialize user profile
-      storage.initializeStorage();
-      const profile = storage.getUserProfile();
-      storage.updateUserProfile({
-        ...profile,
-        name: data.user.name,
-      });
-    } catch (error: any) {
-      // Fallback to localStorage for backward compatibility
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const foundUser = users.find(
-        (u: any) => u.email === email && u.password === password
-      );
-
-      if (!foundUser) {
-        throw new Error('Invalid email or password');
-      }
-
-      const userData = {
-        id: foundUser.id,
-        name: foundUser.name,
-        email: foundUser.email,
-      };
-
-      localStorage.setItem('authData', JSON.stringify(userData));
-      setUser(userData);
-      setIsAuthenticated(true);
-    }
+    // Initialize storage
+    storage.initializeStorage();
+    const profile = storage.getUserProfile();
+    storage.updateUserProfile({
+      ...profile,
+      name: userData.name,
+      email: userData.email,
+    });
   };
 
+  // Logout handler
   const logout = () => {
-    // Clear only auth tokens (keep user data safe)
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('authData');
-    
-    // ✅ DO NOT clear user data - it remains safe
-    // When user logs back in with same account, they'll see their data
-    // Data stays private with user-specific keys
-    
     setUser(null);
     setToken(null);
     setIsAuthenticated(false);
+    localStorage.removeItem('authToken');
   };
 
   return (

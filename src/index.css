@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 /* Root theme variables */
 :root {
   --primary-color: #6E2B8A;
@@ -86,4 +87,18 @@ input, textarea, select {
 /* Primary background */
 .bg-primary {
   @apply bg-[#6E2B8A] text-white;
+}
+
+/* Hide Clerk footer/branding in SignIn/SignUp components */
+.cl-root .cl-footer,
+.cl-root .cl-powered-by,
+.cl-root .powered-by,
+.cl-root .clerk-footer,
+.cl-root a[href*="clerk.dev"],
+.cl-root a[href*="clerk.com"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }

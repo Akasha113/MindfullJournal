@@ -4,20 +4,34 @@ A comprehensive, safety-first, and scalable platform leveraging **machine learni
 
 ---
 
+## 🆕 Recent Updates: Clerk Authentication Integration
+
+This application now features **Clerk** for modern, secure authentication:
+- ✅ Email/Password authentication
+- ✅ Social login (Google, GitHub, etc.)
+- ✅ Email verification built-in
+- ✅ Automatic login after signup
+- ✅ Multi-factor authentication support
+
+**Quick Setup**: See [CLERK_QUICK_START.md](./CLERK_QUICK_START.md) for 5-minute setup guide.
+
+---
+
 ## Table of Contents
 1. [Overview](#overview)  
 2. [Features](#features)  
-3. [System Architecture](#system-architecture)  
-4. [Tech Stack](#tech-stack)  
-5. [Key Modules](#key-modules)  
-6. [Installation](#installation)  
-7. [Usage](#usage)  
-8. [Data Privacy & Compliance](#data-privacy--compliance)  
-9. [Contributing / Journal](#contributing--journal)  
-10. [License](#license)  
-11. [Disclaimer](#disclaimer)  
-12. [Acknowledgments](#acknowledgments)  
-13. [Contact](#contact)  
+3. [Authentication](#authentication)
+4. [System Architecture](#system-architecture)  
+5. [Tech Stack](#tech-stack)  
+6. [Key Modules](#key-modules)  
+7. [Installation](#installation)  
+8. [Usage](#usage)  
+9. [Data Privacy & Compliance](#data-privacy--compliance)  
+10. [Contributing / Journal](#contributing--journal)  
+11. [License](#license)  
+12. [Disclaimer](#disclaimer)  
+13. [Acknowledgments](#acknowledgments)  
+14. [Contact](#contact)  
 
 ---
 

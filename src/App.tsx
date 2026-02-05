@@ -50,7 +50,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" />;
   }
 
   return <>{children}</>;
@@ -121,8 +121,12 @@ function AppContent() {
         <Route path="/admin/crisis-alerts/:alertId" element={<CrisisAlertDetailPage />} />
 
         {/* Public Routes - Accessible to everyone */}
-        <Route path="/login" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><LoginPage /></PublicLayoutWrapper>} />
-        <Route path="/register" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><RegisterPage /></PublicLayoutWrapper>} />
+        <Route path="/sign-in/*" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><LoginPage /></PublicLayoutWrapper>} />
+        <Route path="/sign-up/*" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><RegisterPage /></PublicLayoutWrapper>} />
+        
+        {/* Legacy routes for backward compatibility */}
+        <Route path="/login" element={<Navigate to="/sign-in" replace />} />
+        <Route path="/register" element={<Navigate to="/sign-up" replace />} />
         <Route path="/verify" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><VerificationPage /></PublicLayoutWrapper>} />
         <Route path="/forgot-password" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><ForgotPasswordPage /></PublicLayoutWrapper>} />
         <Route path="/reset-password" element={<PublicLayoutWrapper isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}><ResetPasswordPage /></PublicLayoutWrapper>} />
@@ -182,7 +186,7 @@ function AppContent() {
         </Route>
 
         {/* Catch all */}
-        <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/sign-in"} replace />} />
       </Routes>
     </Router>
   );

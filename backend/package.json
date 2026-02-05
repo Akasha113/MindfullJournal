@@ -1,5 +1,5 @@
 {
-  "name": "zenify-backend",
+  "name": "mindful-journal-backend",
   "version": "1.0.0",
   "description": "Backend server for Mindful Journal with MongoDB Integration",
   "main": "server.js",
