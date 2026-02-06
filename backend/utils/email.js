@@ -22,7 +22,7 @@ export const sendVerificationEmail = async (email, code) => {
   if (!transporter) initializeEmailService();
 
   try {
-    await transporter.sendMail({
+    const result = await transporter.sendMail({
       from: `Mindful Journal <${process.env.GMAIL_USER}>`,
       to: email,
       subject: 'Verify Your Email - Mindful Journal',
@@ -51,10 +51,13 @@ export const sendVerificationEmail = async (email, code) => {
         </div>
       `,
     });
+    console.log('✅ Verification email sent successfully to:', email, '(MessageID:', result.messageId, ')');
     return true;
   } catch (error) {
-    console.error('Email sending failed:', error);
-    throw new Error('Failed to send verification email');
+    console.error('❌ Email sending failed:', error.message);
+    console.error('   Error Code:', error.code);
+    console.error('   Response:', error.response);
+    throw new Error(`Failed to send verification email: ${error.message}`);
   }
 };
 

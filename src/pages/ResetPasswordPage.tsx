@@ -175,7 +175,7 @@ const ResetPasswordPage: React.FC = () => {
                     New Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#6E2B8A] dark:text-[#ba5ac3]" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={password}
@@ -187,7 +187,7 @@ const ResetPasswordPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-white hover:text-gray-600 dark:hover:text-gray-300"
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -203,7 +203,7 @@ const ResetPasswordPage: React.FC = () => {
                     Confirm Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#6E2B8A] dark:text-[#ba5ac3]" />
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={confirmPassword}
@@ -215,7 +215,7 @@ const ResetPasswordPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-white hover:text-gray-600 dark:hover:text-gray-300"
                     >
                       {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -227,7 +227,7 @@ const ResetPasswordPage: React.FC = () => {
                   type="submit"
                   loading={loading}
                   disabled={!password || !confirmPassword}
-                  className="w-full bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+                  className="w-full bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#5a2270] dark:to-[#7a1f7f] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
                 >
                   Reset Password
                 </Button>

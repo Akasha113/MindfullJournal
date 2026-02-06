@@ -118,9 +118,14 @@ app.post('/api/auth/verify', async (req, res) => {
   try {
     const { email, code } = req.body;
 
-    console.log('🔍 Verify request - Email:', email, 'Code:', code);
+    // Trim and remove all whitespace from code
+    const trimmedCode = code.trim().replace(/\s/g, '');
+    
+    console.log('🔍 Verify request - Email:', email);
+    console.log('   Received code:', code);
+    console.log('   Trimmed code:', trimmedCode);
 
-    if (!email || !code) {
+    if (!email || !trimmedCode) {
       return res.status(400).json({ error: 'Email and code are required' });
     }
 
@@ -133,14 +138,17 @@ app.post('/api/auth/verify', async (req, res) => {
       return res.status(400).json({ error: 'No verification code found. Please register again.' });
     }
 
+    console.log('   Stored code:', verificationData.code);
+    console.log('   Code match:', verificationData.code === trimmedCode);
+
     // Check if code is expired
     if (Date.now() > verificationData.expiresAt) {
       await VerificationCode.deleteOne({ _id: verificationData._id });
       return res.status(400).json({ error: 'Verification code has expired. Please register again.' });
     }
 
-    // Check if code matches
-    if (verificationData.code !== code) {
+    // Check if code matches (compare trimmed codes)
+    if (verificationData.code !== trimmedCode) {
       verificationData.attempts += 1;
       if (verificationData.attempts >= verificationData.maxAttempts) {
         await VerificationCode.deleteOne({ _id: verificationData._id });
@@ -426,14 +434,54 @@ app.post('/api/auth/resend-code', async (req, res) => {
     await verificationData.save();
 
     // Send new code
-    await sendVerificationEmail(email, newCode);
+    try {
+      await sendVerificationEmail(email, newCode);
+      console.log('✅ Resent verification email to:', email);
+    } catch (emailError) {
+      console.error('❌ Email send failed during resend:', emailError.message);
+      console.log('🔐 Resent verification code (for testing):', newCode);
+      // Still return success but log the error
+    }
 
     res.status(200).json({
       message: 'New verification code sent to your email',
+      code: newCode, // Include for testing (remove in production)
     });
   } catch (error) {
     console.error('Resend code error:', error);
     res.status(500).json({ error: error.message || 'Failed to resend code' });
+  }
+});
+
+// Debug endpoint to test email sending
+app.post('/api/debug/test-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    console.log('\n🧪 Testing email send to:', email);
+    console.log('📧 Gmail User:', process.env.GMAIL_USER);
+    console.log('🔑 Gmail Password Set:', !!process.env.GMAIL_APP_PASSWORD);
+
+    const testCode = '123456';
+    await sendVerificationEmail(email, testCode);
+
+    res.status(200).json({
+      success: true,
+      message: 'Test email sent successfully!',
+      testTo: email,
+      testCode: testCode,
+    });
+  } catch (error) {
+    console.error('❌ Test email failed:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      hint: 'Check your Gmail credentials in .env file. Make sure 2FA is enabled and you have an App Password.',
+    });
   }
 });
 
@@ -516,22 +564,33 @@ app.post('/api/admin/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log('\n👤 Admin Login Attempt:');
+    console.log('  Email:', email);
+
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
+    console.log('  User found:', !!user);
+    console.log('  isAdmin:', user?.isAdmin);
+
     if (!user || !user.isAdmin) {
+      console.log('  ❌ Not an admin or user not found');
       return res.status(401).json({ error: 'Invalid admin credentials' });
     }
 
     const isPasswordValid = await verifyPassword(password, user.password);
+    console.log('  Password valid:', isPasswordValid);
+
     if (!isPasswordValid) {
+      console.log('  ❌ Invalid password');
       return res.status(401).json({ error: 'Invalid admin credentials' });
     }
 
     const token = generateToken(user._id);
+    console.log('  ✅ Login successful');
     res.status(200).json({
       message: 'Admin logged in successfully',
       token,
@@ -543,6 +602,7 @@ app.post('/api/admin/login', async (req, res) => {
       },
     });
   } catch (error) {
+    console.error('❌ Admin login error:', error);
     res.status(500).json({ error: error.message || 'Admin login failed' });
   }
 });

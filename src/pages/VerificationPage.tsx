@@ -52,7 +52,10 @@ const VerificationPage: React.FC = () => {
     setError("");
     setSuccess("");
 
-    if (!code || code.length !== 6) {
+    // Trim whitespace from code
+    const trimmedCode = code.trim().replace(/\s/g, "");
+
+    if (!trimmedCode || trimmedCode.length !== 6) {
       setError("Please enter a valid 6-digit code");
       return;
     }
@@ -67,7 +70,7 @@ const VerificationPage: React.FC = () => {
         },
         body: JSON.stringify({
           email,
-          code,
+          code: trimmedCode,
         }),
       });
 
