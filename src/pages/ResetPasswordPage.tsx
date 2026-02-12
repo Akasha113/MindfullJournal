@@ -35,6 +35,14 @@ const ResetPasswordPage: React.FC = () => {
   }, [token, code]);
 
   const validateForm = (): boolean => {
+    if (!password) {
+      setError('Please enter a new password');
+      return false;
+    }
+    if (!confirmPassword) {
+      setError('Please confirm your password');
+      return false;
+    }
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
       return false;
@@ -75,9 +83,6 @@ const ResetPasswordPage: React.FC = () => {
       setSuccess(true);
       setPassword('');
       setConfirmPassword('');
-
-      // Redirect to login after 3 seconds
-      setTimeout(() => navigate('/login'), 3000);
     } catch (err: any) {
       setError(err.message || 'Failed to reset password');
     } finally {
@@ -146,14 +151,17 @@ const ResetPasswordPage: React.FC = () => {
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
                 Your password has been changed successfully. You can now login with your new password.
               </p>
-              <p className="text-gray-600 dark:text-gray-400 text-xs mb-6">
-                Redirecting to login page in 3 seconds...
-              </p>
-              <Link to="/login">
-                <Button variant="secondary" className="w-full">
-                  Back to Login
-                </Button>
-              </Link>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="w-full px-4 py-2 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                >
+                  Go to Login
+                </button>
+                <Link to="/login" className="text-sm text-center text-[#6E2B8A] dark:text-[#ba5ac3] hover:underline">
+                  Or click here to login
+                </Link>
+              </div>
             </motion.div>
           ) : (
             <>

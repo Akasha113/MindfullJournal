@@ -60,7 +60,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const PublicLayoutWrapper: React.FC<{ children: React.ReactNode; isDarkMode: boolean; toggleDarkMode: () => void }> = ({ children, isDarkMode, toggleDarkMode }) => {
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
-      <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e]">
+      <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e] pt-16">
         <PublicHeader />
         {children}
       </div>

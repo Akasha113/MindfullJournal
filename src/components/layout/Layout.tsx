@@ -35,14 +35,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e] flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e] flex flex-col pt-16">
       <Navbar toggleSidebar={toggleSidebar} />
       
       <div className="flex flex-1 overflow-hidden">
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <motion.div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden top-16"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -53,7 +53,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {/* Sidebar */}
         <motion.div
           className={`
-            fixed lg:static inset-y-0 left-0 w-64 bg-white dark:bg-gradient-to-b dark:from-[#1a1a2e] dark:to-[#16213e] shadow-lg dark:shadow-xl z-30
+            fixed lg:static inset-y-0 left-0 top-16 w-64 bg-white dark:bg-gradient-to-b dark:from-[#1a1a2e] dark:to-[#16213e] shadow-lg dark:shadow-xl z-30
             transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             transition-transform duration-300 ease-in-out
           `}

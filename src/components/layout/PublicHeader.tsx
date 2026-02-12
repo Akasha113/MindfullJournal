@@ -8,13 +8,10 @@ const PublicHeader: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = React.useContext(ThemeContext);
 
   return (
-    <motion.nav 
-      className="bg-white dark:bg-[#16213e] shadow-md border-b-2 border-[#6E2B8A] z-10"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: 'spring', stiffness: 100 }}
+    <nav 
+      className="fixed top-0 left-0 right-0 bg-white dark:bg-[#16213e] shadow-md border-b-2 border-[#6E2B8A] z-50"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <Link to="/" className="flex-shrink-0 flex items-center">
             <motion.div
@@ -57,7 +54,7 @@ const PublicHeader: React.FC = () => {
           </div>
         </div>
       </div>
-    </motion.nav>
+    </nav>
   );
 };
 
