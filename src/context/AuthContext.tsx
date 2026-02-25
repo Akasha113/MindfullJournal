@@ -23,11 +23,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Login handler
   const login = (authToken: string, userData: any) => {
     localStorage.setItem('authToken', authToken);
+    localStorage.setItem('authData', JSON.stringify(userData))
     setToken(authToken);
     setUser(userData);
     setIsAuthenticated(true);
     
-    // Initialize storage
     storage.initializeStorage();
     const profile = storage.getUserProfile();
     storage.updateUserProfile({
@@ -39,10 +39,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Logout handler
   const logout = () => {
+    const authData = localStorage.getItem('authData');
+    let currentUserId = 'default';
+    try {
+      if (authData) {
+        const parsed = JSON.parse(authData);
+        currentUserId = parsed.id || 'default';
+      }
+    } catch (e) {
+      console.error('Failed to parse authData on logout:', e);
+    }
+    
     setUser(null);
     setToken(null);
     setIsAuthenticated(false);
     localStorage.removeItem('authToken');
+    localStorage.removeItem('authData');
+    localStorage.removeItem(`mindful_conversations_${currentUserId}`);
   };
 
   return (

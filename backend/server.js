@@ -674,19 +674,31 @@ app.post('/api/admin/crisis-alerts', async (req, res) => {
   try {
     const { userId, content, contentType, riskLevel, riskScore, detectedKeywords, riskFactors, conversationId, journalId } = req.body;
 
+    // Normalize and validate userId: allow anonymous alerts when userId is missing/invalid
+    let normalizedUserId = null;
+    try {
+      const mongoose = await import('mongoose');
+      if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+        normalizedUserId = mongoose.Types.ObjectId(userId);
+      } else if (userId) {
+        console.warn('Invalid userId provided for crisis alert:', userId, '- saving alert as anonymous');
+      }
+    } catch (e) {
+      console.warn('Could not validate userId for crisis alert:', e.message);
+    }
+
     console.log('📝 Creating crisis alert for user:', userId);
     console.log('📝 Alert content:', content);
     console.log('📝 Risk level:', riskLevel);
 
-    // Validate required fields
-    if (!userId || !content) {
-      console.error('❌ Missing required fields - userId or content');
-      return res.status(400).json({ error: 'User ID and content are required' });
+    // Validate required fields (content is required; userId is optional/anonymous)
+    if (!content) {
+      console.error('❌ Missing required field - content');
+      return res.status(400).json({ error: 'Content is required' });
     }
 
-    // Create crisis alert
-    const alert = new CrisisAlert({
-      userId,
+    // Build alert data, include userId only when normalizedUserId is valid
+    const alertData = {
       content,
       contentType,
       riskLevel,
@@ -696,35 +708,49 @@ app.post('/api/admin/crisis-alerts', async (req, res) => {
       conversationId,
       journalId,
       urgencyLevel: riskLevel === 'critical' ? 'emergency' : riskLevel === 'high' ? 'urgent' : 'routine',
-    });
+    };
+
+    if (normalizedUserId) {
+      alertData.userId = normalizedUserId;
+    }
+
+    // Create crisis alert
+    const alert = new CrisisAlert(alertData);
 
     await alert.save();
     console.log('✅ Crisis alert saved to database:', alert._id);
 
-    // Fetch user details for email
-    const userDetails = await User.findById(userId);
-    console.log('👤 User details fetched:', userDetails?.name, userDetails?.email);
+    // Fetch user details for email (only if we have a valid userId)
+    let userDetails = null;
+    if (normalizedUserId) {
+      userDetails = await User.findById(normalizedUserId);
+      console.log('👤 User details fetched:', userDetails?.name, userDetails?.email);
+    } else {
+      console.log('👤 Alert created as anonymous (no valid user ID)');
+    }
 
     // Send email notification to admin
     try {
-      if (userDetails) {
-        const adminEmail = process.env.ADMIN_EMAIL || 'akashaqbl@gmail.com';
-        console.log('📧 Sending crisis alert email to:', adminEmail);
-        console.log('   From:', process.env.GMAIL_USER);
-        
-        await sendCrisisAlertEmail(
-          adminEmail,
-          userDetails,
-          alert
-        );
-        console.log('✅ Crisis alert email sent successfully!');
-      } else {
-        console.error('❌ User details not found for ID:', userId);
-      }
+      const adminEmail = process.env.ADMIN_EMAIL || 'akashaqbl@gmail.com';
+      console.log('📧 Sending crisis alert email to:', adminEmail);
+      console.log('   From:', process.env.GMAIL_USER);
+      
+      // Use user details if available; otherwise use placeholder
+      const emailUserDetails = userDetails || {
+        name: 'Anonymous User',
+        email: 'unknown@anonymous.local'
+      };
+      
+      await sendCrisisAlertEmail(
+        adminEmail,
+        emailUserDetails,
+        alert
+      );
+      console.log('✅ Crisis alert email sent successfully!');
     } catch (emailError) {
       console.error('❌ Failed to send crisis alert email:', emailError.message);
       console.error('Email error details:', emailError);
-      console.error('Email error stack:', emailError.stack);
+      // Continue - alert was saved to DB successfully, email is secondary
     }
 
     res.status(201).json({

@@ -6,12 +6,22 @@ export const initializeEmailService = () => {
   console.log('🔧 Initializing email service...');
   console.log('GMAIL_USER:', process.env.GMAIL_USER);
   console.log('GMAIL_APP_PASSWORD set:', !!process.env.GMAIL_APP_PASSWORD);
-  
+  // Validate required Gmail environment variables before creating transporter
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+    console.error('Missing Gmail credentials: please set GMAIL_USER and GMAIL_APP_PASSWORD (use a Gmail App Password).');
+    console.error('See: https://support.google.com/accounts/answer/185833 for creating an App Password.');
+    throw new Error('Missing Gmail credentials: set GMAIL_USER and GMAIL_APP_PASSWORD');
+  }
+
   transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: process.env.GMAIL_USER,
       pass: process.env.GMAIL_APP_PASSWORD,
+    },
+    tls: {
+      // keep this strict in production; allows older servers in dev if needed
+      rejectUnauthorized: true,
     },
   });
   

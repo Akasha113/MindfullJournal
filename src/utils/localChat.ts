@@ -4,11 +4,20 @@ import { ChatMessage, Conversation } from '../types';
 // Get current user ID from localStorage
 const getCurrentUserId = (): string => {
   const authData = localStorage.getItem('authData');
-  if (!authData) return 'default';
+  if (!authData) {
+    console.warn('⚠️ No user authenticated - conversations are anonymous');
+    return 'default';
+  }
   try {
     const parsed = JSON.parse(authData);
-    return parsed.id || parsed.email || 'default';
-  } catch {
+    const userId = parsed.id || parsed.email;
+    if (!userId) {
+      console.warn('⚠️ No user ID in authData');
+      return 'default';
+    }
+    return userId;
+  } catch (e) {
+    console.error('Failed to parse authData:', e);
     return 'default';
   }
 };
@@ -293,11 +302,11 @@ export const sendMessage = async (
         }
       }
       
-      let userId = 'unknown';
+      let userId: string | undefined;
       if (authData) {
         try {
           const parsed = JSON.parse(authData);
-          userId = parsed.id || parsed.email || 'unknown';
+          userId = parsed.id || parsed.email;
         } catch (e) {
           console.error('Failed to parse authData:', e);
         }
@@ -305,9 +314,25 @@ export const sendMessage = async (
       
       console.log('🚨 CRISIS DETECTED - Sending alert to admin');
       console.log('📤 Crisis alert details:');
-      console.log('   userId:', userId);
+      console.log('   userId:', userId || 'anonymous');
       console.log('   message:', userMessage.substring(0, 50) + '...');
       console.log('   token exists:', !!authToken);
+      
+      // Build alert payload (omit userId if not available)
+      const alertPayload: Record<string, any> = {
+        content: userMessage,
+        contentType: 'chat',
+        riskLevel: 'critical',
+        riskScore: 0.95,
+        detectedKeywords: ['suicide', 'die', 'kill myself', 'self-harm'],
+        riskFactors: ['direct_self_harm_statement'],
+        conversationId,
+        urgencyLevel: 'emergency',
+      };
+      
+      if (userId) {
+        alertPayload.userId = userId;
+      }
       
       // Send crisis alert to backend
       const alertResponse = await fetch('http://localhost:3001/api/admin/crisis-alerts', {
@@ -316,17 +341,7 @@ export const sendMessage = async (
           'Content-Type': 'application/json',
           ...(authToken && { 'Authorization': `Bearer ${authToken}` }),
         },
-        body: JSON.stringify({
-          userId,
-          content: userMessage,
-          contentType: 'chat',
-          riskLevel: 'critical',
-          riskScore: 0.95,
-          detectedKeywords: ['suicide', 'die', 'kill myself', 'self-harm'],
-          riskFactors: ['direct_self_harm_statement'],
-          conversationId,
-          urgencyLevel: 'emergency',
-        }),
+        body: JSON.stringify(alertPayload),
       });
       
       console.log('📥 Crisis alert response status:', alertResponse.status);
