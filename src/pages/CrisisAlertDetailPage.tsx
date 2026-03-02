@@ -69,8 +69,30 @@ const CrisisAlertDetailPage: React.FC = () => {
   );
   const [showContactModal, setShowContactModal] = useState(false);
 
+  // track whether emailing is actually configured on the server. When false we hide/disable
+  // the "Contact User" control so admins aren't presented with a broken button. The value
+  // is fetched once when the component mounts.
+  const [emailEnabled, setEmailEnabled] = useState<boolean | null>(null);
+
   useEffect(() => {
     fetchAlert();
+
+    // determine if email service is ready so we can conditionally show the contact button
+    const fetchEmailStatus = async () => {
+      try {
+        const token = localStorage.getItem('adminToken');
+        const resp = await fetch('http://localhost:3001/api/admin/email-ready', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!resp.ok) throw new Error('Failed to get email status');
+        const data = await resp.json();
+        setEmailEnabled(data.enabled);
+      } catch (err) {
+        console.error('Error fetching email status:', err);
+        setEmailEnabled(false);
+      }
+    };
+    fetchEmailStatus();
   }, [alertId]);
 
   const fetchAlert = async () => {
@@ -226,7 +248,9 @@ const CrisisAlertDetailPage: React.FC = () => {
       );
     } catch (error) {
       console.error('Error contacting user:', error);
-      setError(error instanceof Error ? error.message : 'Could not send email');
+      const msg = error instanceof Error ? error.message : 'Could not send email';
+      setError(msg + ' — you can open your email client to send the message manually.');
+      // keep modal open so admin can use the manual fallback button below
     } finally {
       setContactingUser(false);
     }
@@ -250,6 +274,10 @@ const CrisisAlertDetailPage: React.FC = () => {
       </div>
     );
   }
+
+  // derive displayed user info from linked user or snapshot
+  const displayedUserName = alert.userId?.name || alert.userSnapshot?.name || 'Unknown User';
+  const displayedUserEmail = alert.userId?.email || alert.userSnapshot?.email || '';
 
   const riskColors = {
     critical: 'bg-red-100 text-red-800 border-red-300',
@@ -312,8 +340,8 @@ const CrisisAlertDetailPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 border-b border-gray-200">
             <div>
               <h3 className="text-sm font-semibold text-gray-600 mb-2">User</h3>
-              <p className="font-semibold text-gray-900">{alert.userId?.name || 'Unknown User'}</p>
-              <p className="text-sm text-gray-600">{alert.userId?.email || 'No email'}</p>
+              <p className="font-semibold text-gray-900">{displayedUserName}</p>
+              <p className="text-sm text-gray-600">{displayedUserEmail || 'No email'}</p>
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-600 mb-2">Alert Details</h3>
@@ -428,13 +456,27 @@ const CrisisAlertDetailPage: React.FC = () => {
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button
-                onClick={() => setShowContactModal(true)}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 !text-white"
-                disabled={contactingUser}
-              >
-                {contactingUser ? 'Sending...' : '📧 Contact User'}
-              </Button>
+              {/* only render the contact user button if email is enabled; if we haven't
+                  fetched yet we leave a placeholder so layout doesn't shift drastically */}
+              {emailEnabled ? (
+                <Button
+                  onClick={() => setShowContactModal(true)}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 !text-white"
+                  disabled={contactingUser}
+                >
+                  {contactingUser ? 'Sending...' : '📧 Contact User'}
+                </Button>
+              ) : emailEnabled === false ? (
+                <div className="flex-1 text-sm text-gray-500 italic">
+                  Email not configured; contact feature disabled.
+                </div>
+              ) : (
+                // still loading
+                <div className="flex-1">
+                  <Loader className="w-6 h-6 animate-spin text-gray-400" />
+                </div>
+              )}
+
               <Button
                 onClick={handleUpdate}
                 disabled={updating}
@@ -450,7 +492,7 @@ const CrisisAlertDetailPage: React.FC = () => {
         </div>
 
         {/* Contact User Modal */}
-        {showContactModal && (
+        {showContactModal && emailEnabled && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -468,7 +510,7 @@ const CrisisAlertDetailPage: React.FC = () => {
               <div className="bg-gradient-to-r from-[#6E2B8A] to-[#a323af] px-6 py-4">
                 <h2 className="text-xl font-bold text-white">Send Support Message to User</h2>
                 <p className="text-purple-100 text-sm">
-                  Email will be sent to: <strong>{alert?.userId?.email}</strong>
+                  Email will be sent to: <strong>{displayedUserEmail || 'No email available'}</strong>
                 </p>
               </div>
 
@@ -502,6 +544,21 @@ const CrisisAlertDetailPage: React.FC = () => {
                   >
                     Cancel
                   </Button>
+                  <Button
+                    onClick={() => {
+                      // open default email client as a manual fallback
+                      const to = alert?.userId?.email || '';
+                      const subject = encodeURIComponent('Support from Mindful Journal');
+                      const body = encodeURIComponent(contactMessage || '');
+                      const mailto = `mailto:${to}?subject=${subject}&body=${body}`;
+                      window.open(mailto, '_blank');
+                    }}
+                    variant="secondary"
+                    disabled={!contactMessage.trim()}
+                  >
+                    Open in Email Client
+                  </Button>
+
                   <Button
                     onClick={handleContactUser}
                     className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 !text-white"

@@ -1,42 +1,131 @@
 import nodemailer from 'nodemailer';
+import fetch from 'node-fetch'; // used for SendGrid fallback
 
 let transporter = null;
+let emailServiceReady = false;
 
 export const initializeEmailService = () => {
   console.log('🔧 Initializing email service...');
   console.log('GMAIL_USER:', process.env.GMAIL_USER);
-  console.log('GMAIL_APP_PASSWORD set:', !!process.env.GMAIL_APP_PASSWORD);
+  console.log('GMAIL_APP_PASSWORD length:', process.env.GMAIL_APP_PASSWORD?.length || 0, 'characters');
+  
+  // Check for spaces in password (common mistake)
+  if (process.env.GMAIL_APP_PASSWORD && process.env.GMAIL_APP_PASSWORD.includes(' ')) {
+    console.error('❌ CRITICAL: Gmail app password contains SPACES!');
+    console.error('⚠️  Remove all spaces from the password in backend/.env');
+    console.error('❌ Email service will not work with spaces in password');
+    emailServiceReady = false;
+    return;
+  }
+  
   // Validate required Gmail environment variables before creating transporter
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-    console.error('Missing Gmail credentials: please set GMAIL_USER and GMAIL_APP_PASSWORD (use a Gmail App Password).');
-    console.error('See: https://support.google.com/accounts/answer/185833 for creating an App Password.');
-    throw new Error('Missing Gmail credentials: set GMAIL_USER and GMAIL_APP_PASSWORD');
+    console.error('❌ Missing Gmail credentials: please set GMAIL_USER and GMAIL_APP_PASSWORD');
+    console.error('📖 See GMAIL_SETUP_FIX.md for step-by-step instructions');
+    console.error('📖 See: https://support.google.com/accounts/answer/185833 for creating an App Password');
+    emailServiceReady = false;
+    return;
   }
 
-  transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-    tls: {
-      // keep this strict in production; allows older servers in dev if needed
-      rejectUnauthorized: true,
-    },
-  });
-  
-  console.log('✅ Email transporter initialized');
+  try {
+    transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+      tls: {
+        // keep this strict in production; allows older servers in dev if needed
+        rejectUnauthorized: true,
+      },
+    });
+    
+    console.log('✅ Email transporter initialized');
+    emailServiceReady = true;
+  } catch (error) {
+    console.error('❌ Failed to initialize email transporter:', error.message);
+    emailServiceReady = false;
+  }
+};
+
+export const isEmailServiceReady = () => emailServiceReady;
+
+// ---
+// Fallback using SendGrid HTTP API when Gmail fails or is misconfigured
+// ---
+const sendViaSendGrid = async (to, subject, html) => {
+  const key = process.env.SENDGRID_API_KEY;
+  if (!key) return false;
+
+  try {
+    const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: to }] }],
+        from: { email: process.env.GMAIL_USER || 'no-reply@mindfuljournal.com' },
+        subject,
+        content: [{ type: 'text/html', value: html }],
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('❌ SendGrid error:', res.status, text);
+      return false;
+    }
+    console.log('✅ Email sent via SendGrid to', to);
+    return true;
+  } catch (err) {
+    console.error('❌ SendGrid request failed:', err);
+    return false;
+  }
+};
+
+
+// Helper that sends using Gmail transporter first and falls back to SendGrid
+const sendMail = async (mailOptions) => {
+  // try Gmail if transporter is ready
+  if (transporter && emailServiceReady) {
+    try {
+      await transporter.sendMail(mailOptions);
+      return true;
+    } catch (err) {
+      console.error('❌ Gmail send failed:', err.message);
+      // fall through to SendGrid if available
+    }
+  }
+
+  // try SendGrid fallback
+  const sentViaSG = await sendViaSendGrid(mailOptions.to, mailOptions.subject, mailOptions.html);
+  if (sentViaSG) return true;
+
+  return false;
 };
 
 export const sendVerificationEmail = async (email, code) => {
-  if (!transporter) initializeEmailService();
+  if (!transporter) {
+    if (!emailServiceReady) {
+      console.warn('⚠️ Email service not ready - verification email NOT sent');
+      console.warn('📖 See GMAIL_SETUP_FIX.md for Gmail setup instructions');
+      return false;
+    }
+    initializeEmailService();
+  }
 
-  try {
-    const result = await transporter.sendMail({
-      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
-      to: email,
-      subject: 'Verify Your Email - Mindful Journal',
-      html: `
+  if (!transporter) {
+    console.error('❌ Email transporter unavailable - cannot send verification email');
+    return false;
+  }
+
+  const mailOptions = {
+    from: `Mindful Journal <${process.env.GMAIL_USER}>`,
+    to: email,
+    subject: 'Verify Your Email - Mindful Journal',
+    html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="padding: 20px; text-align: center; border-bottom: 1px solid #cccccc;">
             <h1 style="color: #000000; margin: 0; font-size: 24px;">Mindful Journal</h1>
@@ -60,22 +149,38 @@ export const sendVerificationEmail = async (email, code) => {
           </div>
         </div>
       `,
-    });
-    console.log('✅ Verification email sent successfully to:', email, '(MessageID:', result.messageId, ')');
+  };
+
+  try {
+    const sent = await sendMail(mailOptions);
+    if (!sent) {
+      console.error('❌ Verification email failed to send to', email);
+      return false;
+    }
     return true;
   } catch (error) {
-    console.error('❌ Email sending failed:', error.message);
-    console.error('   Error Code:', error.code);
-    console.error('   Response:', error.response);
+    console.error('❌ Email sending failed:', error);
     throw new Error(`Failed to send verification email: ${error.message}`);
   }
 };
 
 export const sendPasswordResetEmail = async (email, resetLink) => {
-  if (!transporter) initializeEmailService();
+  if (!transporter) {
+    if (!emailServiceReady) {
+      console.warn('⚠️ Email service not ready - password reset email NOT sent');
+      console.warn('📖 See GMAIL_SETUP_FIX.md for Gmail setup instructions');
+      return false;
+    }
+    initializeEmailService();
+  }
+
+  if (!transporter) {
+    console.error('❌ Email transporter unavailable - cannot send password reset email');
+    return false;
+  }
 
   try {
-    await transporter.sendMail({
+    const sent = await sendMail({
       from: `Mindful Journal <${process.env.GMAIL_USER}>`,
       to: email,
       subject: 'Reset Your Password - Mindful Journal',
@@ -119,14 +224,22 @@ export const sendPasswordResetEmail = async (email, resetLink) => {
 };
 
 export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert) => {
-  if (!transporter) initializeEmailService();
+  // guard transporter readiness similar to other helpers
+  if (!transporter) {
+    if (!emailServiceReady) {
+      console.warn('⚠️ Email service not ready - crisis alert email NOT sent');
+      console.warn('📖 See GMAIL_SETUP_FIX.md for Gmail setup instructions');
+      return false;
+    }
+    initializeEmailService();
+  }
+
+  if (!transporter) {
+    console.error('❌ Email transporter unavailable - cannot send crisis alert email');
+    return false;
+  }
 
   try {
-    console.log('📧 Starting crisis alert email process...');
-    console.log('📧 Admin email:', adminEmail);
-    console.log('📧 User:', userDetails.name, '(' + userDetails.email + ')');
-    console.log('📧 Transporter initialized:', !!transporter);
-
     const mailOptions = {
       from: `Mindful Journal <${process.env.GMAIL_USER}>`,
       to: adminEmail,
@@ -178,8 +291,12 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
     };
 
     console.log('📧 Email options created, sending now...');
-    await transporter.sendMail(mailOptions);
-    
+    const sent = await sendMail(mailOptions);
+    if (!sent) {
+      console.error('❌ Unable to deliver crisis alert email via any provider');
+      throw new Error('Failed to send crisis alert notification email');
+    }
+
     console.log('✅ Crisis alert email sent successfully to:', adminEmail);
     return true;
   } catch (error) {
@@ -191,16 +308,12 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
 };
 
 export const sendAdminContactEmail = async (userEmail, userName, message) => {
-  if (!transporter) initializeEmailService();
-
   try {
-    console.log('📧 Sending admin contact message to:', userEmail);
-
     const mailOptions = {
-      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
-      to: userEmail,
-      subject: 'Support Message - Mindful Journal',
-      html: `
+    from: `Mindful Journal <${process.env.GMAIL_USER}>`,
+    to: userEmail,
+    subject: 'Support Message - Mindful Journal',
+    html: `
         <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
           <div style="padding: 20px; text-align: center; border-bottom: 1px solid #cccccc;">
             <h1 style="color: #000000; margin: 0; font-size: 24px;">Mindful Journal</h1>
@@ -265,11 +378,15 @@ export const sendAdminContactEmail = async (userEmail, userName, message) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    const sent = await sendMail(mailOptions);
+    if (!sent) {
+      console.error('❌ Admin contact email failed via all providers');
+      return false;
+    }
     console.log('✅ Admin contact email sent successfully to:', userEmail);
     return true;
   } catch (error) {
     console.error('❌ Failed to send admin contact email:', error);
-    throw new Error('Failed to send contact message: ' + error.message);
+    return false;
   }
 };

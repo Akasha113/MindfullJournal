@@ -7,7 +7,7 @@ import User from './models/User.js';
 import VerificationCode from './models/VerificationCode.js';
 import CrisisAlert from './models/CrisisAlert.js';
 import { hashPassword, verifyPassword, generateToken, generateVerificationCode } from './utils/crypto.js';
-import { initializeEmailService, sendVerificationEmail, sendPasswordResetEmail, sendCrisisAlertEmail, sendAdminContactEmail } from './utils/email.js';
+import { initializeEmailService, isEmailServiceReady, sendVerificationEmail, sendPasswordResetEmail, sendCrisisAlertEmail, sendAdminContactEmail } from './utils/email.js';
 import { authMiddleware, errorHandler } from './middleware/auth.js';
 
 dotenv.config();
@@ -287,19 +287,24 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     await verificationData.save();
 
     // Send reset link email
+    const resetURL = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}&code=${resetCode}`;
+    
     try {
-      await sendPasswordResetEmail(
-        email,
-        `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}&code=${resetCode}`
-      );
+      await sendPasswordResetEmail(email, resetURL);
       console.log('✅ Password reset email sent to:', email);
     } catch (emailError) {
-      console.error('Failed to send reset email:', emailError);
-      // Still return success to user (don't leak email errors)
+      console.error('⚠️ Failed to send reset email:', emailError.message);
+      // Log reset link for testing/development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔐 TEST MODE - Reset link (copy this):', resetURL);
+        console.log('🔐 TEST MODE - Reset code:', resetCode);
+      }
     }
 
     res.status(200).json({ 
-      message: 'If an account exists with this email, a reset link has been sent.' 
+      message: 'If an account exists with this email, a reset link has been sent.',
+      // Include reset URL for testing (remove in production)
+      ...(process.env.NODE_ENV === 'development' && { resetURL, resetCode })
     });
   } catch (error) {
     console.error('Forgot password error:', error);
@@ -674,14 +679,27 @@ app.post('/api/admin/crisis-alerts', async (req, res) => {
   try {
     const { userId, content, contentType, riskLevel, riskScore, detectedKeywords, riskFactors, conversationId, journalId } = req.body;
 
-    // Normalize and validate userId: allow anonymous alerts when userId is missing/invalid
+    // Normalize and resolve userId: allow anonymous alerts when userId is missing/invalid.
+    // If the client supplied an email address instead of an ObjectId, attempt to
+    // resolve that to the user's ObjectId so admins can contact the correct user.
     let normalizedUserId = null;
     try {
       const mongoose = await import('mongoose');
       if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-        normalizedUserId = mongoose.Types.ObjectId(userId);
+        normalizedUserId = new mongoose.Types.ObjectId(userId);
       } else if (userId) {
-        console.warn('Invalid userId provided for crisis alert:', userId, '- saving alert as anonymous');
+        // Not a valid ObjectId; try to resolve by email
+        try {
+          const found = await User.findOne({ email: String(userId).toLowerCase() }).select('_id');
+          if (found) {
+            normalizedUserId = found._id;
+            console.log('Resolved userId from email to ObjectId:', normalizedUserId.toString());
+          } else {
+            console.warn('Could not resolve provided userId value as ObjectId or email:', userId);
+          }
+        } catch (resolveErr) {
+          console.warn('Error resolving userId by email:', resolveErr.message);
+        }
       }
     } catch (e) {
       console.warn('Could not validate userId for crisis alert:', e.message);
@@ -714,19 +732,36 @@ app.post('/api/admin/crisis-alerts', async (req, res) => {
       alertData.userId = normalizedUserId;
     }
 
+    // Attach user snapshot when available (either resolved user or client-supplied)
+    if (!alertData.userSnapshot) {
+      // try to get name/email from request body if supplied
+      if (req.body.userName || req.body.userEmail) {
+        alertData.userSnapshot = {
+          name: req.body.userName || '',
+          email: req.body.userEmail || '',
+        };
+      }
+    }
+
     // Create crisis alert
     const alert = new CrisisAlert(alertData);
 
     await alert.save();
     console.log('✅ Crisis alert saved to database:', alert._id);
 
-    // Fetch user details for email (only if we have a valid userId)
+    // Fetch user details for email (prefer real user record), otherwise use snapshot
     let userDetails = null;
     if (normalizedUserId) {
       userDetails = await User.findById(normalizedUserId);
       console.log('👤 User details fetched:', userDetails?.name, userDetails?.email);
+    } else if (alert.userSnapshot && alert.userSnapshot.email) {
+      userDetails = {
+        name: alert.userSnapshot.name || 'Unknown',
+        email: alert.userSnapshot.email,
+      };
+      console.log('👤 Using user snapshot for contact:', userDetails.name, userDetails.email);
     } else {
-      console.log('👤 Alert created as anonymous (no valid user ID)');
+      console.log('👤 Alert created as anonymous (no valid user ID or snapshot)');
     }
 
     // Send email notification to admin
@@ -943,28 +978,48 @@ app.post('/api/admin/crisis-alerts/:alertId/contact-user', authMiddleware, async
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    // Get the crisis alert
-    const alert = await CrisisAlert.findById(alertId).populate('userId');
+    // Get the crisis alert and try to use either a linked user or stored snapshot
+    const alert = await CrisisAlert.findById(alertId).populate('userId', 'name email');
     if (!alert) {
       console.error('❌ Alert not found:', alertId);
       return res.status(404).json({ error: 'Alert not found' });
     }
 
-    if (!alert.userId || !alert.userId.email) {
+    console.log('📧 Contact user endpoint - alert details:');
+    console.log('   userId linked:', !!alert.userId, alert.userId?.email);
+    console.log('   userSnapshot:', alert.userSnapshot);
+
+    // Prefer populated userId email; fall back to stored snapshot
+    const targetEmail = alert.userId?.email || (alert.userSnapshot && alert.userSnapshot.email) || null;
+    const targetName = alert.userId?.name || (alert.userSnapshot && alert.userSnapshot.name) || 'User';
+
+    if (!targetEmail) {
       console.error('❌ User email not found for alert:', alertId);
+      console.error('   Linked user email:', alert.userId?.email);
+      console.error('   Snapshot email:', alert.userSnapshot?.email);
       return res.status(400).json({ error: 'User email not found' });
     }
 
-    console.log('✅ Sending contact email to:', alert.userId.email);
-    console.log('   User name:', alert.userId.name);
+    console.log('✅ Sending contact email to:', targetEmail);
+    console.log('   User name:', targetName);
     console.log('   Message length:', message.length);
+    console.log('   Email service ready:', isEmailServiceReady());
 
     // Send email to user
-    await sendAdminContactEmail(
-      alert.userId.email,
-      alert.userId.name || 'User',
+    const emailResult = await sendAdminContactEmail(
+      targetEmail,
+      targetName,
       message
     );
+
+    if (!emailResult) {
+      console.warn('⚠️ Contact email failed to send to user:', targetEmail);
+      // Do not mark interventionTaken so admin can retry later
+      return res.status(500).json({
+        error: 'Failed to send email. Check server logs for details or update Gmail credentials.',
+        userEmail: targetEmail,
+      });
+    }
 
     // Update alert to mark that contact was sent
     alert.interventionTaken = 'message_sent';
@@ -974,11 +1029,31 @@ app.post('/api/admin/crisis-alerts/:alertId/contact-user', authMiddleware, async
 
     res.status(200).json({
       message: 'Email sent successfully to user',
-      userEmail: alert.userId.email,
+      userEmail: targetEmail,
     });
+
   } catch (error) {
     console.error('Contact user error:', error);
     res.status(500).json({ error: error.message || 'Failed to send email' });
+  }
+});
+
+// Check if email service is configured and ready. Useful for disabling UI features when
+// mail credentials are missing or invalid so that admins aren't shown a button that will
+// always fail. Returns { enabled: boolean }.
+app.get('/api/admin/email-ready', authMiddleware, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.userId);
+    if (!adminUser || !adminUser.isAdmin) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    // `isEmailServiceReady` was imported at the top of this file from utils/email.js
+    const ready = isEmailServiceReady();
+    res.status(200).json({ enabled: ready });
+  } catch (err) {
+    console.error('Failed to check email readiness:', err);
+    res.status(500).json({ error: 'Unable to determine email configuration' });
   }
 });
 

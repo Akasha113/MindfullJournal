@@ -1,3 +1,23 @@
+/**
+ * 🔒 JOURNAL PAGE - ALL ENTRIES STORED LOCALLY, NOT IN DATABASE
+ * 
+ * Privacy Guarantee:
+ * ✅ Journal entries are stored in browser localStorage ONLY
+ * ✅ NO journal data is sent to backend servers
+ * ✅ Admins CANNOT view your journal entries
+ * ✅ Data is user-specific and isolated (indexed by user ID)
+ * ✅ Entries persist across sessions (same browser/device)
+ * 
+ * How journals work:
+ * 1. All entries stored with key: MindFul_Journal_journals_${userId}
+ * 2. Each user has completely separate storage
+ * 3. Deleting an entry removes it permanently from your browser
+ * 4. No cloud backup - your data is 100% on your device
+ * 
+ * NOTE: This is intentional for maximum privacy.
+ * See PRIVACY_MODEL.md for full privacy documentation.
+ */
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { JournalEntry } from '../types';
@@ -19,7 +39,7 @@ const JournalPage: React.FC = () => {
   const [error, setError] = React.useState('');
 
   React.useEffect(() => {
-    if (authLoading) return; // Wait for auth to load
+    if (authLoading || !user) return; // Wait for auth and valid user
     
     // Load journals from storage (user-specific)
     storage.initializeStorage(); // Ensure storage is initialized with correct user

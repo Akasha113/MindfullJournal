@@ -10,6 +10,8 @@ const ForgotPasswordPage: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resetURL, setResetURL] = useState('');
+  const [resetCode, setResetCode] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +34,16 @@ const ForgotPasswordPage: React.FC = () => {
       setSuccess(true);
       setEmail('');
       
-      // Redirect to login after 3 seconds
-      setTimeout(() => navigate('/login'), 3000);
+      // For development: show reset URL if provided
+      if (data.resetURL) {
+        setResetURL(data.resetURL);
+      }
+      if (data.resetCode) {
+        setResetCode(data.resetCode);
+      }
+      
+      // Redirect to login after 5 seconds
+      setTimeout(() => navigate('/login'), 5000);
     } catch (err: any) {
       setError(err.message || 'Failed to send password reset email');
     } finally {
@@ -100,8 +110,20 @@ const ForgotPasswordPage: React.FC = () => {
                 We've sent a password reset link to <strong>{email}</strong>
               </p>
               <p className="text-gray-600 dark:text-gray-400 text-xs mb-6">
-                Redirecting to login page in 3 seconds...
+                Redirecting to login page in 5 seconds...
               </p>
+              
+              {/* For testing/development: show reset link if email fails */}
+              {resetURL && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
+                  <p className="text-xs font-semibold text-blue-900 dark:text-blue-300 mb-2">🔐 TEST MODE - Reset Link:</p>
+                  <a href={resetURL} className="text-xs text-blue-600 dark:text-blue-400 break-all hover:underline block mb-2">
+                    {resetURL}
+                  </a>
+                  <p className="text-xs text-blue-700 dark:text-blue-300">Code: <strong>{resetCode}</strong></p>
+                </div>
+              )}
+              
               <Link to="/login">
                 <Button variant="secondary" className="w-full">
                   Back to Login

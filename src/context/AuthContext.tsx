@@ -22,12 +22,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Login handler
   const login = (authToken: string, userData: any) => {
+    // store token in localStorage (to persist across sessions) but authData in sessionStorage
     localStorage.setItem('authToken', authToken);
-    localStorage.setItem('authData', JSON.stringify(userData))
+    sessionStorage.setItem('authData', JSON.stringify(userData));
     setToken(authToken);
     setUser(userData);
     setIsAuthenticated(true);
     
+    // conversations are now stored in localStorage keyed by user ID
+    // we intentionally do **not** clear them on login so the same user can
+    // return later and continue previous chats. Privacy is preserved because
+    // each user has a different key, so other accounts never see these messages.
+
     storage.initializeStorage();
     const profile = storage.getUserProfile();
     storage.updateUserProfile({
@@ -39,23 +45,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Logout handler
   const logout = () => {
-    const authData = localStorage.getItem('authData');
-    let currentUserId = 'default';
-    try {
-      if (authData) {
-        const parsed = JSON.parse(authData);
-        currentUserId = parsed.id || 'default';
-      }
-    } catch (e) {
-      console.error('Failed to parse authData on logout:', e);
-    }
-    
+    // clear auth and session data; retain conversations in localStorage
+    // so the user sees their history when logging back in.
     setUser(null);
     setToken(null);
     setIsAuthenticated(false);
     localStorage.removeItem('authToken');
-    localStorage.removeItem('authData');
-    localStorage.removeItem(`mindful_conversations_${currentUserId}`);
+    sessionStorage.removeItem('authData');
+    // note: we deliberately do not remove chat data here
   };
 
   return (

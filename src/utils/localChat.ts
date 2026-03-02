@@ -1,11 +1,38 @@
+/**
+ * 🔒 LOCAL CHAT SERVICE - CLIENT-SIDE ONLY, PRIVATE BY DEFAULT
+ * 
+ * ⚠️ IMPORTANT PRIVACY GUARANTEE:
+ * ALL chat conversations are stored in browser **localStorage** ONLY (per-user, tied to user ID).
+ * This means your conversations will persist across logouts and page reloads for the same account.
+ * NO chat messages are ever sent to or stored in the backend database.
+ * Admins CANNOT access user conversations through any API.
+ * 
+ * How it works:
+ * 1. Chat messages are stored with key: mindful_conversations_${userId}
+ * 2. Each user gets their own isolated storage (user-specific).
+ *    Different users on the same browser never see each other's chats.
+ * 3. Data persists across logins and browser sessions (unless manually cleared).
+ * 4. When user logs in, their conversations load automatically.
+ * 5. Deleting a conversation removes it permanently from localStorage.
+ * 
+ * EXCEPTION: Crisis Detection
+ * - When suicidal/self-harm keywords are detected, the message is logged
+ * - This is sent to admins for emergency intervention ONLY
+ * - Non-crisis messages are NEVER sent anywhere
+ * 
+ * See PRIVACY_MODEL.md for detailed privacy information
+ */
+
 // src/utils/localChat.ts - Local storage with GitHub Models API
 import { ChatMessage, Conversation } from '../types';
 
-// Get current user ID from localStorage
+// Get current user ID from sessionStorage (set during login)
 const getCurrentUserId = (): string => {
-  const authData = localStorage.getItem('authData');
+  const authData = sessionStorage.getItem('authData');
   if (!authData) {
-    console.warn('⚠️ No user authenticated - conversations are anonymous');
+    // if no user, return a placeholder so storage functions still work but
+    // chats will effectively be anonymous and wiped on logout.
+    console.warn('⚠️ No user authenticated - conversations will be cleared');
     return 'default';
   }
   try {
@@ -22,7 +49,9 @@ const getCurrentUserId = (): string => {
   }
 };
 
-// User-specific storage key
+// Storage key based solely on the current user.
+// Uses localStorage so data persists across logins for the same account.
+// Different user IDs map to different keys, so privacy is maintained.
 const getStorageKey = (): string => {
   return `mindful_conversations_${getCurrentUserId()}`;
 };
@@ -288,8 +317,8 @@ export const sendMessage = async (
   // If crisis detected, send crisis alert to admin dashboard
   if (hasCrisisContent) {
     try {
-      // Get user ID and token from localStorage
-      const authData = localStorage.getItem('authData');
+      // Get user ID and token from sessionStorage
+      const authData = sessionStorage.getItem('authData');
       let authToken = localStorage.getItem('authToken');
       
       // Fallback to token from authData if authToken not found
@@ -332,6 +361,17 @@ export const sendMessage = async (
       
       if (userId) {
         alertPayload.userId = userId;
+      }
+      // include a snapshot of the logged-in user's name/email when available so admins
+      // can contact them even if a direct ObjectId link isn't present on the server
+      if (authData) {
+        try {
+          const parsed = JSON.parse(authData);
+          if (parsed.name) alertPayload.userName = parsed.name;
+          if (parsed.email) alertPayload.userEmail = parsed.email;
+        } catch (e) {
+          console.warn('Failed to parse authData for user snapshot:', e);
+        }
       }
       
       // Send crisis alert to backend

@@ -1,3 +1,22 @@
+/**
+ * 🔒 LOCAL STORAGE UTILITY - PRIVACY FIRST
+ * 
+ * ⚠️ IMPORTANT: This utility stores SENSITIVE DATA in browser localStorage ONLY.
+ * NO data is sent to backend servers - this is intentional for user privacy.
+ * 
+ * Data stored here (NEVER goes to database):
+ * - Chat conversations & messages
+ * - Journal entries
+ * - Mood tracking history
+ * - Personal notes and thoughts
+ * 
+ * Admin Restriction: ❌ Admins CANNOT access this data via API
+ * Data Persistence: ✅ Data persists across sessions (same browser/device)
+ * Multi-Device: ⚠️ Data is device-specific (won't sync across devices)
+ * 
+ * See PRIVACY_MODEL.md for complete privacy documentation
+ */
+
 import {
   UserProfile,
   JournalEntry,
@@ -27,9 +46,9 @@ const defaultProfile: UserProfile = {
   },
 };
 
-// Get current user ID from localStorage
+// Get current user ID from sessionStorage
 const getCurrentUserId = (): string => {
-  const authData = localStorage.getItem('authData');
+  const authData = sessionStorage.getItem('authData');
   if (!authData) return 'default';
   try {
     const parsed = JSON.parse(authData);
@@ -136,6 +155,8 @@ export const addJournalEntry = (
     id: Date.now().toString(),
     createdAt: Date.now(),
     updatedAt: Date.now(),
+    // ensure attachments array exists even if caller omitted it
+    attachments: entry.attachments || [],
     ...entry,
     flagged: contentCheck.flagged,
     flagReason: contentCheck.reason,
@@ -164,6 +185,8 @@ export const updateJournalEntry = (
     id,
     createdAt: profile.journals[index].createdAt,
     updatedAt: Date.now(),
+    // keep attachments, defaulting to empty array if undefined
+    attachments: updates.attachments || profile.journals[index].attachments || [],
     flagged: contentCheck.flagged,
     flagReason: contentCheck.reason,
   };

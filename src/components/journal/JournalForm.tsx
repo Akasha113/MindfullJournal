@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { JournalEntry, Mood } from '../../types';
+import { JournalEntry, Mood, Attachment } from '../../types';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 import TextArea from '../ui/TextArea';
 import MoodSelector from '../mood/MoodSelector';
-import { X } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 
 interface JournalFormProps {
   onSubmit: (journal: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -25,6 +25,9 @@ const JournalForm: React.FC<JournalFormProps> = ({
   const [mood, setMood] = React.useState<Mood>(initialValues?.mood || 'neutral');
   const [tagInput, setTagInput] = React.useState('');
   const [tags, setTags] = React.useState<string[]>(initialValues?.tags || []);
+  const [attachments, setAttachments] = React.useState<Attachment[]>(
+    initialValues?.attachments || []
+  );
   
   const handleTagAdd = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
@@ -44,6 +47,50 @@ const JournalForm: React.FC<JournalFormProps> = ({
     }
   };
   
+  // helper to convert a File to a data URL
+  const fileToDataUrl = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFilesChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newAttachments: Attachment[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        const typeMain = file.type.split('/')[0];
+        newAttachments.push({
+          id: Date.now().toString() + Math.random().toString(36).slice(2),
+          fileName: file.name,
+          fileType: typeMain,
+          dataUrl,
+        });
+      } catch (err) {
+        console.error('Error reading file', file.name, err);
+      }
+    }
+
+    setAttachments(prev => [...prev, ...newAttachments]);
+    // clear input so same file can be selected again if removed
+    e.target.value = '';
+  };
+
+  const handleRemoveAttachment = (id: string) => {
+    setAttachments(prev => prev.filter(att => att.id !== id));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
@@ -53,6 +100,7 @@ const JournalForm: React.FC<JournalFormProps> = ({
       content: content.trim(),
       mood,
       tags,
+      attachments,
     });
   };
 
@@ -131,6 +179,65 @@ const JournalForm: React.FC<JournalFormProps> = ({
                   >
                     <X size={14} className="text-[#6E2B8A] dark:text-[#a323af] hover:text-[#5a2270] dark:hover:text-[#ba5ac3]" />
                   </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* attachments section */}
+        <div className="mb-4 border border-[#6E2B8A] dark:border-[#a323af] rounded-lg p-3">
+          <label className="block mb-2 text-sm font-medium text-[#6E2B8A] dark:text-[#a323af]">
+            Attachments
+          </label>
+          <label className="inline-flex items-center cursor-pointer text-[#6E2B8A] dark:text-[#a323af] hover:text-[#5a2270]">
+            <Plus size={20} />
+            <span className="ml-2 text-sm">Add files</span>
+            <input
+              type="file"
+              multiple
+              accept="*/*"
+              onChange={handleFilesChange}
+              className="hidden"
+            />
+          </label>
+
+          {attachments.length > 0 && (
+            <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {attachments.map(att => (
+                <div
+                  key={att.id}
+                  className="relative border rounded p-2 bg-[#f9f9f9] dark:bg-[#1f1f2e]"
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttachment(att.id)}
+                    className="absolute top-1 right-1 text-red-500 hover:text-red-700"
+                  >
+                    <X size={14} />
+                  </button>
+                  {att.fileType === 'image' && (
+                    <img
+                      src={att.dataUrl}
+                      alt={att.fileName}
+                      className="max-h-24 mx-auto"
+                    />
+                  )}
+                  {att.fileType === 'video' && (
+                    <video src={att.dataUrl} controls className="max-h-24 w-full" />
+                  )}
+                  {att.fileType === 'audio' && (
+                    <audio src={att.dataUrl} controls className="w-full" />
+                  )}
+                  {att.fileType !== 'image' && att.fileType !== 'video' && att.fileType !== 'audio' && (
+                    <a
+                      href={att.dataUrl}
+                      download={att.fileName}
+                      className="text-xs text-[#6E2B8A] dark:text-[#a323af] underline"
+                    >
+                      {att.fileName}
+                    </a>
+                  )}
                 </div>
               ))}
             </div>

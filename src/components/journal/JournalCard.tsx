@@ -30,6 +30,9 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
     awful: '😞',
   };
 
+  // If there's an image attachment, display it as a banner at the top
+  const bannerImage = journal.attachments?.find(att => att.fileType === 'image');
+
   return (
     <motion.div
       className="bg-white dark:bg-[#16213e] rounded-lg shadow-md overflow-hidden border-2 border-[#6E2B8A] dark:border-[#6E2B8A]"
@@ -38,6 +41,13 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
       transition={{ duration: 0.3 }}
       layout
     >
+      {bannerImage && (
+        <img
+          src={bannerImage.dataUrl}
+          alt={bannerImage.fileName}
+          className="w-full h-40 object-cover"
+        />
+      )}
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <div>
@@ -77,6 +87,31 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
               >
                 #{tag}
               </span>
+            ))}
+          </div>
+        )}
+
+        {journal.attachments && journal.attachments.length > 0 && (
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {journal.attachments
+              .filter(att => !bannerImage || att.id !== bannerImage.id)
+              .map(att => (
+                <div key={att.id} className="border rounded p-2 bg-[#f9f9f9] dark:bg-[#1f1f2e]">
+                {att.fileType === 'image' && (
+                  <img src={att.dataUrl} alt={att.fileName} className="max-h-24 mx-auto" />
+                )}
+                {att.fileType === 'video' && (
+                  <video src={att.dataUrl} controls className="max-h-24 w-full" />
+                )}
+                {att.fileType === 'audio' && (
+                  <audio src={att.dataUrl} controls className="w-full" />
+                )}
+                {(att.fileType !== 'image' && att.fileType !== 'video' && att.fileType !== 'audio') && (
+                  <a href={att.dataUrl} download={att.fileName} className="text-xs text-[#6E2B8A] dark:text-[#a323af] underline">
+                    {att.fileName}
+                  </a>
+                )}
+              </div>
             ))}
           </div>
         )}

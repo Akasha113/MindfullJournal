@@ -1,3 +1,24 @@
+/**
+ * 🔒 MOOD TRACKING PAGE - ALL ENTRIES STORED LOCALLY, NOT IN DATABASE
+ * 
+ * Privacy Guarantee:
+ * ✅ Mood entries are stored in browser localStorage ONLY
+ * ✅ NO mood data is sent to backend servers
+ * ✅ Admins CANNOT view your mood history
+ * ✅ Data is user-specific and isolated (indexed by user ID)
+ * ✅ Mood history persists across sessions (same browser/device)
+ * 
+ * How mood tracking works:
+ * 1. All entries stored with key: MindFul_Journal_mood_entries_${userId}
+ * 2. Each user has completely separate storage
+ * 3. Deleting an entry removes it permanently from your browser
+ * 4. No cloud backup - your data is 100% on your device
+ * 5. You can track mood once per day (edit existing entry to update)
+ * 
+ * NOTE: This is intentional for maximum privacy.
+ * See PRIVACY_MODEL.md for full privacy documentation.
+ */
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MoodEntry, Mood } from '../types';
@@ -20,7 +41,7 @@ const MoodPage: React.FC = () => {
 
   // Load mood entries from storage (user-specific) - ONLY after user is loaded
   React.useEffect(() => {
-    if (authLoading) return; // Wait for auth to load
+    if (authLoading || !user) return; // Wait for auth and user
     
     const loadMoods = () => {
       try {

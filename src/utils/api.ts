@@ -24,146 +24,176 @@ const handleResponse = async (response) => {
 };
 
 // =====================
-// JOURNAL API
+// ⚠️ JOURNAL API - NOT USED (KEPT FOR REFERENCE ONLY)
+// =====================
+// IMPORTANT: Journals are stored in browser localStorage ONLY.
+// These API endpoints are NOT used in production.
+// Journalsare intentionally stored client-side for privacy.
+// See PRIVACY_MODEL.md for complete privacy documentation.
+//
+// If you need to store journals in database in the future,
+// uncomment these functions and implement the corresponding backend endpoints.
 // =====================
 
 export const journalAPI = {
   // Create journal
   create: async (journal) => {
-    const response = await fetch(`${API_URL}/api/journals`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(journal),
-    });
-    return handleResponse(response);
+    throw new Error('Journal API is disabled. Journals are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/journals`, {
+    //   method: 'POST',
+    //   headers: getAuthHeaders(),
+    //   body: JSON.stringify(journal),
+    // });
+    // return handleResponse(response);
   },
 
   // Get all journals
   getAll: async (page = 1, limit = 10, filters = {}) => {
-    const params = new URLSearchParams({
-      page,
-      limit,
-      ...filters,
-    });
-    const response = await fetch(
-      `${API_URL}/api/journals?${params}`,
-      { headers: getAuthHeaders() }
-    );
-    return handleResponse(response);
+    throw new Error('Journal API is disabled. Journals are stored locally in browser localStorage for privacy.');
+    // const params = new URLSearchParams({
+    //   page,
+    //   limit,
+    //   ...filters,
+    // });
+    // const response = await fetch(
+    //   `${API_URL}/api/journals?${params}`,
+    //   { headers: getAuthHeaders() }
+    // );
+    // return handleResponse(response);
   },
 
   // Get single journal
   getById: async (id) => {
-    const response = await fetch(`${API_URL}/api/journals/${id}`, {
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    throw new Error('Journal API is disabled. Journals are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/journals/${id}`, {
+    //   headers: getAuthHeaders(),
+    // });
+    // return handleResponse(response);
   },
 
   // Update journal
   update: async (id, updates) => {
-    const response = await fetch(`${API_URL}/api/journals/${id}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(updates),
-    });
-    return handleResponse(response);
+    throw new Error('Journal API is disabled. Journals are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/journals/${id}`, {
+    //   method: 'PUT',
+    //   headers: getAuthHeaders(),
+    //   body: JSON.stringify(updates),
+    // });
+    // return handleResponse(response);
   },
 
   // Delete journal
   delete: async (id) => {
-    const response = await fetch(`${API_URL}/api/journals/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    throw new Error('Journal API is disabled. Journals are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/journals/${id}`, {
+    //   method: 'DELETE',
+    //   headers: getAuthHeaders(),
+    // });
+    // return handleResponse(response);
   },
 
   // Archive journal
   archive: async (id) => {
-    const response = await fetch(`${API_URL}/api/journals/${id}/archive`, {
-      method: 'PATCH',
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    throw new Error('Journal API is disabled. Journals are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/journals/${id}/archive`, {
+    //   method: 'PATCH',
+    //   headers: getAuthHeaders(),
+    // });
+    // return handleResponse(response);
   },
 };
 
 // =====================
-// CHAT API
+// ⚠️ CHAT API - NOT USED (KEPT FOR REFERENCE ONLY)
+// =====================
+// IMPORTANT: Chat conversations are stored in browser localStorage ONLY.
+// These API endpoints are NOT used in production.
+// Chats are intentionally stored client-side for privacy.
+// Admins CANNOT access user conversations through any API.
+// See PRIVACY_MODEL.md for complete privacy documentation.
+//
+// If you need to store chats in database in the future,
+// uncomment these functions and implement the corresponding backend endpoints.
 // =====================
 
 export const chatAPI = {
   // Create chat
   create: async (chat) => {
-    const response = await fetch(`${API_URL}/api/chats`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(chat),
-    });
-    const data = await handleResponse(response);
-    return data.chat || data;
+    throw new Error('Chat API is disabled. Chats are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/chats`, {
+    //   method: 'POST',
+    //   headers: getAuthHeaders(),
+    //   body: JSON.stringify(chat),
+    // });
+    // const data = await handleResponse(response);
+    // return data.chat || data;
   },
 
   // Get all chats
   getAll: async (page = 1, limit = 10, filters = {}) => {
-    const params = new URLSearchParams({
-      page,
-      limit,
-      ...filters,
-    });
-    const response = await fetch(
-      `${API_URL}/api/chats?${params}`,
-      { headers: getAuthHeaders() }
-    );
-    return handleResponse(response);
+    throw new Error('Chat API is disabled. Chats are stored locally in browser localStorage for privacy.');
+    // const params = new URLSearchParams({
+    //   page,
+    //   limit,
+    //   ...filters,
+    // });
+    // const response = await fetch(
+    //   `${API_URL}/api/chats?${params}`,
+    //   { headers: getAuthHeaders() }
+    // );
+    // return handleResponse(response);
   },
 
   // Get single chat
   getById: async (id) => {
-    const response = await fetch(`${API_URL}/api/chats/${id}`, {
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    throw new Error('Chat API is disabled. Chats are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/chats/${id}`, {
+    //   headers: getAuthHeaders(),
+    // });
+    // return handleResponse(response);
   },
 
   // Add message to chat
   addMessage: async (id, content, role = 'user') => {
-    const response = await fetch(`${API_URL}/api/chats/${id}/messages`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ content, role }),
-    });
-    const data = await handleResponse(response);
-    return data.chat || data;
+    throw new Error('Chat API is disabled. Chats are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/chats/${id}/messages`, {
+    //   method: 'POST',
+    //   headers: getAuthHeaders(),
+    //   body: JSON.stringify({ content, role }),
+    // });
+    // const data = await handleResponse(response);
+    // return data.chat || data;
   },
 
   // Update chat metadata
   update: async (id, updates) => {
-    const response = await fetch(`${API_URL}/api/chats/${id}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(updates),
-    });
-    return handleResponse(response);
+    throw new Error('Chat API is disabled. Chats are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/chats/${id}`, {
+    //   method: 'PUT',
+    //   headers: getAuthHeaders(),
+    //   body: JSON.stringify(updates),
+    // });
+    // return handleResponse(response);
   },
 
   // Delete chat
   delete: async (id) => {
-    const response = await fetch(`${API_URL}/api/chats/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    throw new Error('Chat API is disabled. Chats are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/chats/${id}`, {
+    //   method: 'DELETE',
+    //   headers: getAuthHeaders(),
+    // });
+    // return handleResponse(response);
   },
 
   // Archive chat
   archive: async (id) => {
-    const response = await fetch(`${API_URL}/api/chats/${id}/archive`, {
-      method: 'PATCH',
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
+    throw new Error('Chat API is disabled. Chats are stored locally in browser localStorage for privacy.');
+    // const response = await fetch(`${API_URL}/api/chats/${id}/archive`, {
+    //   method: 'PATCH',
+    //   headers: getAuthHeaders(),
+    // });
+    // return handleResponse(response);
   },
 };
 

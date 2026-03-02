@@ -16,12 +16,20 @@ export interface Conversation {
   hasFlaggedContent?: boolean;
 }
 
+export interface Attachment {
+  id: string;
+  fileName: string;
+  fileType: string;
+  dataUrl: string; // base64 encoded
+}
+
 export interface JournalEntry {
   id: string;
   title: string;
   content: string;
   mood: Mood;
   tags: string[];
+  attachments?: Attachment[];
   createdAt: number;
   updatedAt: number;
   flagged?: boolean;

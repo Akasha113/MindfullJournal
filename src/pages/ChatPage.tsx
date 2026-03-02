@@ -9,7 +9,7 @@ import { getRandomQuote } from '../utils/quotes';
 import { useAuth } from '../context/AuthContext';
 
 const ChatPage: React.FC = () => {
-  const { loading: authLoading } = useAuth();
+  const { loading: authLoading, user } = useAuth();
   const [conversations, setConversations] = React.useState<ConversationType[]>([]);
   const [activeConversation, setActiveConversation] = React.useState<ConversationType | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -17,8 +17,12 @@ const ChatPage: React.FC = () => {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   // Load conversations from localStorage on mount - ONLY after auth loads
+  // reload when user changes or auth finishes
   React.useEffect(() => {
-    if (authLoading) return; // Wait for auth to load
+    if (authLoading || !activeConversation && !conversations) {
+      // allow effect to run after login as well
+    }
+    if (authLoading || !user) return; // wait for auth and actual user
     
     const loadConversations = () => {
       try {
@@ -40,7 +44,7 @@ const ChatPage: React.FC = () => {
     };
     
     loadConversations();
-  }, [authLoading]);
+  }, [authLoading, user]);
 
   React.useEffect(() => {
     if (activeConversation?.messages) {

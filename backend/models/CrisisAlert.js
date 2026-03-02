@@ -12,6 +12,11 @@ const CrisisAlertSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    // Snapshot of user info at time of alert for cases where userId is not linked
+    userSnapshot: {
+      name: { type: String, default: '' },
+      email: { type: String, default: '' },
+    },
     journalId: {
       type: String,
       required: false,
