@@ -252,13 +252,18 @@ app.post('/api/auth/forgot-password', async (req, res) => {
       return res.status(400).json({ error: 'Email is required' });
     }
 
-    // Check if user exists
+    // Check if user exists and is verified
     const user = await User.findOne({ email: email.toLowerCase() });
 
     if (!user) {
-      // Don't reveal if user exists (security best practice)
-      return res.status(200).json({ 
-        message: 'If an account exists with this email, a reset link has been sent.' 
+      return res.status(400).json({ 
+        error: 'Email not registered. Please enter a registered email address.' 
+      });
+    }
+
+    if (!user.verified) {
+      return res.status(400).json({ 
+        error: 'Email not verified. Please verify your email first.' 
       });
     }
 
