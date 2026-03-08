@@ -22,17 +22,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Login handler
   const login = (authToken: string, userData: any) => {
-    // store token in localStorage (to persist across sessions) but authData in sessionStorage
+    // store token in localStorage so it survives app restarts
     localStorage.setItem('authToken', authToken);
-    sessionStorage.setItem('authData', JSON.stringify(userData));
+    // store auth data in BOTH sessionStorage and localStorage
+    // sessionStorage is still useful during a browser session, but PWAs may
+    // clear it when the app is closed or upgraded. using localStorage as a
+    // fallback ensures we can re‑associate the user with their chats later.
+    const authString = JSON.stringify(userData);
+    sessionStorage.setItem('authData', authString);
+    localStorage.setItem('authData', authString);
+
     setToken(authToken);
     setUser(userData);
     setIsAuthenticated(true);
     
-    // conversations are now stored in localStorage keyed by user ID
-    // we intentionally do **not** clear them on login so the same user can
-    // return later and continue previous chats. Privacy is preserved because
-    // each user has a different key, so other accounts never see these messages.
+    // conversations are stored in localStorage keyed by user ID; we don't
+    // clear them on login so the same user sees history across sessions.
 
     storage.initializeStorage();
     const profile = storage.getUserProfile();
@@ -52,6 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthenticated(false);
     localStorage.removeItem('authToken');
     sessionStorage.removeItem('authData');
+    localStorage.removeItem('authData');
     // note: we deliberately do not remove chat data here
   };
 

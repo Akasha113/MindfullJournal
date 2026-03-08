@@ -28,10 +28,18 @@ import { ChatMessage, Conversation } from '../types';
 
 // Get current user ID from sessionStorage (set during login)
 const getCurrentUserId = (): string => {
-  const authData = sessionStorage.getItem('authData');
+  // first try sessionStorage (fast and cleared on logout)
+  let authData = sessionStorage.getItem('authData');
+
+  // if sessionStorage is empty (common in PWAs after closing), fall back
+  // to localStorage where we also mirror authData during login.
   if (!authData) {
-    // if no user, return a placeholder so storage functions still work but
-    // chats will effectively be anonymous and wiped on logout.
+    authData = localStorage.getItem('authData');
+  }
+
+  if (!authData) {
+    // no authenticated user; use a default key so chats are anonymous and
+    // will be wiped when a real user logs in.
     console.warn('⚠️ No user authenticated - conversations will be cleared');
     return 'default';
   }

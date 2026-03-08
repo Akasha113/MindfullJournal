@@ -5,9 +5,11 @@ import './index.css';
 
 // Register PWA Service Worker
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js', { scope: '/' })
-    .then(reg => console.log('✅ Service Worker registered:', reg))
-    .catch(err => console.warn('⚠️ Service Worker registration failed:', err))
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/', type: 'module' })
+      .then(reg => console.log('✅ Service Worker registered:', reg))
+      .catch(err => console.warn('⚠️ Service Worker registration failed:', err))
+  });
 }
 
 createRoot(document.getElementById('root')!).render(
