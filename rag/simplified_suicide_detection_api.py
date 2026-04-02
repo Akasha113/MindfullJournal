@@ -31,30 +31,63 @@ class SimplifiedSuicideDetectionRAG:
         self.load_suicide_patterns()
 
     def load_suicide_patterns(self):
-        """Load suicide detection patterns"""
+        """Load suicide detection patterns (English + Urdu)"""
         self.direct_patterns = [
+            # English
             'i want to kill myself', 'i am going to kill myself', 'i plan to end my life',
             'i am going to commit suicide', 'i have decided to die', 'i will take my own life',
-            'tonight is my last night', 'i have a plan to', 'i already have the', 'i know how i will do it'
+            'tonight is my last night', 'i have a plan to', 'i already have the', 'i know how i will do it',
+            # Urdu
+            'khudkushi karna chahti hoon', 'khudkushi karna chahta hoon', 'khudlushi karna chahti hoon', 'khudlushi karna chahta hoon',
+            'khudkushi krna chahti hoon', 'khudkushi krna chahta hoon', 'khudlushi krna chahti hoon', 'khudlushi krna chahta hoon',
+            'jaan lena chahti hoon', 'jaan lena chahta hoon', 'jaan laina chahti hoon', 'jaan laina chahta hoon',
+            'jaan lena chahti hon', 'jaan lena chahta hon', 'jaan laina chahti hon', 'jaan laina chahta hon',
+            'marna chahti hoon', 'marna chahta hoon', 'marna chahti hon', 'marna chahta hon',
+            'zindagi khatam karna chahti hoon', 'zindagi khatam karna chahta hoon', 'zindagi khatam krna chahti hoon', 'zindagi khatam krna chahta hoon',
+            'khud ko maarna chahti hoon', 'khud ko maarna chahta hoon', 'khud ko marna chahti hoon', 'khud ko marna chahta hoon',
+            'khud ko khatam karna chahti hoon', 'khud ko khatam karna chahta hoon', 'khud ko khatam krna chahti hoon', 'khud ko khatam krna chahta hoon',
+            'khud ko khatam krna chahti hon', 'khud ko khatam krna chahta hon', 'aaj raat meri aakhri raat hai', 'aaj raat meri aakhri raat',
+            'kal mera aakhri din hai', 'kal mera aakhri din', 'main marne ka faisla kar chuki hoon', 'main marne ka faisla kar chuka hoon',
+            'main marne ka faisla kr chuki hoon', 'main marne ka faisla kr chuka hoon', 'main khudkushi karne wali hoon', 'main khudkushi karne wala hoon',
+            'main khudlushi karne wali hoon', 'main khudlushi karne wala hoon', 'main khudkushi krne wali hoon', 'main khudkushi krne wala hoon',
+            'main khudlushi krne wali hoon', 'main khudlushi krne wala hoon'
         ]
         
         self.indirect_patterns = [
+            # English
             'i can\'t go on anymore', 'there\'s no point in living', 'everyone would be better without me',
             'i feel like giving up', 'life is too hard', 'i don\'t see a way out',
             'i feel trapped', 'nothing will ever get better', 'i am a burden to everyone',
-            'i just want the pain to stop', 'hopeless', 'worthless', 'empty', 'numb'
+            'i just want the pain to stop', 'hopeless', 'worthless', 'empty', 'numb',
+            # Urdu
+            'zindagi se tang aa gayi hoon', 'zindagi se tang aa gaya hoon', 'zindagi ka koi matlab nahi',
+            'sab log bina mere behtar honge', 'main haar maan gayi hoon', 'main haar maan gaya hoon',
+            'zindagi bahut mushkil hai', 'koi raasta nahi dikhta', 'main phas gayi hoon', 'main phas gaya hoon',
+            'sab kuch khatam kar doon', 'zindagi se nikalna chahti hoon', 'zindagi se nikalna chahta hoon',
+            'dard khatam karna chahti hoon', 'dard khatam karna chahta hoon', 'be umeed', 'bekar', 'khali',
+            'sunn', 'laachaar', 'bebas', 'dukhi', 'pareshan', 'ghamgin', 'udass'
         ]
         
         self.method_patterns = [
+            # English
             'pills', 'rope', 'bridge', 'gun', 'knife', 'overdose',
-            'hanging', 'jumping', 'drowning', 'cutting', 'poison'
+            'hanging', 'jumping', 'drowning', 'cutting', 'poison',
+            # Urdu
+            'goli', 'rassee', 'pul', 'bandook', 'chaku', 'dawai',
+            'latakna', 'koodna', 'dubna', 'kaatna', 'zehar', 'dawai ki over dose',
+            'khud ko kaatna', 'khud ko jalan'
         ]
         
-        # More specific temporal patterns combined with concerning context
+        # More specific temporal patterns combined with concerning context (English + Urdu)
         self.temporal_patterns = [
+            # English
             'tonight is my last', 'today i will end', 'tomorrow i plan to', 'this weekend i will',
             'when i get home tonight', 'after this conversation', 'in the morning i will end',
-            'by tonight', 'before tomorrow', 'very soon i will'
+            'by tonight', 'before tomorrow', 'very soon i will',
+            # Urdu
+            'aaj raat aakhri', 'aaj khatam kar doon', 'kal karne ka plan', 'is hafte kar doon',
+            'jab ghar pahunchun', 'iske baad', 'subah khatam kar doon', 'raaat tak', 'kal se pehle',
+            'bahut jaldi kar doon', 'abhi karna hai', 'turant karna hai'
         ]
 
     def load_mcp_model(self):
@@ -125,7 +158,13 @@ class SimplifiedSuicideDetectionRAG:
         recent_messages = messages[-5:]  # Last 5 messages
         user_messages = [msg for msg in recent_messages if msg.get("role") == "user"]
         
-        risk_words = ["die", "kill", "suicide", "end", "pain", "hopeless", "trapped", "burden"]
+        risk_words = [
+            # English
+            "die", "kill", "suicide", "end", "pain", "hopeless", "trapped", "burden",
+            # Urdu
+            "marna", "maar", "khudkushi", "khatam", "dard", "be umeed", "phas", "bojh",
+            "jaan lena", "zindagi khatam", "khud ko maarna", "zehar", "kaatna", "jaland"
+        ]
         context_score = 0
         contextual_cues = []
         
@@ -172,26 +211,45 @@ class SimplifiedSuicideDetectionRAG:
         return actions.get(risk_level, "Continue monitoring")
 
     def get_knowledge_matches(self, risk_level):
-        """Get relevant knowledge base information"""
+        """Get relevant knowledge base information (English + Urdu)"""
         if risk_level == "critical":
             return [
+                # English
                 "Crisis Resources: National Suicide Prevention Lifeline (988)",
                 "Immediate Action: Contact emergency services",
-                "Safety Protocol: Do not leave person alone"
+                "Safety Protocol: Do not leave person alone",
+                # Urdu
+                "کرائسس وسائل: قومی خودکشی روک تھام لائف لائن (988)",
+                "فوری کارروائی: ایمرجنسی سروسز سے رابطہ کریں",
+                "سیفٹی پروٹوکول: شخص کو اکیلا نہ چھوڑیں"
             ]
         elif risk_level == "high":
             return [
+                # English
                 "Warning Signs: Expressions of hopelessness and specific plans",
                 "Intervention: Professional mental health assessment needed",
-                "Resources: Crisis text line (text HOME to 741741)"
+                "Resources: Crisis text line (text HOME to 741741)",
+                # Urdu
+                "خطرے کے نشان: ناامیدی کے اظہار اور مخصوص منصوبے",
+                "مداخلت: پیشہ ورانہ ذہنی صحت کی تشخیص کی ضرورت",
+                "وسائل: کرائسس ٹیکسٹ لائن (HOME لکھ کر 741741 پر ٹیکسٹ کریں)"
             ]
         elif risk_level == "medium":
             return [
+                # English
                 "Risk Factors: Emotional distress and concerning language",
-                "Prevention: Supportive conversation and resource provision"
+                "Prevention: Supportive conversation and resource provision",
+                # Urdu
+                "خطرے کے عوامل: جذباتی پریشانی اور تشویش ناک زبان",
+                "روک تھام: معاونت بخش گفتگو اور وسائل کی فراہمی"
             ]
         else:
-            return ["Preventive Resources: Mental health support information"]
+            return [
+                # English
+                "Preventive Resources: Mental health support information",
+                # Urdu
+                "روک تھام وسائل: ذہنی صحت کی سپورٹ معلومات"
+            ]
 
     def analyze_suicide_risk(self, request: SuicideAnalysisRequest) -> RiskAnalysisResponse:
         """Comprehensive suicide risk analysis"""

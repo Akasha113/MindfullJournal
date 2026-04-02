@@ -59,6 +59,29 @@ const AdminDashboardPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<'overview' | 'users' | 'crisis'>('overview');
 
   useEffect(() => {
+    // if a token is provided in the URL (e.g. from email link), save it so
+    // the admin can open the dashboard directly without manually logging in.
+    const params = new URLSearchParams(window.location.search);
+    const tokenFromUrl = params.get('token');
+    if (tokenFromUrl) {
+      localStorage.setItem('adminToken', tokenFromUrl);
+      // try to decode basic user info from the JWT and store it as well
+      try {
+        const payload = JSON.parse(atob(tokenFromUrl.split('.')[1]));
+        const userObj = {
+          id: payload.id,
+          name: payload.name,
+          email: payload.email,
+          isAdmin: payload.isAdmin,
+        };
+        localStorage.setItem('adminUser', JSON.stringify(userObj));
+      } catch (e) {
+        console.warn('Failed to decode admin token payload', e);
+      }
+      // clean up query string so it doesn't persist in history
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+
     const adminToken = localStorage.getItem('adminToken');
     const adminUser = localStorage.getItem('adminUser');
 

@@ -240,6 +240,9 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
   }
 
   try {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const alertUrl = `${frontendUrl}/admin/crisis-alerts/${crisisAlert._id}`;
+    
     const mailOptions = {
       from: `Mindful Journal <${process.env.GMAIL_USER}>`,
       to: adminEmail,
@@ -271,8 +274,8 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
             <p style="color: #333333; margin: 5px 0; font-size: 13px;"><strong>Risk Factors:</strong> ${crisisAlert.riskFactors.join(', ') || 'None'}</p>
 
             <div style="text-align: center; margin: 25px 0;">
-              <a href="http://localhost:5173/admin/dashboard" style="background: #333333; color: white; padding: 10px 25px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; display: inline-block;">
-                View in Admin Dashboard
+              <a href="${alertUrl}" style="background: #333333; color: white; padding: 10px 25px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; display: inline-block;">
+                View Alert Details
               </a>
             </div>
 

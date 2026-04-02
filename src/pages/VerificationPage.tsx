@@ -96,8 +96,10 @@ const VerificationPage: React.FC = () => {
     setError("");
     setSuccess("");
     setCanResend(false);
+    setLoading(true);
 
     try {
+      console.log("Attempting to resend code to:", email);
       const response = await fetch(`${API_URL}/api/auth/resend-code`, {
         method: "POST",
         headers: {
@@ -109,6 +111,7 @@ const VerificationPage: React.FC = () => {
       });
 
       const data = await response.json();
+      console.log("Resend response:", data, "Status:", response.status);
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to resend code");
@@ -130,8 +133,11 @@ const VerificationPage: React.FC = () => {
         });
       }, 1000);
     } catch (err: any) {
+      console.error("Resend code error:", err);
       setError(err.message || "Failed to resend code");
       setCanResend(true);
+    } finally {
+      setLoading(false);
     }
   };
 

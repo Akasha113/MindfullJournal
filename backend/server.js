@@ -440,22 +440,27 @@ app.post('/api/auth/resend-code', async (req, res) => {
     const newCode = generateVerificationCode();
     verificationData.code = newCode;
     verificationData.attempts = 0;
-    verificationData.expiresAt = new Date(Date.now() + 1 * 60 * 1000);
+    verificationData.expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await verificationData.save();
 
+    console.log('✅ Generated new verification code:', newCode);
+
     // Send new code
+    let emailSent = false;
     try {
       await sendVerificationEmail(email, newCode);
+      emailSent = true;
       console.log('✅ Resent verification email to:', email);
     } catch (emailError) {
       console.error('❌ Email send failed during resend:', emailError.message);
-      console.log('🔐 Resent verification code (for testing):', newCode);
-      // Still return success but log the error
+      console.log('🔐 New verification code (for testing):', newCode);
+      // Continue anyway - code is saved in DB
     }
 
     res.status(200).json({
       message: 'New verification code sent to your email',
       code: newCode, // Include for testing (remove in production)
+      emailSent: emailSent,
     });
   } catch (error) {
     console.error('Resend code error:', error);
@@ -712,7 +717,7 @@ app.post('/api/admin/crisis-alerts', async (req, res) => {
 
     console.log('📝 Creating crisis alert for user:', userId);
     console.log('📝 Alert content:', content);
-    console.log('📝 Risk level:', riskLevel);
+    console.log('📝 User snapshot from request:', req.body.userName, req.body.userEmail);
 
     // Validate required fields (content is required; userId is optional/anonymous)
     if (!content) {
@@ -739,12 +744,15 @@ app.post('/api/admin/crisis-alerts', async (req, res) => {
 
     // Attach user snapshot when available (either resolved user or client-supplied)
     if (!alertData.userSnapshot) {
-      // try to get name/email from request body if supplied
-      if (req.body.userName || req.body.userEmail) {
+      // try to get name/email from request body if supplied (check multiple possible field names)
+      const userName = req.body.userName || req.body.name || req.body.userName || req.body.displayName;
+      const userEmail = req.body.userEmail || req.body.email || req.body.userEmail || req.body.mail;
+      if (userName || userEmail) {
         alertData.userSnapshot = {
-          name: req.body.userName || '',
-          email: req.body.userEmail || '',
+          name: userName || '',
+          email: userEmail || '',
         };
+        console.log('📧 Created user snapshot:', alertData.userSnapshot);
       }
     }
 
@@ -769,9 +777,11 @@ app.post('/api/admin/crisis-alerts', async (req, res) => {
       console.log('👤 Alert created as anonymous (no valid user ID or snapshot)');
     }
 
+    console.log('📧 Final userDetails for email:', userDetails);
+
     // Send email notification to admin
     try {
-      const adminEmail = process.env.ADMIN_EMAIL || 'akashaqbl@gmail.com';
+      const adminEmail = process.env.ADMIN_EMAIL || 'mindfuljounralofficial@gmail.com';
       console.log('📧 Sending crisis alert email to:', adminEmail);
       console.log('   From:', process.env.GMAIL_USER);
       

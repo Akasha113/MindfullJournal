@@ -75,6 +75,14 @@ const CrisisAlertDetailPage: React.FC = () => {
   const [emailEnabled, setEmailEnabled] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // Check if admin is authenticated
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) {
+      // Redirect to admin login with return URL
+      navigate('/admin?returnUrl=' + encodeURIComponent(window.location.pathname));
+      return;
+    }
+
     fetchAlert();
 
     // determine if email service is ready so we can conditionally show the contact button
@@ -93,7 +101,7 @@ const CrisisAlertDetailPage: React.FC = () => {
       }
     };
     fetchEmailStatus();
-  }, [alertId]);
+  }, [alertId, navigate]);
 
   const fetchAlert = async () => {
     try {

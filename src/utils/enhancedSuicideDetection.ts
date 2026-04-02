@@ -22,9 +22,10 @@ interface ConversationContext {
   conversationId: string;
 }
 
-// Enhanced suicide-related phrases with context patterns
+// Enhanced suicide-related phrases with context patterns (English + Urdu)
 const ENHANCED_SUICIDE_PATTERNS = {
   direct: [
+    // English
     'i want to kill myself',
     'i am going to kill myself',
     'i plan to end my life',
@@ -34,9 +35,44 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'tonight is my last night',
     'i have a plan to',
     'i already have the',
-    'i know how i will do it'
+    'i know how i will do it',
+    // Urdu
+    'khudkushi karna chahti hoon',
+    'khudkushi karna chahta hoon',
+    'jaan lena chahti hoon',
+    'jaan lena chahta hoon',
+    'marna chahti hoon',
+    'marna chahta hoon',
+    'zindagi khatam karna chahti hoon',
+    'zindagi khatam karna chahta hoon',
+    'khud ko maarna chahti hoon',
+    'khud ko maarna chahta hoon',
+    'aaj raat meri aakhri raat hai',
+    'kal mera aakhri din hai',
+    'main marne ka faisla kar chuki hoon',
+    'main marne ka faisla kar chuka hoon',
+    'main khudkushi karne wali hoon',
+    'main khudkushi karne wala hoon',
+    'khudlushi karna chahti hoon', 'khudlushi karna chahta hoon',
+    'khudkushi krna chahti hoon', 'khudkushi krna chahta hoon',
+    'khudlushi krna chahti hoon', 'khudlushi krna chahta hoon',
+    'jaan laina chahti hoon', 'jaan laina chahta hoon',
+    'jaan lena chahti hon', 'jaan lena chahta hon',
+    'jaan laina chahti hon', 'jaan laina chahta hon',
+    'marna chahti hon', 'marna chahta hon',
+    'zindagi khatam krna chahti hoon', 'zindagi khatam krna chahta hoon',
+    'khud ko marna chahti hoon', 'khud ko marna chahta hoon',
+    'khud ko khatam karna chahti hoon', 'khud ko khatam karna chahta hoon',
+    'khud ko khatam krna chahti hoon', 'khud ko khatam krna chahta hoon',
+    'khud ko khatam krna chahti hon', 'khud ko khatam krna chahta hon',
+    'aaj raat meri aakhri raat', 'kal mera aakhri din',
+    'main marne ka faisla kr chuki hoon', 'main marne ka faisla kr chuka hoon',
+    'main khudlushi karne wali hoon', 'main khudlushi karne wala hoon',
+    'main khudkushi krne wali hoon', 'main khudkushi krne wala hoon',
+    'main khudlushi krne wali hoon', 'main khudlushi krne wala hoon'
   ],
   indirect: [
+    // English
     'i can\'t go on anymore',
     'there\'s no point in living',
     'everyone would be better without me',
@@ -46,29 +82,92 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'i feel trapped',
     'nothing will ever get better',
     'i am a burden to everyone',
-    'i just want the pain to stop'
+    'i just want the pain to stop',
+    // Urdu
+    'zindagi se tang aa gayi hoon',
+    'zindagi se tang aa gaya hoon',
+    'zindagi ka koi matlab nahi',
+    'sab log bina mere behtar honge',
+    'main haar maan gayi hoon',
+    'main haar maan gaya hoon',
+    'zindagi bahut mushkil hai',
+    'koi raasta nahi dikhta',
+    'main phas gayi hoon',
+    'main phas gaya hoon',
+    'kabhi kuch behtar nahi hoga',
+    'main sab ki bojh hoon',
+    'dard khatam karna chahti hoon',
+    'dard khatam karna chahta hoon',
+    'sab kuch khatam kar doon',
+    'zindagi se nikalna chahti hoon',
+    'zindagi se nikalna chahta hoon'
   ],
   methods: [
+    // English
     'pills', 'rope', 'bridge', 'gun', 'knife', 'overdose',
-    'hanging', 'jumping', 'drowning', 'cutting', 'poison'
+    'hanging', 'jumping', 'drowning', 'cutting', 'poison',
+    // Urdu
+    'goli', 'rassee', 'pul', 'bandook', 'chaku', 'dawai',
+    'latakna', 'koodna', 'dubna', 'kaatna', 'zehar',
+    'dawai ki over dose', 'khud ko kaatna', 'khud ko jalan'
   ],
   temporal: [
+    // English
     'tonight', 'today', 'tomorrow', 'this weekend', 'soon',
-    'when i get home', 'after this', 'in the morning'
+    'when i get home', 'after this', 'in the morning',
+    // Urdu
+    'aaj raat', 'aaj', 'kal', 'is hafte', 'jaldi',
+    'jab ghar pahunchun', 'iske baad', 'subah',
+    'abhi', 'foran', 'turant', 'bahut jaldi'
   ],
   emotional_distress: [
+    // English
     'hopeless', 'worthless', 'empty', 'numb', 'broken',
-    'alone', 'abandoned', 'rejected', 'failure', 'useless'
+    'alone', 'abandoned', 'rejected', 'failure', 'useless',
+    // Urdu
+    'be umeed', 'bekar', 'khali', 'sunn', 'tota',
+    'akeli', 'akela', 'chhoda gaya', 'rad kar diya',
+    'naakam', 'lafanga', 'laachaar', 'bebas',
+    'dukhi', 'pareshan', 'ghamgin', 'udass'
   ]
 };
 
-// Context-aware risk assessment patterns
+// Context-aware risk assessment patterns (English + Urdu)
 const CONTEXTUAL_RISK_INDICATORS = {
-  isolation: ['no one cares', 'all alone', 'nobody understands', 'no friends'],
-  plan_formation: ['i have thought about', 'i have been planning', 'i know exactly how'],
-  means_access: ['i have access to', 'i can get', 'i already have'],
-  timeline: ['very soon', 'tonight', 'today', 'this week'],
-  finality: ['final decision', 'made up my mind', 'there\'s no going back', 'this is it']
+  isolation: [
+    // English
+    'no one cares', 'all alone', 'nobody understands', 'no friends',
+    // Urdu
+    'koi care nahi karta', 'bilkul akeli', 'bilkul akela', 'koi samajhta nahi',
+    'koi dost nahi', 'sab mujhe chhod gaye', 'koi mere saath nahi'
+  ],
+  plan_formation: [
+    // English
+    'i have thought about', 'i have been planning', 'i know exactly how',
+    // Urdu
+    'main soch chuki hoon', 'main soch chuka hoon', 'main plan bana rahi hoon',
+    'main plan bana raha hoon', 'main jaanti hoon kaise', 'main jaanta hoon kaise',
+    'mujhe pata hai kaise karna hai'
+  ],
+  means_access: [
+    // English
+    'i have access to', 'i can get', 'i already have',
+    // Urdu
+    'mere paas hai', 'main la sakti hoon', 'main la sakta hoon', 'pehle se hi hai'
+  ],
+  timeline: [
+    // English
+    'very soon', 'tonight', 'today', 'this week',
+    // Urdu
+    'bahut jaldi', 'aaj raat', 'aaj', 'is hafte', 'abhi'
+  ],
+  finality: [
+    // English
+    'final decision', 'made up my mind', 'there\'s no going back', 'this is it',
+    // Urdu
+    'aakhri faisla', 'mujhe pata hai', 'ab wapas nahi ja sakti', 'ab wapas nahi ja sakta',
+    'yahi hai', 'khudkushi karne ka faisla kar liya'
+  ]
 };
 
 class EnhancedSuicideDetector {
@@ -79,8 +178,9 @@ class EnhancedSuicideDetector {
   }
 
   private initializeKnowledgeBase() {
-    // Mental health knowledge base for RAG
+    // Mental health knowledge base for RAG (English + Urdu)
     this.knowledgeBase = [
+      // English
       "Suicidal ideation often includes expressions of hopelessness, worthlessness, and desire to escape pain.",
       "Warning signs include talking about death, giving away possessions, social withdrawal, and mood changes.",
       "Risk factors include depression, anxiety, substance abuse, trauma, and social isolation.",
@@ -88,7 +188,22 @@ class EnhancedSuicideDetector {
       "Crisis resources include National Suicide Prevention Lifeline: 988, Crisis Text Line: Text HOME to 741741.",
       "Professional help should be sought immediately for any suicidal thoughts or behaviors.",
       "Safety planning involves removing means, creating support networks, and identifying coping strategies.",
-      "Recovery is possible with appropriate mental health treatment and support systems."
+      "Recovery is possible with appropriate mental health treatment and support systems.",
+      
+      // Urdu
+      "خودکشی کے خیالات میں اکثر ناامیدی، بےقدری اور درد سے بچنے کی خواہش شامل ہوتی ہے۔",
+      "خطرے کے نشانات میں موت کے بارے میں بات کرنا، سامان دینا، سماجی پسپائی اور مزاج میں تبدیلی شامل ہے۔",
+      "خطرے کے عوامل میں افسردگی، پریشانی، مادہ کی لت، صدمہ اور سماجی تنہائی شامل ہے۔",
+      "جب کوئی مخصوص منصوبہ، ذرائع اور وقت کا اظہار کرے تو فوری مداخلت ضروری ہے۔",
+      "کرائسس وسائل میں قومی خودکشی روک تھام لائف لائن: 988، کرائسس ٹیکسٹ لائن: ٹیکسٹ ہوم ٹو 741741 شامل ہے۔",
+      "کسی بھی خودکشی کے خیالات یا رویوں کے لیے فوری طور پر پیشہ ورانہ مدد حاصل کی جانی چاہیے۔",
+      "سیفٹی پلاننگ میں ذرائع کو ہٹانا، سپورٹ نیٹ ورک بنانا اور کاپنگ کی حکمت عملیوں کی نشاندہی شامل ہے۔",
+      "مناسب ذہنی صحت کی علاج اور سپورٹ سسٹم کے ساتھ صحتیابی ممکن ہے۔",
+      
+      // Urdu-specific cultural context
+      "اردو میں خودکشی کے اشارے: زندگی سے تنگ آ جانا، سب کچھ ختم کرنا، جان لینا چاہتی ہوں وغیرہ۔",
+      "پاکستانی اور جنوبی ایشیائی ثقافت میں خودکشی کے خطرے کے نشانات: سماجی دباؤ، گھر گلی کی پریشانیاں، تعلیمی دباؤ۔",
+      "اردو میں مدد کے لیے: چھپے ہوئے اشاروں پر توجہ دیں جیسے 'میں چلی جاؤں گی' یا 'سب کچھ ختم ہو جائے'۔"
     ];
   }
 

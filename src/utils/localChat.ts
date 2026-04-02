@@ -375,11 +375,23 @@ export const sendMessage = async (
       if (authData) {
         try {
           const parsed = JSON.parse(authData);
-          if (parsed.name) alertPayload.userName = parsed.name;
-          if (parsed.email) alertPayload.userEmail = parsed.email;
+          console.log('📧 Auth data parsed:', parsed);
+          // Try different possible field names for user data
+          const userName = parsed.name || parsed.userName || parsed.displayName;
+          const userEmail = parsed.email || parsed.userEmail || parsed.mail;
+          if (userName) {
+            alertPayload.userName = userName;
+            console.log('📧 Setting userName:', userName);
+          }
+          if (userEmail) {
+            alertPayload.userEmail = userEmail;
+            console.log('📧 Setting userEmail:', userEmail);
+          }
         } catch (e) {
-          console.warn('Failed to parse authData for user snapshot:', e);
+          console.error('❌ Failed to parse authData for user snapshot:', e);
         }
+      } else {
+        console.log('📧 No authData found for user snapshot');
       }
       
       // Send crisis alert to backend
