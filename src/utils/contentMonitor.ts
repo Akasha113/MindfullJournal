@@ -34,10 +34,16 @@ const CONCERNING_KEYWORDS = [
   'maybe if i was gone',
 
   // Urdu keywords (expanded with variations)
-  'khudkushi', 'khudkushi karna', 'khudlushi', 'khudlushi karna',
+  'khudkushi', 'khudkushi karna', 'khudkushi krna', 'khudlushi', 'khudlushi karna', 'khudlushi krna',
   'jaan lena', 'jaan laina', 'jaan lena chahti hoon', 'jaan laina chahti hoon',
   'jaan lena chahta hoon', 'jaan laina chahta hoon',
+  'jaan lena chahti hon', 'jaan lena chahta hon',  // variations with 'hon' instead of 'hoon'
   'marna chahti hoon', 'marna chahta hoon',
+  'marna chahti hon', 'marna chahta hon',  // variations with 'hon'
+  'khudkushi karne wali hoon', 'khudkushi karne wala hoon',
+  'khudkushi krne wali hoon', 'khudkushi krne wala hoon',
+  'khudkushi krni hoon', 'khudkushi krna hoon',
+  'khudkushi krni hon', 'khudkushi krna hon',
   'zindagi khatam karna', 'zindagi khatam krna',
   'khud ko maarna', 'khud ko marna', 'khud ko khatam karna',
   'jaan se maarna', 'jaan se marna',
@@ -51,8 +57,6 @@ const CONCERNING_KEYWORDS = [
   'khud ko jalan', 'khud ko jalana',
   'zehar khana', 'zehar khaana',
   'dawai ki over dose', 'dawai ki overdose',
-  'jaan lena chahti hoon', 'jaan lena chahta hoon',
-  'jaan laina chahti hoon', 'jaan laina chahta hoon',
   'marne ka faisla kar liya', 'marne ka faisla kr liya',
   'khudkushi karne wali hoon', 'khudkushi karne wala hoon',
   'khudlushi karne wali hoon', 'khudlushi karne wala hoon',
@@ -60,6 +64,7 @@ const CONCERNING_KEYWORDS = [
   'zindagi se ghabra gayi', 'zindagi se ghabra gaya',
   'sab log bina mere behtar honge', 'sab log bina mere better honge',
   'main sab ki bojh hoon', 'main sab ki booj hoon',
+  'mn sab ki bojh hoon', 'mn sab ki bojh',  // variations with 'mn'
   'koi mujhe care nahi karta', 'koi mujhe care nahi krta',
   'bilkul akeli hoon', 'bilkul akela hoon',
   'bilkul akeli', 'bilkul akela',
@@ -67,7 +72,9 @@ const CONCERNING_KEYWORDS = [
   'zindagi bahut mushkil hai', 'zindagi bohot mushkil hai',
   'koi raasta nahi dikhta', 'koi rasta nahi dikhta',
   'main phas gayi hoon', 'main phas gaya hoon',
+  'mn phas gayi hoon', 'mn phas gaya hoon',  // variations with 'mn'
   'main phas gayi', 'main phas gaya',
+  'mn phas gayi', 'mn phas gaya',  // variations with 'mn'
   'kabhi kuch behtar nahi hoga', 'kabhi kuch better nahi hoga',
   'be umeed hoon', 'be umeed', 'be umeedi',
   'bekar hoon', 'bekar', 'bekas hoon',

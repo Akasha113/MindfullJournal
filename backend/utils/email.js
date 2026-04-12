@@ -92,9 +92,12 @@ const sendMail = async (mailOptions) => {
   if (transporter && emailServiceReady) {
     try {
       await transporter.sendMail(mailOptions);
+      console.log('✅ Gmail sendMail success for:', mailOptions.to);
       return true;
     } catch (err) {
-      console.error('❌ Gmail send failed:', err.message);
+      console.error('❌ Gmail send failed:', err);
+      console.error('❌ Gmail send failed (message):', err.message);
+      console.error('❌ Gmail send failed (code):', err.code);
       // fall through to SendGrid if available
     }
   }
@@ -226,6 +229,7 @@ export const sendPasswordResetEmail = async (email, resetLink) => {
 export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert) => {
   // guard transporter readiness similar to other helpers
   if (!transporter) {
+    console.warn('⚠️ transport not set in sendCrisisAlertEmail; emailServiceReady=', emailServiceReady);
     if (!emailServiceReady) {
       console.warn('⚠️ Email service not ready - crisis alert email NOT sent');
       console.warn('📖 See GMAIL_SETUP_FIX.md for Gmail setup instructions');
@@ -240,8 +244,8 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
   }
 
   try {
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const alertUrl = `${frontendUrl}/admin/crisis-alerts/${crisisAlert._id}`;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5175';
+    const alertUrl = `${frontendUrl}/admin/login?returnUrl=/admin/crisis-alerts/${crisisAlert._id}`;
     
     const mailOptions = {
       from: `Mindful Journal <${process.env.GMAIL_USER}>`,
@@ -275,7 +279,7 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
 
             <div style="text-align: center; margin: 25px 0;">
               <a href="${alertUrl}" style="background: #333333; color: white; padding: 10px 25px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px; display: inline-block;">
-                View Alert Details
+                Login & View Alert Details
               </a>
             </div>
 

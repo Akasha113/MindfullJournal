@@ -79,7 +79,7 @@ const CrisisAlertDetailPage: React.FC = () => {
     const adminToken = localStorage.getItem('adminToken');
     if (!adminToken) {
       // Redirect to admin login with return URL
-      navigate('/admin?returnUrl=' + encodeURIComponent(window.location.pathname));
+      navigate('/admin/login?returnUrl=' + encodeURIComponent(window.location.pathname));
       return;
     }
 

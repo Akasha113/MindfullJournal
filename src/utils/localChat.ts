@@ -63,8 +63,15 @@ const getCurrentUserId = (): string => {
 const getStorageKey = (): string => {
   return `mindful_conversations_${getCurrentUserId()}`;
 };
-const GITHUB_ENDPOINT = "https://models.inference.ai.azure.com";
-const GITHUB_MODEL = "gpt-4o-mini"; // Fast model: gpt-4o-mini or gpt-4o for better quality
+
+const GITHUB_ENDPOINT =
+  import.meta.env.VITE_GITHUB_API_ENDPOINT ||
+  import.meta.env.VITE_AZURE_INFERENCE_ENDPOINT ||
+  'https://models.inference.ai.azure.com';
+
+const GITHUB_MODEL = import.meta.env.VITE_GITHUB_MODEL || 'gpt-4o-mini';
+
+console.log('🔣 AI endpoint:', GITHUB_ENDPOINT, 'model:', GITHUB_MODEL);
 
 const INITIAL_GREETING =
   "Hi! 👋 I'm your AI companion here to listen and support you. I'm in a safe, judgment-free space where you can share anything on your mind. How are you feeling today?";
@@ -89,16 +96,24 @@ if (debugToken) {
   console.warn('⚠️ GitHub API Token NOT found. Make sure .env.local has VITE_GITHUB_API_TOKEN set.');
 }
 
-// Crisis detection and resources
-// Includes English AND Roman Urdu (phonetic Urdu) keywords for better detection
+// Crisis detection and resources - ALL LANGUAGES SUPPORTED
+// Comprehensive multilingual crisis keywords for global suicide detection
 const CRISIS_KEYWORDS = [
-  // English - Original keywords
+  // ===== ENGLISH =====
+  'i want to kill myself',
+  'i am going to kill myself',
+  'i plan to end my life',
+  'i am going to commit suicide',
+  'i have decided to die',
+  'i will take my own life',
+  'tonight is my last night',
+  'i have a plan to',
+  'i already have the',
+  'i know how i will do it',
   'suicide', 'suicidal', 'kill myself', 'hurt myself', 'harm myself',
   'end my life', 'end it', 'don\'t want to live', 'want to die',
   'self harm', 'self-harm', 'cutting myself', 'overdose', 'hang myself',
   'jump', 'i can\'t take it anymore', 'can\'t go on', 'give up',
-  
-  // English - Additional critical keywords
   'no reason to live', 'worthless', 'nobody cares', 'everyone would be better off',
   'life is meaningless', 'tired of living', 'end everything', 'take my life',
   'step in front', 'slash my wrists', 'poison myself', 'drown myself',
@@ -106,21 +121,116 @@ const CRISIS_KEYWORDS = [
   'final goodbye', 'last goodbye', 'saying goodbye', 'permanent solution',
   'can\'t handle this', 'too much pain', 'unbearable pain', 'rope', 'noose',
   'sleeping pills', 'razors', 'cut myself', 'break bones', 'bleed out',
-  
-  // Roman Urdu (Phonetic Urdu) - Critical phrases
+
+  // ===== URDU =====
+  'khudkushi karna chahti hoon',
+  'khudkushi karna chahta hoon',
+  'jaan lena chahti hoon',
+  'jaan lena chahta hoon',
+  'jaan lena chahti hon',
+  'jaan lena chahta hon',
+  'marna chahti hoon',
+  'marna chahta hoon',
+  'marna chahti hon',
+  'marna chahta hon',
+  'mn marna chahti hon',
+  'mn marna chahta hon',
+  'khudkushi karne wali hoon',
+  'khudkushi karne wala hoon',
+  'khudkushi krne wali hoon',
+  'khudkushi krne wala hoon',
+  'khudkushi krni hoon',
+  'khudkushi krna hoon',
+  'khudkushi krni hon',
+  'khudkushi krna hon',
+  'zindagi khatam karna chahti hoon',
+  'zindagi khatam karna chahta hoon',
+  'zindagi khatam krna chahti hoon',
+  'zindagi khatam krna chahta hoon',
+  'khud ko maarna chahti hoon',
+  'khud ko maarna chahta hoon',
+  'khud ko marna chahti hoon',
+  'khud ko marna chahta hoon',
+  'aaj raat meri aakhri raat hai',
+  'kal mera aakhri din hai',
+  'main marne ka faisla kar chuki hoon',
+  'main marne ka faisla kar chuka hoon',
+  'mn marne ka faisla kar chuki hoon',
+  'mn marne ka faisla kar chuka hoon',
+  'main khudkushi karne wali hoon',
+  'main khudkushi karne wala hoon',
+  'mn khudkushi karne wali hoon',
+  'mn khudkushi karne wala hoon',
+  'mn khudkushi krne wali hoon',
+  'mn khudkushi krne wala hoon',
+  'mn khudkushi krna chahti hon',
+  'mn khudkushi krna chahta hon',
   'khud ko marna hai', 'apne aap ko marna', 'mujhe mar jana', 'mujhe suicide krna',
-  'jeevan khatam krna', 'apne aap ko nuksan', 'apne aap ko kaatna', 'apne aap se hate',
-  'apne aap se nfrat', 'zyada bardasht nahi', 'kuch nahi raha', 'sab khatam',
-  'jeevan se thaka', 'maut', 'mar ja', 'mun mar ja', 'khud ko zehreela',
-  'apne aap ko zyada', 'apne se pyar nahi', 'insaan se befeeda', 'sab bekar',
-  'jeevan bekaar', 'koi matlab nahi', 'koi fayda nahi', 'zehreela khana',
-  'gla kaatna', 'pehlhan kaatna', 'zyada dard', 'zyada kasak', 'zyada takleef',
-  'khud ko hurt', 'apne aap ko chot', 'apne aap ko nayak', 'khud ko tabah',
-  'khud tabahi', 'apne aap ko nist', 'apne aap ko khatam', 'khud ko khatm',
-  'mera kuch nahi', 'mujhe nahi chahiye', 'mar jana theek hai', 'mar ja betar hai',
-  'rassi', 'gala', 'pehlwan', 'zehaar', 'tablet', 'ilaj', 'zyada tanhai',
-  'akela hoon', 'kisi ko parwah nahi', 'kisi ne dhikaar nahi', 'sab bekaar soch',
-  'khud gina nahi', 'apne aap ko nasuksan', 'apne aap ko zalim', 'apne aap ko zyulm'
+  'jeevan khatam krna', 'apne aap ko nuksan', 'apne aap ko kaatna',
+  'zyada bardasht nahi', 'kuch nahi raha', 'sab khatam',
+  'jeevan se thaka', 'mar ja', 'khud ko zehreela',
+  'apne se pyar nahi', 'insaan se befeeda', 'sab bekar',
+  'jeevan bekaar', 'koi matlab nahi', 'koi fayda nahi',
+  'khud ko hurt', 'apne aap ko chot', 'khud ko tabah',
+  'mera kuch nahi', 'mujhe nahi chahiye', 'zyada tanhai',
+  'akela hoon', 'kisi ko parwah nahi', 'khud gina nahi',
+
+  // ===== SPANISH =====
+  'quiero matarme',
+  'voy a suicidarme',
+  'planeo terminar mi vida',
+  'he decidido morir',
+  'quiero acabar con esto',
+  'no aguanto más la vida',
+
+  // ===== FRENCH =====
+  'je veux me tuer',
+  'je vais me suicider',
+  'je décide de mourir',
+  'je veux mettre fin à ma vie',
+  'j\'en ai assez de vivre',
+
+  // ===== ARABIC =====
+  'أريد أن أنهي حياتي',
+  'سأنتحر',
+  'لا أستطيع العيش',
+  'سأضع حداً لحياتي',
+  'أريد أن أموت',
+
+  // ===== PORTUGUESE =====
+  'quero me matar',
+  'vou me suicidar',
+  'quero acabar com minha vida',
+  'não aguento mais viver',
+
+  // ===== GERMAN =====
+  'ich will mich töten',
+  'ich werde mich umbringen',
+  'ich will mein Leben beenden',
+  'ich kann nicht mehr leben',
+
+  // ===== ITALIAN =====
+  'voglio suicidarmi',
+  'vado a togliermi la vita',
+  'non posso più vivere',
+  'voglio morire',
+
+  // ===== HINDI =====
+  'main apne aap ko maarna chahta hoon',
+  'main aatmahatya karna chahta hoon',
+  'mujhe jeena nahi hai',
+  'zindagi se thak gaya hoon',
+
+  // ===== BENGALI =====
+  'ami nij-deh poriksha korte chai',
+  'ami jeeban sesh korte chai',
+  'jeeban aro chalte parchhi na',
+
+  // ===== TURKISH =====
+  'kendimi öldürmek istiyorum',
+  'intihar edeceğim',
+  'hayatımı bitirmek istiyorum',
+  'artık dayanamıyorum'
 ];
 
 export const isCrisisMessage = (message: string): boolean => {
@@ -226,6 +336,7 @@ export const fetchGitHubResponse = async (messages: ChatMessage[]): Promise<stri
     return responseText;
   } catch (error: any) {
     console.error('GitHub Models API error:', error.message || error);
+    console.error('GitHub endpoint used:', GITHUB_ENDPOINT);
     
     // Handle content filter errors gracefully
     if (error.message === 'content_filter') {
