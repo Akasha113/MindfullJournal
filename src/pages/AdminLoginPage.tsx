@@ -22,6 +22,12 @@ const AdminLoginPage: React.FC = () => {
     }
   }, [searchParams]);
 
+  const clearRegularUserSession = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authData');
+    sessionStorage.removeItem('authData');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -41,7 +47,9 @@ const AdminLoginPage: React.FC = () => {
         return;
       }
 
-      // Store admin token
+      // Clear any existing regular user session before storing admin session
+      clearRegularUserSession();
+
       localStorage.setItem('adminToken', data.token);
       localStorage.setItem('adminUser', JSON.stringify(data.admin));
 

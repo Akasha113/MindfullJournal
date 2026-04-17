@@ -117,6 +117,7 @@ function AppContent() {
       <Routes>
         {/* ADMIN PORTAL - Completely Separate */}
         <Route path="/admin" element={<AdminLoginPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="/admin/crisis-alerts/:alertId" element={<CrisisAlertDetailPage />} />
 

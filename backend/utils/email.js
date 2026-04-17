@@ -245,7 +245,8 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
 
   try {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5175';
-    const alertUrl = `${frontendUrl}/admin/login?returnUrl=/admin/crisis-alerts/${crisisAlert._id}`;
+    const returnUrl = `/admin/crisis-alerts/${crisisAlert._id}`;
+    const alertUrl = `${frontendUrl}/admin/login?returnUrl=${encodeURIComponent(returnUrl)}`;
     
     const mailOptions = {
       from: `Mindful Journal <${process.env.GMAIL_USER}>`,
