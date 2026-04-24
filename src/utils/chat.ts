@@ -422,7 +422,7 @@ const sendCrisisAlertToBackend = async (
   contentType: 'chat' | 'journal'
 ): Promise<void> => {
   try {
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3002';
     
     const alertPayload = {
       userId,

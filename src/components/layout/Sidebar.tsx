@@ -80,8 +80,8 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
                     : 'text-gray-700 dark:text-white hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e]'
                   }
                 `}>
-                  <span className={isActive ? 'text-white' : 'text-black dark:text-white'}>{item.icon}</span>
-                  <span className={`ml-3 ${isActive ? 'text-white' : 'text-black dark:text-white'}`}>{item.label}</span>
+                  <span className={isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'}>{item.icon}</span>
+                  <span className={`ml-3 ${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>{item.label}</span>
                 </div>
                 
               )}

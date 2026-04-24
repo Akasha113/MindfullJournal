@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import User from './models/User.js';
 import VerificationCode from './models/VerificationCode.js';
 import CrisisAlert from './models/CrisisAlert.js';
@@ -171,6 +172,12 @@ app.post('/api/auth/verify', async (req, res) => {
     // Generate token
     const token = generateToken(newUser._id, newUser.email);
 
+    // Generate password hash for encryption key derivation on frontend
+    const passwordHash = crypto
+      .createHash('sha256')
+      .update(email.toLowerCase() + verificationData.userData.password + 'mindful-encryption-salt-v1')
+      .digest('hex');
+
     // Clean up verification code
     await VerificationCode.deleteOne({ _id: verificationData._id });
 
@@ -181,6 +188,7 @@ app.post('/api/auth/verify', async (req, res) => {
         id: newUser._id,
         name: newUser.name,
         email: newUser.email,
+        passwordHash: passwordHash, // Add for encryption key derivation
       },
       token,
     });
@@ -223,12 +231,19 @@ app.post('/api/auth/login', async (req, res) => {
     // Generate token
     const token = generateToken(user._id, user.email);
 
+    // Generate password hash for encryption key derivation on frontend
+    const passwordHash = crypto
+      .createHash('sha256')
+      .update(email + password + 'mindful-encryption-salt-v1')
+      .digest('hex');
+
     const userData = {
       id: user._id,
       name: user.name,
       email: user.email,
       avatar: user.avatar,
       isAdmin: user.isAdmin,
+      passwordHash: passwordHash, // Add for encryption key derivation
     };
 
     res.status(200).json({

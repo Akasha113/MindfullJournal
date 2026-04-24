@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ChatMessage from '../components/chat/ChatMessage';
 import ChatInput from '../components/chat/ChatInput';
 import localChat from '../utils/localChat';
+import { fetchChatsFromBackend } from '../utils/cloudSync';
 import { Conversation as ConversationType } from '../types';
 import { PlusCircle, Trash2, Brain } from 'lucide-react';
 import { getRandomQuote } from '../utils/quotes';
@@ -26,7 +27,32 @@ const ChatPage: React.FC = () => {
     
     const loadConversations = async () => {
       try {
-        const allConversations = localChat.getAllConversations();
+        // First load local conversations
+        let allConversations = localChat.getAllConversations();
+        
+        // Then fetch from backend and merge
+        const backendResult = await fetchChatsFromBackend();
+        if (backendResult.success && backendResult.chats && backendResult.chats.length > 0) {
+          // Merge backend chats into local storage
+          for (const chat of backendResult.chats) {
+            const existingChat = allConversations.find(c => c.id === chat.conversationId);
+            if (!existingChat && chat.data) {
+              // Create proper conversation object from backend data
+              const conversationToSave = {
+                id: chat.conversationId,
+                title: chat.data.title || `Chat - ${new Date().toLocaleDateString()}`,
+                messages: chat.data.messages || [],
+                createdAt: chat.data.createdAt || Date.now(),
+                updatedAt: chat.data.updatedAt || Date.now(),
+                hasFlaggedContent: chat.data.hasFlaggedContent,
+              };
+              // Save synced conversation to local storage
+              await localChat.saveSyncedConversation(conversationToSave);
+            }
+          }
+          // Reload local conversations after adding backend ones
+          allConversations = localChat.getAllConversations();
+        }
         
         if (allConversations.length === 0) {
           const newConversation = await localChat.createConversation();

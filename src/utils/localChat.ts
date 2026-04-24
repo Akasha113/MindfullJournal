@@ -421,6 +421,9 @@ const saveConversation = async (conversation: Conversation) => {
   }
 };
 
+// Export saveConversation for external use (backend sync recovery)
+export const saveSyncedConversation = saveConversation;
+
 // Create new conversation
 export const createConversation = async (): Promise<Conversation> => {
   const conversation: Conversation = {
@@ -549,7 +552,7 @@ export const sendMessage = async (
       }
       
       // Send crisis alert to backend
-      const alertResponse = await fetch('http://localhost:3001/api/admin/crisis-alerts', {
+      const alertResponse = await fetch('http://localhost:3002/api/admin/crisis-alerts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -664,4 +667,5 @@ export default {
   deleteConversation,
   clearConversation,
   updateConversationTitle,
+  saveSyncedConversation,
 };

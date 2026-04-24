@@ -28,6 +28,7 @@ import JournalForm from '../components/journal/JournalForm';
 import Button from '../components/ui/Button';
 import { Plus, Search, Filter } from 'lucide-react';
 import storage from '../utils/storage';
+import { fetchJournalsFromBackend } from '../utils/cloudSync';
 import { useAuth } from '../context/AuthContext';
 
 const JournalPage: React.FC = () => {
@@ -43,11 +44,54 @@ const JournalPage: React.FC = () => {
   React.useEffect(() => {
     if (authLoading || !user) return; // Wait for auth and valid user
     
-    // Load journals from storage (user-specific)
-    storage.initializeStorage(); // Ensure storage is initialized with correct user
-    const entries = storage.getJournalEntries();
-    setJournals(entries);
-    setLoading(false);
+    const loadJournals = async () => {
+      try {
+        // Load journals from storage (user-specific)
+        storage.initializeStorage(); // Ensure storage is initialized with correct user
+        let entries = storage.getJournalEntries();
+        
+        // Fetch from backend and merge
+        const backendResult = await fetchJournalsFromBackend();
+        if (backendResult.success && backendResult.journals && backendResult.journals.length > 0) {
+          // Merge backend journals into local storage
+          let hasNewJournals = false;
+          for (const journal of backendResult.journals) {
+            const existingJournal = entries.find(e => e.id === journal.entryId);
+            if (!existingJournal && journal.data) {
+              // Add synced journal to list
+              const syncedJournal: JournalEntry = {
+                id: journal.entryId,
+                title: journal.data.title || 'Untitled',
+                content: journal.data.content || '',
+                mood: journal.data.mood || 'neutral',
+                tags: journal.data.tags || [],
+                attachments: journal.data.attachments || [],
+                createdAt: journal.data.createdAt || Date.now(),
+                updatedAt: journal.data.updatedAt || Date.now(),
+                flagged: journal.data.flagged || false,
+                flagReason: journal.data.flagReason,
+              };
+              entries.push(syncedJournal);
+              hasNewJournals = true;
+            }
+          }
+          
+          // If we added new journals, update storage
+          if (hasNewJournals) {
+            const profile = storage.getUserProfile();
+            storage.updateUserProfile({ ...profile, journals: entries });
+          }
+        }
+        
+        setJournals(entries);
+      } catch (err) {
+        console.error('Failed to load journals:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadJournals();
   }, [authLoading, user]);
 
   React.useEffect(() => {

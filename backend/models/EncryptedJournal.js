@@ -35,6 +35,11 @@ const EncryptedJournalSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // Authentication tag for GCM mode
+    authTag: {
+      type: String,
+      required: true,
+    },
     // Hash of decrypted data to verify integrity
     dataHash: {
       type: String,

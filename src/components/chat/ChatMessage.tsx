@@ -45,7 +45,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           <div className={`
             rounded-lg p-3 border-2
             ${isUser 
-              ? 'bg-[#E8D5F2] dark:bg-[#E8D5F2] text-black dark:text-black border-[#6E2B8A] dark:border-[#6E2B8A]' 
+              ? 'bg-[#E8D5F2] dark:bg-[#2d1b4e] text-black dark:text-white border-[#6E2B8A] dark:border-[#a323af]' 
               : isCrisisMessage
                 ? 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#5a2270] dark:text-[#a323af] border-[#6E2B8A] dark:border-[#a323af] shadow-lg'
                 : 'bg-[#6E2B8A] dark:bg-[#6E2B8A] text-white dark:text-white border-[#6E2B8A] dark:border-[#6E2B8A]'
@@ -57,10 +57,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                 <span className="font-semibold text-sm">Crisis Support Resources</span>
               </div>
             )}
-            <p className={`whitespace-pre-wrap ${isUser ? 'text-black' : isCrisisMessage ? 'text-[#5a2270] dark:text-white' : 'text-white'}`}>{message.content}</p>
+            <p className={`whitespace-pre-wrap ${isUser ? 'text-black dark:text-white' : isCrisisMessage ? 'text-[#5a2270] dark:text-white' : 'text-white'}`}>{message.content}</p>
           </div>
           
-          <div className={`text-xs text-black dark:text-black mt-1 ${isUser ? 'text-right' : 'text-left'}`}>
+          <div className={`text-xs text-black dark:text-white mt-1 ${isUser ? 'text-right' : 'text-left'}`}>
             {formatDistanceToNow(new Date(message.timestamp), { addSuffix: true })}
           </div>
         </div>

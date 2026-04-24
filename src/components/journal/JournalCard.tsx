@@ -18,8 +18,8 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
     great: 'bg-[#6E2B8A] text-white',
     good: 'bg-[#6E2B8A] text-white',
     neutral: 'bg-[#6E2B8A] text-white',
-    bad: 'bg-[#d191d7] dark:bg-[#e8c8eb] text-black',
-    awful: 'bg-[#e8c8eb] dark:bg-[#f4f5f7] text-black',
+    bad: 'bg-[#d191d7] dark:bg-[#2d1b4e] text-black dark:text-white',
+    awful: 'bg-[#e8c8eb] dark:bg-[#3a2860] text-black dark:text-white',
   };
 
   const moodEmojis = {

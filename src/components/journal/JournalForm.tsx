@@ -177,7 +177,7 @@ const JournalForm: React.FC<JournalFormProps> = ({
                     className="ml-1 focus:outline-none"
                     onClick={() => handleTagRemove(tag)}
                   >
-                    <X size={14} className="text-[#6E2B8A] dark:text-[#a323af] hover:text-[#5a2270] dark:hover:text-[#ba5ac3]" />
+                    <X size={14} className="text-white hover:text-gray-200" />
                   </button>
                 </div>
               ))}

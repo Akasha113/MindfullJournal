@@ -156,7 +156,7 @@ const SettingsPage: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-2xl font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent mb-2">Settings</h1>
-        <p className="text-slate-600 dark:text-slate-300">Customize your Mindful journalexperience to match your preferences</p>
+        <p className="text-slate-600 dark:text-slate-200">Customize your Mindful journal experience to match your preferences</p>
       </motion.div>
       
       {/* Profile Settings */}
@@ -198,7 +198,7 @@ const SettingsPage: React.FC = () => {
               <label className="text-base font-semibold text-[#6E2B8A] dark:text-[#ba5ac3]">
                 Dark Mode
               </label>
-              <p className="text-xs text-[#6E2B8A] dark:text-[#8ba5af] mt-2">
+              <p className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3] mt-2">
                 {darkMode ? '🌙 Dark mode is active' : '☀️ Light mode is active'}
               </p>
             </div>
@@ -278,7 +278,7 @@ const SettingsPage: React.FC = () => {
               <label className="text-base font-semibold text-[#6E2B8A] dark:text-[#ba5ac3]">
                 Daily Mood Reminders
               </label>
-              <p className="text-xs text-[#6E2B8A] dark:text-[#8ba5af] mt-2">
+              <p className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3] mt-2">
                 {notifications ? '✓ Enabled - Get daily check-in reminders' : '○ Disabled - No reminders'}
               </p>
             </div>
@@ -313,7 +313,7 @@ const SettingsPage: React.FC = () => {
               onChange={(e) => handleNotificationTimeChange(e.target.value)}
               className="w-full px-4 py-3 border border-[#e8c8eb] dark:border-[#4a3570] dark:bg-[#0f0f1e] dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:ring-offset-2 dark:focus:ring-offset-[#16213e] transition-all"
             />
-            <p className="text-xs text-[#6E2B8A] dark:text-[#8ba5af] mt-3 flex items-center gap-2">
+            <p className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3] mt-3 flex items-center gap-2">
               <span>📅</span>
               <span>You'll receive a reminder at <span className="font-bold">{notificationTime}</span> daily to check in with your mood</span>
             </p>
@@ -323,7 +323,7 @@ const SettingsPage: React.FC = () => {
         {/* Permission Request */}
         {notificationPermission === 'denied' && (
           <div className="mb-6 p-4 bg-gradient-to-r from-[#f3e8ff] to-[#ede9fe] dark:from-[#2d1b4e] dark:to-[#3d2560] border border-[#d8a4e8] dark:border-[#5a2270] rounded-lg">
-            <p className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3] flex items-center gap-2">
+            <p className="text-xs text-[#6E2B8A] dark:text-[#ba5ac3] flex items-center gap-2 font-medium">
               <span>⚠️</span>
               <span>Notifications are blocked in your browser settings. Enable them to receive reminders.</span>
             </p>
