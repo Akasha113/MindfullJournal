@@ -24,12 +24,12 @@ const ChatPage: React.FC = () => {
     }
     if (authLoading || !user) return; // wait for auth and actual user
     
-    const loadConversations = () => {
+    const loadConversations = async () => {
       try {
         const allConversations = localChat.getAllConversations();
         
         if (allConversations.length === 0) {
-          const newConversation = localChat.createConversation();
+          const newConversation = await localChat.createConversation();
           setConversations([newConversation]);
           setActiveConversation(newConversation);
         } else {
@@ -87,16 +87,16 @@ const ChatPage: React.FC = () => {
   };
 
   // New chat
-  const handleNewConversation = () => {
-    const newChat = localChat.createConversation();
+  const handleNewConversation = async () => {
+    const newChat = await localChat.createConversation();
     setConversations(prev => [...prev, newChat]);
     setActiveConversation(newChat);
   };
 
-  const handleDeleteConversation = (id: string, e: React.MouseEvent) => {
+  const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!window.confirm('Delete this conversation?')) return;
-    localChat.deleteConversation(id);
+    await localChat.deleteConversation(id);
     const updated = conversations.filter(c => c.id !== id);
     setConversations(updated);
     setActiveConversation(updated[updated.length - 1] ?? null);

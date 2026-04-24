@@ -27,6 +27,7 @@ import {
   ChatMessage,
 } from '../types';
 import { checkContent } from './contentMonitor';
+import { syncJournalToBackend, deleteJournalFromBackend, fetchJournalsFromBackend } from './cloudSync';
 
 // Default user profile
 const defaultProfile: UserProfile = {
@@ -145,9 +146,9 @@ export const getJournalEntries = (): JournalEntry[] => {
   return profile.journals;
 };
 
-export const addJournalEntry = (
+export const addJournalEntry = async (
   entry: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>
-): JournalEntry => {
+): Promise<JournalEntry> => {
   const profile = getUserProfile();
   const contentCheck = checkContent(entry.content);
 
@@ -165,13 +166,21 @@ export const addJournalEntry = (
   const updatedJournals = [...profile.journals, newEntry];
   updateUserProfile({ journals: updatedJournals });
 
+  // Sync to backend (fire and forget)
+  const authData = sessionStorage.getItem('authData') || localStorage.getItem('authData');
+  if (authData) {
+    syncJournalToBackend(newEntry.id, newEntry).catch(err => 
+      console.warn('Failed to sync journal to backend (will retry on next sync):', err)
+    );
+  }
+
   return newEntry;
 };
 
-export const updateJournalEntry = (
+export const updateJournalEntry = async (
   id: string,
   updates: Omit<JournalEntry, 'id' | 'createdAt'>
-): JournalEntry | null => {
+): Promise<JournalEntry | null> => {
   const profile = getUserProfile();
   const index = profile.journals.findIndex(journal => journal.id === id);
 
@@ -194,10 +203,18 @@ export const updateJournalEntry = (
   profile.journals[index] = updatedEntry;
   updateUserProfile({ journals: profile.journals });
 
+  // Sync to backend (fire and forget)
+  const authData = sessionStorage.getItem('authData') || localStorage.getItem('authData');
+  if (authData) {
+    syncJournalToBackend(updatedEntry.id, updatedEntry).catch(err => 
+      console.warn('Failed to sync journal to backend (will retry on next sync):', err)
+    );
+  }
+
   return updatedEntry;
 };
 
-export const deleteJournalEntry = (id: string): boolean => {
+export const deleteJournalEntry = async (id: string): Promise<boolean> => {
   const profile = getUserProfile();
   const updatedJournals = profile.journals.filter(
     journal => journal.id !== id
@@ -206,7 +223,42 @@ export const deleteJournalEntry = (id: string): boolean => {
   if (updatedJournals.length === profile.journals.length) return false;
 
   updateUserProfile({ journals: updatedJournals });
+
+  // Also delete from backend
+  const authData = sessionStorage.getItem('authData') || localStorage.getItem('authData');
+  if (authData) {
+    deleteJournalFromBackend(id).catch(err => 
+      console.warn('Failed to delete journal from backend:', err)
+    );
+  }
+
   return true;
+};
+
+// Sync journals from backend (call this on login)
+export const syncJournalsFromBackend = async (): Promise<void> => {
+  try {
+    const result = await fetchJournalsFromBackend();
+    
+    if (result.success && result.journals) {
+      const profile = getUserProfile();
+      const localJournalIds = new Set(profile.journals.map(j => j.id));
+      
+      // Add journals that only exist on backend
+      for (const backendJournal of result.journals) {
+        if (!localJournalIds.has(backendJournal.entryId)) {
+          profile.journals.push(backendJournal.data);
+        }
+      }
+      
+      // Save merged list
+      updateUserProfile({ journals: profile.journals });
+      console.log('✅ Synced journals from backend:', result.journals.length, 'new/updated');
+    }
+  } catch (error) {
+    console.warn('⚠️ Failed to sync journals from backend (will use local):', error);
+    // Silently fail - local data is still available
+  }
 };
 
 // ✅ Mood entries

@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { Brain, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +20,7 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -32,7 +34,8 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      login(data.token, data.user);
+      // Login is now async (syncs data from backend)
+      await login(data.token, data.user);
       navigate('/dashboard');
     } catch (err) {
       setError('An error occurred. Please try again.');

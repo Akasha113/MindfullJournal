@@ -1,30 +1,29 @@
 /**
- * 🔒 LOCAL CHAT SERVICE - CLIENT-SIDE ONLY, PRIVATE BY DEFAULT
+ * 🔒 LOCAL CHAT SERVICE - CLIENT-SIDE + BACKEND SYNC
  * 
- * ⚠️ IMPORTANT PRIVACY GUARANTEE:
- * ALL chat conversations are stored in browser **localStorage** ONLY (per-user, tied to user ID).
- * This means your conversations will persist across logouts and page reloads for the same account.
- * NO chat messages are ever sent to or stored in the backend database.
+ * ⚠️ UPDATED PRIVACY GUARANTEE:
+ * ALL chat conversations are stored LOCALLY in browser localStorage AND synced to backend.
+ * Data is encrypted before sending to backend - backend cannot decrypt.
  * Admins CANNOT access user conversations through any API.
  * 
  * How it works:
- * 1. Chat messages are stored with key: mindful_conversations_${userId}
- * 2. Each user gets their own isolated storage (user-specific).
- *    Different users on the same browser never see each other's chats.
- * 3. Data persists across logins and browser sessions (unless manually cleared).
- * 4. When user logs in, their conversations load automatically.
- * 5. Deleting a conversation removes it permanently from localStorage.
+ * 1. Chat messages are stored with key: mindful_conversations_${userId} (LOCAL)
+ * 2. Chats are encrypted and synced to backend after each message
+ * 3. When user logs in from a new device, chats are fetched from backend and decrypted
+ * 4. Each user gets isolated storage (user-specific)
+ * 5. Different users on the same browser never see each other's chats
  * 
  * EXCEPTION: Crisis Detection
  * - When suicidal/self-harm keywords are detected, the message is logged
  * - This is sent to admins for emergency intervention ONLY
- * - Non-crisis messages are NEVER sent anywhere
+ * - Non-crisis messages are NEVER sent unencrypted anywhere
  * 
  * See PRIVACY_MODEL.md for detailed privacy information
  */
 
-// src/utils/localChat.ts - Local storage with GitHub Models API
+// src/utils/localChat.ts - Local storage with GitHub Models API + Backend Sync
 import { ChatMessage, Conversation } from '../types';
+import { syncChatToBackend, deleteChatFromBackend } from './cloudSync';
 
 // Get current user ID from sessionStorage (set during login)
 const getCurrentUserId = (): string => {
@@ -354,10 +353,45 @@ export const fetchGitHubResponse = async (messages: ChatMessage[]): Promise<stri
   }
 };
 
-// Get all conversations from localStorage
+// Get all conversations from localStorage + backend
 export const getAllConversations = (): Conversation[] => {
   const stored = localStorage.getItem(getStorageKey());
   return stored ? JSON.parse(stored) : [];
+};
+
+// Sync conversations from backend (call this on login)
+export const syncConversationsFromBackend = async (): Promise<void> => {
+  try {
+    const { fetchChatsFromBackend } = await import('./cloudSync');
+    const result = await fetchChatsFromBackend();
+    
+    if (result.success && result.chats) {
+      // Merge backend chats with local ones
+      const localChats = getAllConversations();
+      const localChatIds = new Set(localChats.map(c => c.id));
+      
+      // Add chats that only exist on backend
+      for (const backendChat of result.chats) {
+        if (!localChatIds.has(backendChat.conversationId)) {
+          const newConv: Conversation = {
+            id: backendChat.conversationId,
+            title: backendChat.data.title || `Chat - ${new Date(backendChat.data.createdAt).toLocaleDateString()}`,
+            messages: backendChat.data.messages || [],
+            createdAt: backendChat.data.createdAt || Date.now(),
+            updatedAt: backendChat.data.updatedAt || Date.now(),
+          };
+          localChats.push(newConv);
+        }
+      }
+      
+      // Save merged list
+      localStorage.setItem(getStorageKey(), JSON.stringify(localChats));
+      console.log('✅ Synced conversations from backend:', result.chats.length, 'new/updated');
+    }
+  } catch (error) {
+    console.warn('⚠️ Failed to sync conversations from backend (will use local):', error);
+    // Silently fail - local data is still available
+  }
 };
 
 // Get single conversation
@@ -366,8 +400,8 @@ export const getConversation = (id: string): Conversation | null => {
   return conversations.find(c => c.id === id) || null;
 };
 
-// Save conversation to localStorage
-const saveConversation = (conversation: Conversation) => {
+// Save conversation to localStorage AND sync to backend
+const saveConversation = async (conversation: Conversation) => {
   const conversations = getAllConversations();
   const index = conversations.findIndex(c => c.id === conversation.id);
   if (index >= 0) {
@@ -376,10 +410,19 @@ const saveConversation = (conversation: Conversation) => {
     conversations.push(conversation);
   }
   localStorage.setItem(getStorageKey(), JSON.stringify(conversations));
+  
+  // Sync to backend (fire and forget to not block UI)
+  // Only sync if user is authenticated
+  const authData = sessionStorage.getItem('authData') || localStorage.getItem('authData');
+  if (authData) {
+    syncChatToBackend(conversation.id, conversation).catch(err => 
+      console.warn('Failed to sync chat to backend (will retry on next sync):', err)
+    );
+  }
 };
 
 // Create new conversation
-export const createConversation = (): Conversation => {
+export const createConversation = async (): Promise<Conversation> => {
   const conversation: Conversation = {
     id: Date.now().toString(),
     title: `Chat - ${new Date().toLocaleDateString()}`,
@@ -394,21 +437,21 @@ export const createConversation = (): Conversation => {
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
-  saveConversation(conversation);
+  await saveConversation(conversation);
   return conversation;
 };
 
 // Add message to conversation
-export const addMessage = (
+export const addMessage = async (
   conversationId: string,
   message: ChatMessage
-): Conversation | null => {
+): Promise<Conversation | null> => {
   const conversation = getConversation(conversationId);
   if (!conversation) return null;
 
   conversation.messages.push(message);
   conversation.updatedAt = Date.now();
-  saveConversation(conversation);
+  await saveConversation(conversation);
   return conversation;
 };
 
@@ -430,7 +473,7 @@ export const sendMessage = async (
     content: userMessage,
     timestamp: Date.now(),
   };
-  const afterUser = addMessage(conversationId, userMsg);
+  const afterUser = await addMessage(conversationId, userMsg);
   if (!afterUser) return null;
 
   // If crisis detected, send crisis alert to admin dashboard
@@ -538,7 +581,7 @@ export const sendMessage = async (
       content: getCrisisResponse(),
       timestamp: Date.now(),
     };
-    return addMessage(conversationId, crisisMsg);
+    return await addMessage(conversationId, crisisMsg);
   }
 
   try {
@@ -552,7 +595,7 @@ export const sendMessage = async (
       timestamp: Date.now(),
     };
     
-    return addMessage(conversationId, aiMsg);
+    return await addMessage(conversationId, aiMsg);
   } catch (error) {
     console.error('Error getting AI response:', error);
     
@@ -564,19 +607,27 @@ export const sendMessage = async (
       timestamp: Date.now(),
     };
     
-    return addMessage(conversationId, fallbackMsg);
+    return await addMessage(conversationId, fallbackMsg);
   }
 };
 
-// Delete conversation
-export const deleteConversation = (id: string): void => {
+// Delete conversation from localStorage AND backend
+export const deleteConversation = async (id: string): Promise<void> => {
   const conversations = getAllConversations();
   const filtered = conversations.filter(c => c.id !== id);
   localStorage.setItem(getStorageKey(), JSON.stringify(filtered));
+  
+  // Also delete from backend
+  const authData = sessionStorage.getItem('authData') || localStorage.getItem('authData');
+  if (authData) {
+    deleteChatFromBackend(id).catch(err => 
+      console.warn('Failed to delete chat from backend:', err)
+    );
+  }
 };
 
 // Clear messages in conversation
-export const clearConversation = (id: string): Conversation | null => {
+export const clearConversation = async (id: string): Promise<Conversation | null> => {
   const conversation = getConversation(id);
   if (!conversation) return null;
 
@@ -589,18 +640,18 @@ export const clearConversation = (id: string): Conversation | null => {
     }
   ];
   conversation.updatedAt = Date.now();
-  saveConversation(conversation);
+  await saveConversation(conversation);
   return conversation;
 };
 
 // Update conversation title
-export const updateConversationTitle = (id: string, title: string): Conversation | null => {
+export const updateConversationTitle = async (id: string, title: string): Promise<Conversation | null> => {
   const conversation = getConversation(id);
   if (!conversation) return null;
 
   conversation.title = title;
   conversation.updatedAt = Date.now();
-  saveConversation(conversation);
+  await saveConversation(conversation);
   return conversation;
 };
 

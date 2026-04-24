@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState } from 'react';
 import storage from '../utils/storage';
+import { syncConversationsFromBackend } from '../utils/localChat';
+import { syncJournalsFromBackend } from '../utils/storage';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export interface AuthContextType {
   isAuthenticated: boolean;
   user: any | null;
-  login: (token: string, userData: any) => void;
+  login: (token: string, userData: any) => Promise<void>;
   logout: () => void;
   loading: boolean;
   token: string | null;
@@ -21,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading] = useState(false);
 
   // Login handler
-  const login = (authToken: string, userData: any) => {
+  const login = async (authToken: string, userData: any) => {
     // store token in localStorage so it survives app restarts
     localStorage.setItem('authToken', authToken);
     // store auth data in BOTH sessionStorage and localStorage
@@ -46,6 +48,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name: userData.name,
       email: userData.email,
     });
+
+    // 🔄 Sync data from backend on login
+    // This ensures chats and journals are available across devices/browsers
+    console.log('🔄 Syncing data from backend...');
+    try {
+      await Promise.all([
+        syncConversationsFromBackend(),
+        syncJournalsFromBackend(),
+      ]);
+      console.log('✅ Backend sync complete');
+    } catch (error) {
+      console.error('⚠️ Backend sync failed (will use local data):', error);
+      // Silently fail - local data is still available
+    }
   };
 
   // Logout handler

@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 import User from './models/User.js';
 import VerificationCode from './models/VerificationCode.js';
 import CrisisAlert from './models/CrisisAlert.js';
+import EncryptedChat from './models/EncryptedChat.js';
+import EncryptedJournal from './models/EncryptedJournal.js';
 import { hashPassword, verifyPassword, generateToken, generateVerificationCode } from './utils/crypto.js';
 import { initializeEmailService, isEmailServiceReady, sendVerificationEmail, sendPasswordResetEmail, sendCrisisAlertEmail, sendAdminContactEmail } from './utils/email.js';
 import { authMiddleware, errorHandler } from './middleware/auth.js';
@@ -1138,9 +1140,291 @@ app.post('/api/test-email', async (req, res) => {
   }
 });
 
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// =====================
+// ENCRYPTED CHAT ROUTES - SYNCED ACROSS DEVICES
+// =====================
+
+/**
+ * 🔒 SAVE/SYNC ENCRYPTED CHAT
+ * Client sends encrypted chat data
+ * Backend stores without access to decrypted content
+ */
+app.post('/api/chats/sync', authMiddleware, async (req, res) => {
+  try {
+    const { conversationId, encryptedData, iv, authTag, clientUpdatedAt, dataHash } = req.body;
+
+    // Validation
+    if (!conversationId || !encryptedData || !iv || !authTag || !dataHash) {
+      return res.status(400).json({ error: 'Missing required encryption fields' });
+    }
+
+    // Find or create encrypted chat record
+    let chat = await EncryptedChat.findOne({
+      userId: req.userId,
+      conversationId: conversationId,
+    });
+
+    if (chat) {
+      // Update existing chat
+      chat.encryptedData = encryptedData;
+      chat.iv = iv;
+      chat.authTag = authTag;
+      chat.dataHash = dataHash;
+      chat.clientUpdatedAt = new Date(clientUpdatedAt);
+      chat.isDeleted = false;
+    } else {
+      // Create new chat
+      chat = new EncryptedChat({
+        userId: req.userId,
+        conversationId: conversationId,
+        encryptedData,
+        iv,
+        authTag,
+        dataHash,
+        clientUpdatedAt: new Date(clientUpdatedAt),
+        isDeleted: false,
+      });
+    }
+
+    await chat.save();
+
+    res.status(200).json({
+      message: 'Chat synced successfully',
+      chatId: chat._id,
+      conversationId: conversationId,
+    });
+  } catch (error) {
+    console.error('Chat sync error:', error);
+    res.status(500).json({ error: error.message || 'Failed to sync chat' });
+  }
 });
+
+/**
+ * 🔒 GET ALL ENCRYPTED CHATS FOR USER
+ * Returns encrypted data - client will decrypt
+ */
+app.get('/api/chats/all', authMiddleware, async (req, res) => {
+  try {
+    const chats = await EncryptedChat.find({
+      userId: req.userId,
+      isDeleted: false,
+    }).select('conversationId encryptedData iv authTag dataHash clientUpdatedAt createdAt');
+
+    res.status(200).json({
+      message: 'Chats retrieved successfully',
+      count: chats.length,
+      chats: chats,
+    });
+  } catch (error) {
+    console.error('Get chats error:', error);
+    res.status(500).json({ error: error.message || 'Failed to retrieve chats' });
+  }
+});
+
+/**
+ * 🔒 GET SPECIFIC ENCRYPTED CHAT
+ */
+app.get('/api/chats/:conversationId', authMiddleware, async (req, res) => {
+  try {
+    const chat = await EncryptedChat.findOne({
+      userId: req.userId,
+      conversationId: req.params.conversationId,
+      isDeleted: false,
+    });
+
+    if (!chat) {
+      return res.status(404).json({ error: 'Chat not found' });
+    }
+
+    res.status(200).json({
+      message: 'Chat retrieved successfully',
+      chat: {
+        conversationId: chat.conversationId,
+        encryptedData: chat.encryptedData,
+        iv: chat.iv,
+        authTag: chat.authTag,
+        dataHash: chat.dataHash,
+        clientUpdatedAt: chat.clientUpdatedAt,
+        createdAt: chat.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error('Get chat error:', error);
+    res.status(500).json({ error: error.message || 'Failed to retrieve chat' });
+  }
+});
+
+/**
+ * 🔒 DELETE ENCRYPTED CHAT (Soft delete)
+ */
+app.delete('/api/chats/:conversationId', authMiddleware, async (req, res) => {
+  try {
+    const chat = await EncryptedChat.findOne({
+      userId: req.userId,
+      conversationId: req.params.conversationId,
+    });
+
+    if (!chat) {
+      return res.status(404).json({ error: 'Chat not found' });
+    }
+
+    // Soft delete
+    chat.isDeleted = true;
+    await chat.save();
+
+    res.status(200).json({
+      message: 'Chat deleted successfully',
+      conversationId: req.params.conversationId,
+    });
+  } catch (error) {
+    console.error('Delete chat error:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete chat' });
+  }
+});
+
+// =====================
+// ENCRYPTED JOURNAL ROUTES - SYNCED ACROSS DEVICES
+// =====================
+
+/**
+ * 🔒 SAVE/SYNC ENCRYPTED JOURNAL ENTRY
+ * Client sends encrypted journal data
+ * Backend stores without access to decrypted content
+ */
+app.post('/api/journals/sync', authMiddleware, async (req, res) => {
+  try {
+    const { entryId, encryptedData, iv, authTag, clientUpdatedAt, dataHash } = req.body;
+
+    // Validation
+    if (!entryId || !encryptedData || !iv || !authTag || !dataHash) {
+      return res.status(400).json({ error: 'Missing required encryption fields' });
+    }
+
+    // Find or create encrypted journal record
+    let journal = await EncryptedJournal.findOne({
+      userId: req.userId,
+      entryId: entryId,
+    });
+
+    if (journal) {
+      // Update existing journal
+      journal.encryptedData = encryptedData;
+      journal.iv = iv;
+      journal.authTag = authTag;
+      journal.dataHash = dataHash;
+      journal.clientUpdatedAt = new Date(clientUpdatedAt);
+      journal.isDeleted = false;
+    } else {
+      // Create new journal
+      journal = new EncryptedJournal({
+        userId: req.userId,
+        entryId: entryId,
+        encryptedData,
+        iv,
+        authTag,
+        dataHash,
+        clientUpdatedAt: new Date(clientUpdatedAt),
+        isDeleted: false,
+      });
+    }
+
+    await journal.save();
+
+    res.status(200).json({
+      message: 'Journal synced successfully',
+      journalId: journal._id,
+      entryId: entryId,
+    });
+  } catch (error) {
+    console.error('Journal sync error:', error);
+    res.status(500).json({ error: error.message || 'Failed to sync journal' });
+  }
+});
+
+/**
+ * 🔒 GET ALL ENCRYPTED JOURNAL ENTRIES FOR USER
+ * Returns encrypted data - client will decrypt
+ */
+app.get('/api/journals/all', authMiddleware, async (req, res) => {
+  try {
+    const journals = await EncryptedJournal.find({
+      userId: req.userId,
+      isDeleted: false,
+    }).select('entryId encryptedData iv authTag dataHash clientUpdatedAt createdAt');
+
+    res.status(200).json({
+      message: 'Journals retrieved successfully',
+      count: journals.length,
+      journals: journals,
+    });
+  } catch (error) {
+    console.error('Get journals error:', error);
+    res.status(500).json({ error: error.message || 'Failed to retrieve journals' });
+  }
+});
+
+/**
+ * 🔒 GET SPECIFIC ENCRYPTED JOURNAL ENTRY
+ */
+app.get('/api/journals/:entryId', authMiddleware, async (req, res) => {
+  try {
+    const journal = await EncryptedJournal.findOne({
+      userId: req.userId,
+      entryId: req.params.entryId,
+      isDeleted: false,
+    });
+
+    if (!journal) {
+      return res.status(404).json({ error: 'Journal entry not found' });
+    }
+
+    res.status(200).json({
+      message: 'Journal retrieved successfully',
+      journal: {
+        entryId: journal.entryId,
+        encryptedData: journal.encryptedData,
+        iv: journal.iv,
+        authTag: journal.authTag,
+        dataHash: journal.dataHash,
+        clientUpdatedAt: journal.clientUpdatedAt,
+        createdAt: journal.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error('Get journal error:', error);
+    res.status(500).json({ error: error.message || 'Failed to retrieve journal' });
+  }
+});
+
+/**
+ * 🔒 DELETE ENCRYPTED JOURNAL ENTRY (Soft delete)
+ */
+app.delete('/api/journals/:entryId', authMiddleware, async (req, res) => {
+  try {
+    const journal = await EncryptedJournal.findOne({
+      userId: req.userId,
+      entryId: req.params.entryId,
+    });
+
+    if (!journal) {
+      return res.status(404).json({ error: 'Journal entry not found' });
+    }
+
+    // Soft delete
+    journal.isDeleted = true;
+    await journal.save();
+
+    res.status(200).json({
+      message: 'Journal entry deleted successfully',
+      entryId: req.params.entryId,
+    });
+  } catch (error) {
+    console.error('Delete journal error:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete journal' });
+  }
+});
+
+
 
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {

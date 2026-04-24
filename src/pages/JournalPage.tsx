@@ -1,20 +1,22 @@
 /**
- * 🔒 JOURNAL PAGE - ALL ENTRIES STORED LOCALLY, NOT IN DATABASE
+ * 🔒 JOURNAL PAGE - ENCRYPTED CLOUD SYNC + LOCAL STORAGE
  * 
  * Privacy Guarantee:
- * ✅ Journal entries are stored in browser localStorage ONLY
- * ✅ NO journal data is sent to backend servers
- * ✅ Admins CANNOT view your journal entries
+ * ✅ Journal entries are stored in browser localStorage AND synced to backend
+ * ✅ Data is encrypted before sending to backend
+ * ✅ Admins CANNOT view or decrypt your journal entries
  * ✅ Data is user-specific and isolated (indexed by user ID)
- * ✅ Entries persist across sessions (same browser/device)
+ * ✅ Entries persist across sessions and devices
+ * ✅ When you login from a new device, your journals sync automatically
  * 
  * How journals work:
- * 1. All entries stored with key: MindFul_Journal_journals_${userId}
- * 2. Each user has completely separate storage
- * 3. Deleting an entry removes it permanently from your browser
- * 4. No cloud backup - your data is 100% on your device
+ * 1. All entries stored locally with key: MindFul_Journal_journals_${userId}
+ * 2. Each entry is encrypted with your password hash before backend sync
+ * 3. Backend stores encrypted data but cannot decrypt it
+ * 4. When you login from another device, encrypted data is fetched and decrypted
+ * 5. Your data is always synced across all your devices
  * 
- * NOTE: This is intentional for maximum privacy.
+ * NOTE: Maximum privacy with cross-device sync.
  * See PRIVACY_MODEL.md for full privacy documentation.
  */
 
@@ -66,19 +68,21 @@ const JournalPage: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleDeleteJournal = (id: string) => {
+  const handleDeleteJournal = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this journal entry?')) {
+      await storage.deleteJournalEntry(id);
       setJournals(journals.filter(journal => journal.id !== id));
     }
   };
 
-  const handleSubmitJournal = (journalData: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleSubmitJournal = async (journalData: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (editingJournal) {
       const updated = {
         ...editingJournal,
         ...journalData,
         updatedAt: Date.now(),
       };
+      await storage.updateJournalEntry(updated.id, updated);
       setJournals(journals.map(j => (j.id === updated.id ? updated : j)));
     } else {
       const newJournal: JournalEntry = {
@@ -87,6 +91,7 @@ const JournalPage: React.FC = () => {
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
+      await storage.addJournalEntry(newJournal);
       setJournals([...journals, newJournal]);
     }
     setShowForm(false);
