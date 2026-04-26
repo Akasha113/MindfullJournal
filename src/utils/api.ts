@@ -1,14 +1,21 @@
-// Production API URL from environment or fallback
+// Detect if running in production based on hostname
+const isProduction = () => {
+  const hostname = window.location.hostname;
+  return hostname !== 'localhost' && hostname !== '127.0.0.1';
+};
+
+// Get the correct API URL
 const getApiUrl = () => {
-  // During development, use environment variable or localhost
-  if (import.meta.env.DEV) {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  // In development (localhost), use local backend
+  if (!isProduction()) {
+    return 'http://localhost:3002';
   }
-  // In production, use Railway backend
-  return import.meta.env.VITE_API_URL || 'https://mindfulljournal-production.up.railway.app';
+  // In production (Vercel), use Railway backend
+  return 'https://mindfulljournal-production.up.railway.app';
 };
 
 export const API_URL = getApiUrl();
+console.log('🌐 API_URL:', API_URL);
 
 // Get stored token
 export const getToken = () => localStorage.getItem('authToken');
