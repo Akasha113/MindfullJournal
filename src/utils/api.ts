@@ -1,4 +1,14 @@
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+// Production API URL from environment or fallback
+const getApiUrl = () => {
+  // During development, use environment variable or localhost
+  if (import.meta.env.DEV) {
+    return import.meta.env.VITE_API_URL || 'http://localhost:3002';
+  }
+  // In production, use Railway backend
+  return import.meta.env.VITE_API_URL || 'https://mindfulljournal-production.up.railway.app';
+};
+
+export const API_URL = getApiUrl();
 
 // Get stored token
 export const getToken = () => localStorage.getItem('authToken');
