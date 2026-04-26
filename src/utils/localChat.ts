@@ -552,7 +552,7 @@ export const sendMessage = async (
       }
       
       // Send crisis alert to backend
-      const alertResponse = await fetch('http://localhost:3002/api/admin/crisis-alerts', {
+      const alertResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/crisis-alerts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
