@@ -10,7 +10,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       devOptions: {
         enabled: true,
-        type: 'module'
+        type: 'classic'
       },
       manifest: {
         name: 'Mindful Journal',
@@ -104,7 +104,7 @@ export default defineConfig({
             }
           },
           {
-            urlPattern: /^http:\/\/localhost:3001\/api\/.*/i,
+            urlPattern: /^(https?:\/\/)(.+)\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
