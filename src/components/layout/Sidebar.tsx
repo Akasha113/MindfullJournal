@@ -46,14 +46,14 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
   
 
   return (
-    <aside className="h-full flex flex-col bg-white dark:bg-[#16213e]">
-      <div className="p-6 border-b-2 border-[#f4e4f5] dark:border-[#2d1b4e] bg-gradient-to-r from-white to-[#f4e4f5] dark:from-[#1a1a2e] dark:to-[#2d1b4e]">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-10 w-10 bg-gradient-to-br from-[#6E2B8A] to-[#a323af] rounded-full flex items-center justify-center">
-            <Brain size={20} className="text-white" />
+    <aside className="h-full flex flex-col bg-white dark:bg-[#16213e] overflow-hidden">
+      <div className="p-3 sm:p-4 md:p-6 border-b-2 border-[#f4e4f5] dark:border-[#2d1b4e] bg-gradient-to-r from-white to-[#f4e4f5] dark:from-[#1a1a2e] dark:to-[#2d1b4e]">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2">
+          <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-[#6E2B8A] to-[#a323af] rounded-full flex items-center justify-center flex-shrink-0">
+            <Brain size={16} className="sm:size-20 text-white" />
           </div>
-          <div>
-            <h2 className="text-lg font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent">
+          <div className="min-w-0">
+            <h2 className="text-sm sm:text-lg font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent truncate">
               Mindful Journal
             </h2>
             <p className="text-xs text-gray-600 dark:text-gray-400">Wellness Companion</p>
@@ -61,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
         </div>
       </div>
       
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-2 sm:p-3 md:p-4 space-y-1 sm:space-y-2 overflow-y-auto">
         {navItems.map((item, index) => (
           <motion.div 
             key={item.to}
@@ -74,14 +74,14 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
               end={item.exact}
               children={({ isActive }) => (
                 <div className={`
-                  flex items-center px-4 py-3 rounded-lg font-semibold transition-all duration-200
+                  flex items-center px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-200 text-sm sm:text-base gap-2 sm:gap-3
                   ${isActive 
                     ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] text-white shadow-lg' 
                     : 'text-gray-700 dark:text-white hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e]'
                   }
                 `}>
-                  <span className={isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'}>{item.icon}</span>
-                  <span className={`ml-3 ${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>{item.label}</span>
+                  <span className={`${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'} flex-shrink-0`}>{item.icon}</span>
+                  <span className={`${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>{item.label}</span>
                 </div>
                 
               )}
@@ -93,14 +93,14 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
       </nav>
      
       <motion.div 
-        className="p-4 border-t-2 border-[#f4e4f5] dark:border-[#2d1b4e] bg-gradient-to-t from-[#f4e4f5] to-white dark:from-[#2d1b4e] dark:to-[#16213e]"
+        className="p-2 sm:p-3 md:p-4 border-t-2 border-[#f4e4f5] dark:border-[#2d1b4e] bg-gradient-to-t from-[#f4e4f5] to-white dark:from-[#2d1b4e] dark:to-[#16213e]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
         {/* Quote Section */}
         <motion.div 
-          className="text-xs text-gray-700 dark:text-white italic mb-4 p-3 rounded-lg bg-white dark:bg-[#1a1a2e] border border-[#f4e4f5] dark:border-[#2d1b4e]"
+          className="text-xs sm:text-sm text-gray-700 dark:text-white italic p-2 sm:p-3 rounded-lg bg-white dark:bg-[#1a1a2e] border border-[#f4e4f5] dark:border-[#2d1b4e]"
           key={quote.text}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -108,7 +108,7 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
           transition={{ duration: 1 }}
         >
           <p>"{quote.text}"</p>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">— {quote.author}</p>
+          <p className="mt-1 sm:mt-2 text-gray-600 dark:text-gray-300">— {quote.author}</p>
         </motion.div>
 
         {/* Logout Button */}

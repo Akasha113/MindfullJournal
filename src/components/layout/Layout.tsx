@@ -72,12 +72,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         
         {/* Main content */}
         <motion.main 
-          className="flex-1 overflow-auto p-4 md:p-6"
+          className="flex-1 overflow-auto p-2 sm:p-3 md:p-4 lg:p-6 w-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="max-w-7xl mx-auto w-full h-full">
+          <div className="max-w-7xl mx-auto w-full">
             {children || <Outlet />}
           </div>
         </motion.main>

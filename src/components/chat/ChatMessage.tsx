@@ -24,26 +24,26 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3 sm:mb-4 px-2 sm:px-0`}
     >
-      <div className={`flex max-w-[80%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+      <div className={`flex max-w-[90%] sm:max-w-[80%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
         <div className={`
-          flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center
-          ${isUser ? 'ml-2' : 'mr-2'}
+          flex-shrink-0 h-6 w-6 sm:h-8 sm:w-8 rounded-full flex items-center justify-center
+          ${isUser ? 'ml-1 sm:ml-2' : 'mr-1 sm:mr-2'}
           ${isUser ? 'bg-[#6E2B8A] dark:bg-[#2d1b4e]' : isCrisisMessage ? 'bg-[#a323af]' : 'bg-[#6E2B8A] dark:bg-[#a323af]'}
         `}>
           {isUser ? (
-            <User size={16} className="text-white dark:text-[#a323af]" />
+            <User size={14} className="sm:size-16 text-white dark:text-[#a323af]" />
           ) : isCrisisMessage ? (
-            <AlertCircle size={16} className="text-white" />
+            <AlertCircle size={14} className="sm:size-16 text-white" />
           ) : (
-            <Brain size={16} className="text-white" />
+            <Brain size={14} className="sm:size-16 text-white" />
           )}
         </div>
         
         <div>
           <div className={`
-            rounded-lg p-3 border-2
+            rounded-lg p-2 sm:p-3 border-2 text-xs sm:text-sm
             ${isUser 
               ? 'bg-[#E8D5F2] dark:bg-[#2d1b4e] text-black dark:text-white border-[#6E2B8A] dark:border-[#a323af]' 
               : isCrisisMessage
@@ -52,12 +52,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             }
           `}>
             {isCrisisMessage && (
-              <div className="flex items-center mb-2 text-[#6E2B8A] dark:text-[#a323af]">
-                <AlertCircle size={16} className="mr-2" />
-                <span className="font-semibold text-sm">Crisis Support Resources</span>
+              <div className="flex items-center mb-1 sm:mb-2 text-[#6E2B8A] dark:text-[#a323af]">
+                <AlertCircle size={14} className="sm:size-16 mr-1 sm:mr-2" />
+                <span className="font-semibold text-xs sm:text-sm">Crisis Support Resources</span>
               </div>
             )}
-            <p className={`whitespace-pre-wrap ${isUser ? 'text-black dark:text-white' : isCrisisMessage ? 'text-[#5a2270] dark:text-white' : 'text-white'}`}>{message.content}</p>
+            <p className={`whitespace-pre-wrap break-words ${isUser ? 'text-black dark:text-white' : isCrisisMessage ? 'text-[#5a2270] dark:text-white' : 'text-white'}`}>{message.content}</p>
           </div>
           
           <div className={`text-xs text-black dark:text-white mt-1 ${isUser ? 'text-right' : 'text-left'}`}>

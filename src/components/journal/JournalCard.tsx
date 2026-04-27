@@ -48,22 +48,22 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
           className="w-full h-40 object-cover"
         />
       )}
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <div>
-            <h3 className="text-lg font-semibold text-black dark:text-white mb-1">{journal.title}</h3>
-            <div className="text-xs text-black dark:text-white">
+      <div className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mb-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-lg font-semibold text-black dark:text-white mb-1 break-words">{journal.title}</h3>
+            <div className="text-xs sm:text-sm text-black dark:text-white">
               {format(new Date(journal.createdAt), 'MMM d, yyyy - h:mm a')}
             </div>
           </div>
 
-          <div className={`px-2 py-1 rounded-full text-xs ${moodColors[journal.mood]}`}>
+          <div className={`px-2 py-1 rounded-full text-xs sm:text-sm whitespace-nowrap ${moodColors[journal.mood]}`}>
             {moodEmojis[journal.mood]} {journal.mood.charAt(0).toUpperCase() + journal.mood.slice(1)}
           </div>
         </div>
 
         <motion.div
-          className="mt-3 text-black dark:text-white overflow-hidden"
+          className="mt-3 text-xs sm:text-sm text-black dark:text-white overflow-hidden"
           animate={{ height: isExpanded ? 'auto' : '80px' }}
         >
           <p className={isExpanded ? '' : 'line-clamp-3'}>{journal.content}</p>
@@ -72,7 +72,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
         {journal.content.length > 150 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-2 text-sm text-black dark:text-white hover:text-[#6E2B8A] dark:hover:text-[#a323af] focus:outline-none font-medium"
+            className="mt-2 text-xs sm:text-sm text-black dark:text-white hover:text-[#6E2B8A] dark:hover:text-[#a323af] focus:outline-none font-medium"
           >
             {isExpanded ? 'Show less' : 'Read more'}
           </button>
@@ -92,7 +92,7 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
         )}
 
         {journal.attachments && journal.attachments.length > 0 && (
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="mt-3 grid responsive-grid-2 gap-2">
             {journal.attachments
               .filter(att => !bannerImage || att.id !== bannerImage.id)
               .map(att => (
@@ -117,13 +117,13 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
         )}
 
         {/* Buttons */}
-        <div className="mt-4 flex justify-end gap-2">
+        <div className="mt-4 flex flex-col sm:flex-row justify-end gap-2">
           {/* Edit button: purple bg with white icon, hover gradient from white to light purple */}
           <Button
             size="sm"
             onClick={() => onEdit(journal)}
-            icon={<Edit size={16} className="text-white group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
-            className="bg-[#6E2B8A] dark:bg-[#a323af] text-white dark:text-white hover:bg-gradient-to-r hover:from-white hover:to-[#e8c8eb] dark:hover:bg-gradient-to-r dark:hover:from-[#3d2860] dark:hover:to-[#2d1b4e] hover:text-[#6E2B8A] dark:hover:text-[#a323af] border-2 border-[#6E2B8A] dark:border-[#a323af] transition-all duration-300 group"
+            icon={<Edit size={14} className="sm:size-16 text-white group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
+            className="bg-[#6E2B8A] dark:bg-[#a323af] text-white dark:text-white hover:bg-gradient-to-r hover:from-white hover:to-[#e8c8eb] dark:hover:bg-gradient-to-r dark:hover:from-[#3d2860] dark:hover:to-[#2d1b4e] hover:text-[#6E2B8A] dark:hover:text-[#a323af] border-2 border-[#6E2B8A] dark:border-[#a323af] transition-all duration-300 group text-xs sm:text-sm w-full sm:w-auto touch-button"
           >
             Edit
           </Button>
@@ -132,8 +132,8 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
           <Button
             size="sm"
             onClick={() => onDelete(journal.id)}
-            icon={<Trash size={16} className="text-black group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
-            className="bg-white dark:bg-[#2d1b4e] text-black dark:text-white border-2 border-[#E9D5FF] dark:border-[#2d1b4e] hover:bg-gradient-to-r hover:from-[#e8c8eb] hover:to-white dark:hover:bg-gradient-to-r dark:hover:from-[#2d1b4e] dark:hover:to-[#3d2860] hover:text-[#6E2B8A] dark:hover:text-[#a323af] hover:border-[#6E2B8A] dark:hover:border-[#a323af] transition-all duration-300 group"
+            icon={<Trash size={14} className="sm:size-16 text-black group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
+            className="bg-white dark:bg-[#2d1b4e] text-black dark:text-white border-2 border-[#E9D5FF] dark:border-[#2d1b4e] hover:bg-gradient-to-r hover:from-[#e8c8eb] hover:to-white dark:hover:bg-gradient-to-r dark:hover:from-[#2d1b4e] dark:hover:to-[#3d2860] hover:text-[#6E2B8A] dark:hover:text-[#a323af] hover:border-[#6E2B8A] dark:hover:border-[#a323af] transition-all duration-300 group text-xs sm:text-sm w-full sm:w-auto touch-button"
           >
             Delete
           </Button>

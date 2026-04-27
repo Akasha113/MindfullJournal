@@ -157,32 +157,32 @@ const MoodPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#16213e] py-8 px-4 md:px-8 space-y-6">
+    <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#16213e] py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8 space-y-4 sm:space-y-6">
       {loading ? (
         <div className="text-center py-12">
-          <p className="text-gray-600 dark:text-gray-300">Loading mood data...</p>
+          <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Loading mood data...</p>
         </div>
       ) : (
         <>
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-[#6E2B8A] mb-2">Mood Tracker</h1>
-            <p className="text-gray-600 dark:text-gray-300">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#6E2B8A] mb-1 sm:mb-2">Mood Tracker</h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
               Track your daily mood to see patterns and trends over time
             </p>
           </div>
 
           {/* Today's Mood Section */}
           <motion.div
-            className="bg-white dark:bg-[#16213e] p-6 rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A]"
+            className="bg-white dark:bg-[#16213e] p-3 sm:p-4 md:p-6 rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4 text-[#6E2B8A]">
               {hasTrackedToday && !isEditing ? "Today's Mood" : isEditing ? "Edit Today's Mood" : 'How are you feeling today?'}
             </h2>
 
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <MoodSelector
                 selectedMood={currentMood}
                 onSelectMood={setCurrentMood}
@@ -193,23 +193,23 @@ const MoodPage: React.FC = () => {
             {/* Track / Edit Buttons */}
             {!hasTrackedToday || isEditing ? (
               <>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-[#6E2B8A] dark:text-[#a323af] mb-2">
+                <div className="mb-3 sm:mb-4">
+                  <label className="block text-xs sm:text-sm font-medium text-[#6E2B8A] dark:text-[#a323af] mb-2">
                     Optional thoughts (optional)
                   </label>
                   <textarea
                     value={optionalThought}
                     onChange={e => setOptionalThought(e.target.value)}
                     placeholder="What's on your mind? What triggered this mood?"
-                    className="w-full p-3 border-2 border-[#f4e4f5] dark:border-[#6E2B8A] bg-white dark:bg-[#2d1b4e] text-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent resize-none"
+                    className="w-full p-2 sm:p-3 border-2 border-[#f4e4f5] dark:border-[#6E2B8A] bg-white dark:bg-[#2d1b4e] text-gray-800 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent resize-none text-sm"
                     rows={3}
                   />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Button
                     onClick={handleTrackMood}
-                    className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white"
-                    icon={<Plus size={18} />}
+                    className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white text-sm sm:text-base touch-button w-full sm:w-auto"
+                    icon={<Plus size={16} className="sm:size-18" />}
                   >
                     {isEditing ? 'Update Mood' : "Track Today's Mood"}
                   </Button>
@@ -217,7 +217,7 @@ const MoodPage: React.FC = () => {
                     <Button
                       onClick={handleCancelEdit}
                       variant="outline"
-                      className="border-[#6E2B8A] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e]"
+                      className="border-[#6E2B8A] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] text-sm sm:text-base w-full sm:w-auto"
                     >
                       Cancel
                     </Button>
@@ -229,12 +229,12 @@ const MoodPage: React.FC = () => {
                 <Button
                   onClick={handleEditTodayMood}
                   variant="outline"
-                  className="border-[#6E2B8A] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e]"
+                  className="border-[#6E2B8A] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] text-sm sm:text-base w-full sm:w-auto touch-button"
                 >
                   Edit Today's Mood
                 </Button>
                 {optionalThought && (
-                  <div className="mt-4 p-3 bg-[#f4e4f5] dark:bg-[#2d1b4e] rounded-md italic text-[#6E2B8A] dark:text-[#a323af]">
+                  <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-[#f4e4f5] dark:bg-[#2d1b4e] rounded-md italic text-[#6E2B8A] dark:text-[#a323af] text-sm">
                     "{optionalThought}"
                   </div>
                 )}
@@ -249,14 +249,14 @@ const MoodPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-[#6E2B8A]">Mood Trends</h2>
-                <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mb-3 sm:mb-4">
+                <h2 className="text-base sm:text-lg md:text-xl font-semibold text-[#6E2B8A]">Mood Trends</h2>
+                <div className="flex space-x-1 sm:space-x-2 w-full sm:w-auto">
                   {[7, 14, 30].map(days => (
                     <button
                       key={days}
                       onClick={() => setTimeframe(days as 7 | 14 | 30)}
-                      className={`px-3 py-1 text-sm rounded font-medium transition-colors ${
+                      className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded font-medium transition-colors touch-button flex-1 sm:flex-none ${
                         timeframe === days
                           ? 'bg-[#6E2B8A] dark:bg-[#a323af] text-white'
                           : 'bg-[#f4e4f5] dark:bg-[#2d1b4e] text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#e8c8eb] dark:hover:bg-[#3a2860]'
@@ -277,25 +277,25 @@ const MoodPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <h2 className="text-xl font-semibold mb-4 text-[#6E2B8A]">Mood History</h2>
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4 text-[#6E2B8A]">Mood History</h2>
 
             {moodEntries.length === 0 ? (
-              <div className="text-center py-12 bg-white dark:bg-[#16213e] rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A]">
-                <p className="text-[#6E2B8A] dark:text-[#a323af] font-medium">No mood entries yet</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              <div className="text-center py-8 sm:py-12 bg-white dark:bg-[#16213e] rounded-lg shadow-md border-2 border-[#f4e4f5] dark:border-[#6E2B8A]">
+                <p className="text-[#6E2B8A] dark:text-[#a323af] font-medium text-sm sm:text-base">No mood entries yet</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2">
                   Start tracking your mood daily to see your history here
                 </p>
               </div>
             ) : (
               <div className="bg-white dark:bg-[#16213e] rounded-lg shadow-md overflow-hidden border-2 border-[#f4e4f5] dark:border-[#6E2B8A]">
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-[#f4e4f5] dark:bg-[#2d1b4e] text-left">
-                        <th className="py-3 px-4 font-medium text-[#6E2B8A] dark:text-[#a323af]">Date</th>
-                        <th className="py-3 px-4 font-medium text-[#6E2B8A] dark:text-[#a323af]">Mood</th>
-                        <th className="py-3 px-4 font-medium text-[#6E2B8A] dark:text-[#a323af]">Notes</th>
-                        <th className="py-3 px-4 font-medium text-[#6E2B8A] dark:text-[#a323af]">Action</th>
+                        <th className="py-2 sm:py-3 px-2 sm:px-4 font-medium text-[#6E2B8A] dark:text-[#a323af] text-xs sm:text-sm">Date</th>
+                        <th className="py-2 sm:py-3 px-2 sm:px-4 font-medium text-[#6E2B8A] dark:text-[#a323af] text-xs sm:text-sm">Mood</th>
+                        <th className="hidden sm:table-cell py-2 sm:py-3 px-2 sm:px-4 font-medium text-[#6E2B8A] dark:text-[#a323af] text-xs sm:text-sm">Notes</th>
+                        <th className="py-2 sm:py-3 px-2 sm:px-4 font-medium text-[#6E2B8A] dark:text-[#a323af] text-xs sm:text-sm">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -317,22 +317,22 @@ const MoodPage: React.FC = () => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.05 + index * 0.02 }}
                             >
-                              <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-white">
-                                {format(new Date(entry.date), 'MMM d, yyyy')}
+                              <td className="py-2 sm:py-3 px-2 sm:px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-white text-xs sm:text-sm">
+                                {format(new Date(entry.date), 'MMM d')}
                               </td>
-                              <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-white font-medium">
-                                {moodEmojis[entry.mood]} {entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}
+                              <td className="py-2 sm:py-3 px-2 sm:px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-white font-medium text-xs sm:text-sm">
+                                {moodEmojis[entry.mood]} <span className="hidden sm:inline">{entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}</span>
                               </td>
-                              <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-gray-300 max-w-xs truncate">
+                              <td className="hidden sm:table-cell py-2 sm:py-3 px-2 sm:px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-gray-300 max-w-xs truncate text-xs sm:text-sm">
                                 {entry.note || '-'}
                               </td>
-                              <td className="py-3 px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e]">
+                              <td className="py-2 sm:py-3 px-2 sm:px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e]">
                                 <button
                                   onClick={() => handleDeleteMood(entry.id)}
-                                  className="text-red-500 hover:text-red-700 transition-colors"
+                                  className="text-red-500 hover:text-red-700 transition-colors p-1 touch-button"
                                   title="Delete mood entry"
                                 >
-                                  <Trash2 size={18} />
+                                  <Trash2 size={16} className="sm:size-18" />
                                 </button>
                               </td>
                             </motion.tr>

@@ -166,17 +166,17 @@ const AdminDashboardPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e]">
       {/* Header */}
       <header className="bg-white dark:bg-[#16213e] border-b border-[#f4e4f5] dark:border-[#2d1b4e] sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-[#6E2B8A] dark:text-[#a323af] flex items-center gap-2">
-              <Shield className="w-6 h-6" />
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#6E2B8A] dark:text-[#a323af] flex items-center gap-1 sm:gap-2">
+              <Shield className="w-5 h-5 sm:w-6 sm:h-6" />
               Admin Dashboard
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Welcome, {admin?.name}</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Welcome, {admin?.name}</p>
           </div>
           <Button
             onClick={handleLogout}
-            className="bg-[#6E2B8A] hover:bg-[#5a2270] dark:bg-[#a323af] dark:hover:bg-[#8b1b8f] !text-white flex items-center gap-2"
+            className="bg-[#6E2B8A] hover:bg-[#5a2270] dark:bg-[#a323af] dark:hover:bg-[#8b1b8f] !text-white flex items-center gap-2 text-sm touch-button w-full sm:w-auto"
           >
             <LogOut className="w-4 h-4" />
             Logout
@@ -185,20 +185,20 @@ const AdminDashboardPage: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {error && (
-          <motion.div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-8 text-red-700 dark:text-red-400">
+          <motion.div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4 mb-4 sm:mb-8 text-red-700 dark:text-red-400 text-sm sm:text-base">
             {error}
           </motion.div>
         )}
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-[#f4e4f5] dark:border-[#2d1b4e]">
+        <div className="flex gap-1 sm:gap-4 mb-4 sm:mb-8 border-b border-[#f4e4f5] dark:border-[#2d1b4e] overflow-x-auto">
           <button
             onClick={() => setSelectedTab('overview')}
-            className={`px-4 py-2 font-medium border-b-2 transition !text-white ${
+            className={`px-2 sm:px-4 py-2 font-medium border-b-2 transition !text-white text-xs sm:text-sm whitespace-nowrap ${
               selectedTab === 'overview'
-                ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] border-[#6E2B8A] dark:border-[#a323af] px-4 py-2 rounded-t-lg'
+                ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] border-[#6E2B8A] dark:border-[#a323af]'
                 : 'bg-[#8B5BA5] dark:bg-[#2d1b4e] border-transparent hover:bg-[#7a4a94] dark:hover:bg-[#3a2860]'
             }`}
           >
@@ -206,25 +206,25 @@ const AdminDashboardPage: React.FC = () => {
           </button>
           <button
             onClick={() => setSelectedTab('crisis')}
-            className={`px-4 py-2 font-medium border-b-2 transition flex items-center gap-2 !text-white ${
+            className={`px-2 sm:px-4 py-2 font-medium border-b-2 transition flex items-center gap-1 !text-white text-xs sm:text-sm whitespace-nowrap ${
               selectedTab === 'crisis'
-                ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] border-[#6E2B8A] dark:border-[#a323af] px-4 py-2 rounded-t-lg'
+                ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] border-[#6E2B8A] dark:border-[#a323af]'
                 : 'bg-[#8B5BA5] dark:bg-[#2d1b4e] border-transparent hover:bg-[#7a4a94] dark:hover:bg-[#3a2860]'
             }`}
           >
-            <AlertTriangle className="w-4 h-4" />
+            <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
             Crisis Alerts
             {crisisStats && crisisStats.pendingAlerts > 0 && (
-              <span className="ml-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+              <span className="ml-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs">
                 {crisisStats.pendingAlerts}
               </span>
             )}
           </button>
           <button
             onClick={() => setSelectedTab('users')}
-            className={`px-4 py-2 font-medium border-b-2 transition !text-white ${
+            className={`px-2 sm:px-4 py-2 font-medium border-b-2 transition !text-white text-xs sm:text-sm whitespace-nowrap ${
               selectedTab === 'users'
-                ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] border-[#6E2B8A] dark:border-[#a323af] px-4 py-2 rounded-t-lg'
+                ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] border-[#6E2B8A] dark:border-[#a323af]'
                 : 'bg-[#8B5BA5] dark:bg-[#2d1b4e] border-transparent hover:bg-[#7a4a94] dark:hover:bg-[#3a2860]'
             }`}
           >
@@ -237,49 +237,49 @@ const AdminDashboardPage: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
             {/* User Stats */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">User Statistics</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-[#6E2B8A]">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">Total Users</p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalUsers}</p>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">User Statistics</h2>
+              <div className="grid responsive-grid-2 lg:grid-cols-4 gap-2 sm:gap-4">
+                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-3 sm:p-6 border-l-4 border-[#6E2B8A]">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Total Users</p>
+                      <p className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stats.totalUsers}</p>
                     </div>
-                    <Users className="w-12 h-12 text-[#6E2B8A] opacity-20" />
+                    <Users className="w-8 h-8 sm:w-12 sm:h-12 text-[#6E2B8A] opacity-20 flex-shrink-0" />
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-green-500">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">Verified Users</p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.verifiedUsers}</p>
+                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-3 sm:p-6 border-l-4 border-green-500">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Verified Users</p>
+                      <p className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stats.verifiedUsers}</p>
                     </div>
-                    <CheckCircle className="w-12 h-12 text-green-500 opacity-20" />
+                    <CheckCircle className="w-8 h-8 sm:w-12 sm:h-12 text-green-500 opacity-20 flex-shrink-0" />
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-orange-500">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">Unverified Users</p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.unverifiedUsers}</p>
+                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-3 sm:p-6 border-l-4 border-orange-500">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Unverified Users</p>
+                      <p className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stats.unverifiedUsers}</p>
                     </div>
-                    <Clock className="w-12 h-12 text-orange-500 opacity-20" />
+                    <Clock className="w-8 h-8 sm:w-12 sm:h-12 text-orange-500 opacity-20 flex-shrink-0" />
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-[#a323af]">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">New Today</p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.newUsersToday}</p>
+                <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-3 sm:p-6 border-l-4 border-[#a323af]">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">New Today</p>
+                      <p className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stats.newUsersToday}</p>
                     </div>
-                    <TrendingUp className="w-12 h-12 text-[#a323af] opacity-20" />
+                    <TrendingUp className="w-8 h-8 sm:w-12 sm:h-12 text-[#a323af] opacity-20 flex-shrink-0" />
                   </div>
                 </div>
               </div>
@@ -288,45 +288,45 @@ const AdminDashboardPage: React.FC = () => {
             {/* Crisis Stats */}
             {crisisStats && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Crisis Monitoring</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-red-500">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm">Critical Alerts</p>
-                        <p className="text-3xl font-bold text-red-600">{crisisStats.criticalAlerts}</p>
+                <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Crisis Monitoring</h2>
+                <div className="grid responsive-grid-2 lg:grid-cols-4 gap-2 sm:gap-4">
+                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-3 sm:p-6 border-l-4 border-red-500">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Critical Alerts</p>
+                        <p className="text-xl sm:text-3xl font-bold text-red-600">{crisisStats.criticalAlerts}</p>
                       </div>
-                      <AlertTriangle className="w-12 h-12 text-red-500 opacity-20" />
+                      <AlertTriangle className="w-8 h-8 sm:w-12 sm:h-12 text-red-500 opacity-20 flex-shrink-0" />
                     </div>
                   </div>
 
-                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-orange-500">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm">High Risk Alerts</p>
-                        <p className="text-3xl font-bold text-orange-600">{crisisStats.highRiskAlerts}</p>
+                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-3 sm:p-6 border-l-4 border-orange-500">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">High Risk Alerts</p>
+                        <p className="text-xl sm:text-3xl font-bold text-orange-600">{crisisStats.highRiskAlerts}</p>
                       </div>
-                      <AlertCircle className="w-12 h-12 text-orange-500 opacity-20" />
+                      <AlertCircle className="w-8 h-8 sm:w-12 sm:h-12 text-orange-500 opacity-20 flex-shrink-0" />
                     </div>
                   </div>
 
-                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-[#6E2B8A]">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm">Pending Review</p>
-                        <p className="text-3xl font-bold text-[#6E2B8A]">{crisisStats.pendingAlerts}</p>
+                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-3 sm:p-6 border-l-4 border-[#6E2B8A]">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Pending Review</p>
+                        <p className="text-xl sm:text-3xl font-bold text-[#6E2B8A]">{crisisStats.pendingAlerts}</p>
                       </div>
-                      <Clock className="w-12 h-12 text-[#6E2B8A] opacity-20" />
+                      <Clock className="w-8 h-8 sm:w-12 sm:h-12 text-[#6E2B8A] opacity-20 flex-shrink-0" />
                     </div>
                   </div>
 
-                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-6 border-l-4 border-red-700">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-gray-600 text-sm">Emergency Alerts</p>
-                        <p className="text-3xl font-bold text-red-700">{crisisStats.emergencyAlerts}</p>
+                  <div className="bg-white dark:bg-[#16213e] rounded-lg shadow p-3 sm:p-6 border-l-4 border-red-700">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Emergency Alerts</p>
+                        <p className="text-xl sm:text-3xl font-bold text-red-700">{crisisStats.emergencyAlerts}</p>
                       </div>
-                      <Zap className="w-12 h-12 text-red-600 opacity-20" />
+                      <Zap className="w-8 h-8 sm:w-12 sm:h-12 text-red-600 opacity-20 flex-shrink-0" />
                     </div>
                   </div>
                 </div>

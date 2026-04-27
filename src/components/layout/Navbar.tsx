@@ -59,9 +59,9 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Brain size={20} className="text-white" />
+                <Brain size={16} className="sm:size-20 text-white" />
               </motion.div>
-              <span className="ml-2 text-xl font-semibold text-[#6E2B8A] dark:text-white">Mindful Journal</span>
+              <span className="hidden sm:inline ml-2 text-lg sm:text-xl font-semibold text-[#6E2B8A] dark:text-white">Mindful Journal</span>
             </Link>
           </div>
           
@@ -76,7 +76,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
 
             <Link
               to="/about"
-              className="text-sm font-semibold text-[#6E2B8A] dark:text-[#a323af] hover:text-[#5a2270] dark:hover:text-[#ba5ac3]"
+              className="hidden sm:inline text-sm font-semibold text-[#6E2B8A] dark:text-[#a323af] hover:text-[#5a2270] dark:hover:text-[#ba5ac3]"
             >
               About
             </Link>
@@ -85,17 +85,17 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               <div className="relative" ref={dropdownRef}>
                 <motion.button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white font-semibold hover:shadow-lg transition-all duration-200"
+                  className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white font-semibold hover:shadow-lg transition-all duration-200 text-sm sm:text-base touch-button"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <User size={18} />
-                  <span className="text-sm">{user.name}</span>
+                  <User size={16} className="sm:size-18" />
+                  <span className="hidden sm:inline text-sm">{user.name}</span>
                   <motion.div
                     animate={{ rotate: showDropdown ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <ChevronDown size={18} />
+                    <ChevronDown size={16} className="sm:size-18" />
                   </motion.div>
                 </motion.button>
 
@@ -108,7 +108,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                     pointerEvents: showDropdown ? 'auto' : 'none'
                   }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-40 bg-white dark:bg-[#1a1a2e] rounded-lg shadow-xl border-2 border-[#f4e4f5] dark:border-[#6E2B8A] z-50"
+                  className="absolute right-0 mt-2 w-36 sm:w-40 bg-white dark:bg-[#1a1a2e] rounded-lg shadow-xl border-2 border-[#f4e4f5] dark:border-[#6E2B8A] z-50"
                 >
                   {/* User Info */}
                   <div className="px-4 py-3 border-b border-[#f4e4f5] dark:border-[#6E2B8A]">

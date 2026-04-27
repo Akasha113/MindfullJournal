@@ -33,18 +33,38 @@ body {
   color: #000000;
 }
 
-/* Headings */
+/* Headings - Mobile first, responsive sizes */
 h1, h2, h3, h4, h5, h6 {
   @apply text-[#6E2B8A] font-bold dark:text-[#a323af];
   color: #6E2B8A;
 }
 
-h1 { @apply text-4xl; }
-h2 { @apply text-3xl; }
-h3 { @apply text-2xl; }
-h4 { @apply text-xl; }
-h5 { @apply text-lg; }
-h6 { @apply text-base; }
+h1 { 
+  @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl;
+  line-height: 1.2;
+}
+
+h2 { 
+  @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+  line-height: 1.3;
+}
+
+h3 { 
+  @apply text-lg sm:text-xl md:text-2xl lg:text-3xl;
+  line-height: 1.3;
+}
+
+h4 { 
+  @apply text-base sm:text-lg md:text-xl;
+}
+
+h5 { 
+  @apply text-sm sm:text-base md:text-lg;
+}
+
+h6 { 
+  @apply text-xs sm:text-sm md:text-base;
+}
 
 /* Paragraphs and text */
 p, span, div {
@@ -55,13 +75,18 @@ p {
   @apply dark:text-white;
 }
 
-/* Buttons */
+/* Buttons - Responsive sizing */
 button, .btn {
-  @apply bg-[#6E2B8A] hover:bg-[#5a2270] text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
+  @apply bg-[#6E2B8A] hover:bg-[#5a2270] text-white font-semibold py-2 px-4 sm:px-5 md:px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base;
 }
 
 button:active, .btn:active {
   @apply transform scale-95;
+}
+
+/* Responsive button for different sizes */
+button.lg, .btn.lg {
+  @apply px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-base sm:text-lg md:text-xl;
 }
 
 /* Links */
@@ -101,4 +126,54 @@ input, textarea, select {
   height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
+}
+
+/* Responsive utilities */
+@layer components {
+  .responsive-container {
+    @apply px-3 sm:px-4 md:px-6 lg:px-8;
+  }
+
+  .responsive-padding {
+    @apply p-3 sm:p-4 md:p-6 lg:p-8;
+  }
+
+  .responsive-gap {
+    @apply gap-2 sm:gap-3 md:gap-4 lg:gap-6;
+  }
+
+  .responsive-text {
+    @apply text-xs sm:text-sm md:text-base lg:text-lg;
+  }
+
+  .responsive-heading-sm {
+    @apply text-sm sm:text-base md:text-lg lg:text-xl;
+  }
+
+  .responsive-heading-md {
+    @apply text-base sm:text-lg md:text-xl lg:text-2xl;
+  }
+
+  /* Mobile-first responsive grid */
+  .responsive-grid-2 {
+    @apply grid-cols-1 sm:grid-cols-2;
+  }
+
+  .responsive-grid-3 {
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .responsive-grid-4 {
+    @apply grid-cols-2 sm:grid-cols-3 lg:grid-cols-4;
+  }
+
+  /* Better spacing for mobile */
+  .mobile-safe-area {
+    @apply pb-20 sm:pb-0;
+  }
+
+  /* Touch-friendly buttons for mobile */
+  .touch-button {
+    @apply min-h-[44px] sm:min-h-auto;
+  }
 }
