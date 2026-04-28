@@ -33,11 +33,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           ${isUser ? 'bg-[#6E2B8A] dark:bg-[#2d1b4e]' : isCrisisMessage ? 'bg-[#a323af]' : 'bg-[#6E2B8A] dark:bg-[#a323af]'}
         `}>
           {isUser ? (
-            <User size={14} className="sm:size-16 text-white dark:text-[#a323af]" />
+            <User size={14} className=" text-white dark:text-[#a323af]" />
           ) : isCrisisMessage ? (
             <AlertCircle size={14} className="sm:size-16 text-white" />
           ) : (
-            <Brain size={14} className="sm:size-16 text-white" />
+            <Brain size={14} className=" text-white" />
           )}
         </div>
         

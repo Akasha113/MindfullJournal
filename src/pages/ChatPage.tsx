@@ -16,6 +16,7 @@ const ChatPage: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [pageLoading, setPageLoading] = React.useState(true);
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = React.useState<string | null>(null);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   // Load conversations from localStorage on mount - ONLY after auth loads
@@ -122,11 +123,25 @@ const ChatPage: React.FC = () => {
 
   const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!window.confirm('Delete this conversation?')) return;
-    await localChat.deleteConversation(id);
-    const updated = conversations.filter(c => c.id !== id);
-    setConversations(updated);
-    setActiveConversation(updated[updated.length - 1] ?? null);
+    setDeleteConfirmId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
+    try {
+      await localChat.deleteConversation(deleteConfirmId);
+      const updated = conversations.filter(c => c.id !== deleteConfirmId);
+      setConversations(updated);
+      setActiveConversation(updated[updated.length - 1] ?? null);
+    } catch (err) {
+      console.error('Delete failed', err);
+    } finally {
+      setDeleteConfirmId(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmId(null);
   };
 
   const getDisplayMessages = (messages: any[] | undefined) =>
@@ -163,14 +178,13 @@ const ChatPage: React.FC = () => {
               handleNewConversation();
               setSidebarOpen(false);
             }}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-[#6E2B8A] dark:bg-gradient-to-r dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white rounded-md hover:bg-[#5a2270] transition-all text-sm sm:text-base"
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-[#6E2B8A] dark:bg-[#6E2B8A] text-white rounded-md hover:bg-[#5a2270] transition-all text-sm sm:text-base"
           >
-            <PlusCircle size={16} className="sm:size-18" />
-            <span className="hidden sm:inline">New Chat</span>
+            <span>New Chat</span>
           </button>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden p-2 text-[#6E2B8A] dark:text-[#a323af]"
+            className="md:hidden ml-2 p-2 text-[#6E2B8A] dark:text-[#6E2B8A] bg-[#f4e4f5] dark:bg-[#f4e4f5] rounded-md hover:bg-[#e8c8eb] dark:hover:bg-[#e8c8eb]"
           >
             <X size={20} />
           </button>
@@ -192,8 +206,13 @@ const ChatPage: React.FC = () => {
             >
               <div className="flex items-center justify-between p-2 sm:p-3">
                 <span className="truncate text-xs sm:text-sm">{convo.title}</span>
-                <button onClick={(e) => handleDeleteConversation(convo.id, e)} className="flex-shrink-0 ml-2">
-                  <Trash2 size={14} className="sm:size-16" />
+                {/* FIXED: light theme background + dark purple icon, proper small size */}
+                <button
+                  onClick={(e) => handleDeleteConversation(convo.id, e)}
+                  className="flex-shrink-0 ml-2 p-1 rounded-md bg-[#f4e4f5] dark:bg-[#3a2860] text-[#6E2B8A] dark:text-[#d8a8e8] hover:bg-[#e8c8eb] dark:hover:bg-[#4a3070] transition-colors"
+                  aria-label="Delete conversation"
+                >
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>
@@ -208,7 +227,7 @@ const ChatPage: React.FC = () => {
         <div className="flex items-center justify-between p-2 sm:p-3 md:p-4 border-b bg-white dark:bg-[#16213e] md:hidden">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 text-[#6E2B8A] dark:text-[#a323af] hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] rounded-lg"
+            className="p-2 text-[#6E2B8A] dark:text-[#a323af] bg-[#f4e4f5] dark:bg-[#f4e4f5] hover:bg-[#e8c8eb] dark:hover:bg-[#e8c8eb] rounded-lg"
           >
             <Menu size={20} />
           </button>
@@ -235,8 +254,9 @@ const ChatPage: React.FC = () => {
         </div>
 
         {/* Input Area */}
-        <div className="p-2 sm:p-3 md:p-4 border-t bg-white dark:bg-[#16213e] m-2 sm:m-3 md:m-4 rounded-lg shadow-md flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+        <div className="p-2 sm:p-3 md:p-4 border-t bg-white dark:bg-[#16213e] m-2 sm:m-3 md:m-4 rounded-lg shadow-md flex items-center gap-2 sm:gap-3">
           <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
+          {/* FIXED: smaller padding, proper icon size, no oversized button */}
           <button
             onClick={() => {
               if (!activeConversation) return;
@@ -248,12 +268,53 @@ const ChatPage: React.FC = () => {
                 );
               }
             }}
-            className="px-3 sm:px-4 py-2 bg-[#6E2B8A] text-white rounded-md hover:bg-[#5a2270] transition-all flex-shrink-0 touch-button"
+            className="p-1.5 bg-[#f4e4f5] dark:bg-[#3a2860] text-[#6E2B8A] dark:text-[#d8a8e8] rounded-md hover:bg-[#e8c8eb] dark:hover:bg-[#4a3070] transition-all flex-shrink-0"
+            title="Clear conversation"
           >
-            <Trash2 size={16} className="sm:size-18" />
+            <Trash2 size={16} />
           </button>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteConfirmId && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white dark:bg-[#16213e] rounded-lg shadow-lg p-6 max-w-sm mx-4 border-2 border-[#6E2B8A] dark:border-[#a323af]"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <h3 className="text-lg font-semibold text-black dark:text-white mb-2">
+                Delete Chat?
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                Are you sure you want to delete this chat? This action cannot be undone.
+              </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={cancelDelete}
+                  className="px-4 py-2 rounded-md bg-gray-200 dark:bg-[#2d1b4e] text-black dark:text-white hover:bg-gray-300 dark:hover:bg-[#3a2860] transition-colors font-medium text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-colors font-medium text-sm"
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

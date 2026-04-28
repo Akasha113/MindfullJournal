@@ -15,7 +15,6 @@
   --border-color: #e8c8eb;
 }
 
-/* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-primary: #1a1a2e;
@@ -27,13 +26,11 @@
   }
 }
 
-/* Base styles */
 body {
   @apply bg-white dark:bg-[#1a1a2e] text-black dark:text-white transition-colors duration-200;
   color: #000000;
 }
 
-/* Headings - Mobile first, responsive sizes */
 h1, h2, h3, h4, h5, h6 {
   @apply text-[#6E2B8A] font-bold dark:text-[#a323af];
   color: #6E2B8A;
@@ -66,7 +63,6 @@ h6 {
   @apply text-xs sm:text-sm md:text-base;
 }
 
-/* Paragraphs and text */
 p, span, div {
   color: #000000;
 }
@@ -75,7 +71,6 @@ p {
   @apply dark:text-white;
 }
 
-/* Buttons - Responsive sizing */
 button, .btn {
   @apply bg-[#6E2B8A] hover:bg-[#5a2270] text-white font-semibold py-2 px-4 sm:px-5 md:px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base;
 }
@@ -84,37 +79,30 @@ button:active, .btn:active {
   @apply transform scale-95;
 }
 
-/* Responsive button for different sizes */
 button.lg, .btn.lg {
   @apply px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-base sm:text-lg md:text-xl;
 }
 
-/* Links */
 a {
   @apply text-[#6E2B8A] hover:text-[#5a2270] transition-colors duration-200;
 }
 
-/* Inputs and textareas */
 input, textarea, select {
   @apply border-2 border-[#e8c8eb] dark:border-[#6E2B8A] focus:border-[#6E2B8A] dark:focus:border-[#a323af] dark:bg-[#16213e] dark:text-white transition-colors duration-200;
 }
 
-/* Cards */
 .card {
   @apply bg-white dark:bg-[#16213e] rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-4;
 }
 
-/* Accent elements */
 .accent {
   @apply text-[#6E2B8A];
 }
 
-/* Primary background */
 .bg-primary {
   @apply bg-[#6E2B8A] text-white;
 }
 
-/* Hide Clerk footer/branding in SignIn/SignUp components */
 .cl-root .cl-footer,
 .cl-root .cl-powered-by,
 .cl-root .powered-by,
@@ -128,7 +116,6 @@ input, textarea, select {
   padding: 0 !important;
 }
 
-/* Responsive utilities */
 @layer components {
   .responsive-container {
     @apply px-3 sm:px-4 md:px-6 lg:px-8;
@@ -154,7 +141,6 @@ input, textarea, select {
     @apply text-base sm:text-lg md:text-xl lg:text-2xl;
   }
 
-  /* Mobile-first responsive grid */
   .responsive-grid-2 {
     @apply grid-cols-1 sm:grid-cols-2;
   }
@@ -167,13 +153,12 @@ input, textarea, select {
     @apply grid-cols-2 sm:grid-cols-3 lg:grid-cols-4;
   }
 
-  /* Better spacing for mobile */
   .mobile-safe-area {
     @apply pb-20 sm:pb-0;
   }
 
   /* Touch-friendly buttons for mobile */
   .touch-button {
-    @apply min-h-[44px] sm:min-h-auto;
+    @apply min-h-[44px] sm:min-h-0;
   }
 }

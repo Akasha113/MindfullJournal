@@ -20,15 +20,58 @@
  */
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MoodEntry, Mood } from '../types';
 import MoodSelector from '../components/mood/MoodSelector';
 import MoodChart from '../components/mood/MoodChart';
 import Button from '../components/ui/Button';
 import { format } from 'date-fns';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus, X } from 'lucide-react';
 import storage from '../utils/storage';
 import { useAuth } from '../context/AuthContext';
+
+// ✅ Custom Popup Component
+const MoodPopup: React.FC<{ message: string; username: string; onClose: () => void }> = ({ message, username, onClose }) => {
+  React.useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <motion.div
+          className="bg-white dark:bg-[#1a1a2e] rounded-2xl shadow-2xl border-2 border-[#6E2B8A] dark:border-[#a323af] p-6 sm:p-8 max-w-sm w-full mx-4 relative text-center"
+          initial={{ opacity: 0, scale: 0.8, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.8, y: 30 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        >
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 text-[#6E2B8A] dark:text-[#a323af] hover:text-[#a323af] dark:hover:text-[#e8c8eb] transition-colors"
+          >
+            <X size={18} />
+          </button>
+          <div className="text-5xl mb-4">✨</div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Dear</p>
+          <h2 className="text-xl font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent mb-3">
+            {username} 💜
+          </h2>
+          <p className="text-gray-700 dark:text-gray-200 text-sm sm:text-base font-medium">
+            {message}
+          </p>
+          <motion.div
+            className="mt-5 h-1 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] rounded-full"
+            initial={{ width: '100%' }}
+            animate={{ width: '0%' }}
+            transition={{ duration: 3, ease: 'linear' }}
+          />
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};
 
 const MoodPage: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
@@ -38,24 +81,28 @@ const MoodPage: React.FC = () => {
   const [timeframe, setTimeframe] = React.useState<7 | 14 | 30>(7);
   const [loading, setLoading] = React.useState(true);
   const [isEditing, setIsEditing] = React.useState(false);
+  const [popup, setPopup] = React.useState<{ show: boolean; message: string }>({ show: false, message: '' });
 
-  // Load mood entries from storage (user-specific) - ONLY after user is loaded
+  const showPopup = (message: string) => setPopup({ show: true, message });
+  const closePopup = () => setPopup({ show: false, message: '' });
+
+  const username = React.useMemo(() => {
+    const profile = storage.getUserProfile();
+    return profile?.name || user?.email?.split('@')[0] || 'Friend';
+  }, [user]);
+
   React.useEffect(() => {
-    if (authLoading || !user) return; // Wait for auth and user
-    
+    if (authLoading || !user) return;
     const loadMoods = () => {
       try {
         setLoading(true);
-        storage.initializeStorage(); // Ensure storage is initialized with correct user
+        storage.initializeStorage();
         const entries = storage.getMoodEntries();
         setMoodEntries(entries);
-
-        // Load today's mood if exists
         const todayStr = new Date().toDateString();
         const todayEntry = entries.find(
           (e: MoodEntry) => new Date(e.date).toDateString() === todayStr
         );
-
         if (todayEntry) {
           setCurrentMood(todayEntry.mood);
           setOptionalThought(todayEntry.note || '');
@@ -69,17 +116,15 @@ const MoodPage: React.FC = () => {
     loadMoods();
   }, [authLoading, user]);
 
-  // Save to storage whenever entries change (user-specific)
   React.useEffect(() => {
-    if (loading || authLoading || !user) return; // Don't save while loading or no user
-    
+    if (loading || authLoading || !user) return;
     const profile = storage.getUserProfile();
-    storage.updateUserProfile({ 
-      ...profile, 
-      mood: { 
-        current: currentMood, 
-        history: moodEntries 
-      } 
+    storage.updateUserProfile({
+      ...profile,
+      mood: {
+        current: currentMood,
+        history: moodEntries,
+      },
     });
   }, [moodEntries, currentMood, loading, authLoading, user]);
 
@@ -88,59 +133,47 @@ const MoodPage: React.FC = () => {
     return moodEntries.some(e => new Date(e.date).toDateString() === todayStr);
   }, [moodEntries]);
 
-  // Track today's mood
   const handleTrackMood = () => {
     if (hasTrackedToday && !isEditing) {
       alert('You have already tracked your mood today. Edit or delete the existing entry to track again.');
       return;
     }
-
     const newEntry: MoodEntry = {
       id: Date.now().toString(),
       mood: currentMood,
       note: optionalThought,
       date: Date.now(),
     };
-
     if (isEditing) {
-      // Update existing entry
       const todayStr = new Date().toDateString();
-      const updated = moodEntries.map(e => 
+      const updated = moodEntries.map(e =>
         new Date(e.date).toDateString() === todayStr ? newEntry : e
       );
       setMoodEntries(updated);
       setIsEditing(false);
-      alert('Mood updated successfully! ✨');
+      showPopup('Your mood has been updated successfully! 🌟');
     } else {
-      // Create new entry
       setMoodEntries(prev => [...prev, newEntry]);
-      alert('Mood tracked successfully! ✨');
+      showPopup('Your mood has been tracked successfully! Keep it up! 🌈');
     }
-    
     setCurrentMood('neutral');
     setOptionalThought('');
   };
 
-  // Edit today's mood
   const handleEditTodayMood = () => {
     const todayStr = new Date().toDateString();
     const todayEntry = moodEntries.find(e => new Date(e.date).toDateString() === todayStr);
-    
     if (todayEntry) {
-      // Load the mood data into the form
       setCurrentMood(todayEntry.mood);
       setOptionalThought(todayEntry.note || '');
       setIsEditing(true);
     }
   };
 
-  // Cancel editing
   const handleCancelEdit = () => {
     setIsEditing(false);
     setCurrentMood('neutral');
     setOptionalThought('');
-    
-    // Reload today's mood if it exists
     const todayStr = new Date().toDateString();
     const todayEntry = moodEntries.find(e => new Date(e.date).toDateString() === todayStr);
     if (todayEntry) {
@@ -149,15 +182,26 @@ const MoodPage: React.FC = () => {
     }
   };
 
-  // Delete mood entry
   const handleDeleteMood = (id: string) => {
     if (window.confirm('Delete this mood entry?')) {
       setMoodEntries(prev => prev.filter(e => e.id !== id));
     }
   };
 
+  // ✅ Single shared class for ALL data cells — guarantees identical color everywhere
+  const cellClass = "py-2 sm:py-3 px-2 sm:px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-gray-300 text-xs sm:text-sm";
+
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#16213e] py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8 space-y-4 sm:space-y-6">
+
+      {popup.show && (
+        <MoodPopup
+          message={popup.message}
+          username={username}
+          onClose={closePopup}
+        />
+      )}
+
       {loading ? (
         <div className="text-center py-12">
           <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Loading mood data...</p>
@@ -190,7 +234,6 @@ const MoodPage: React.FC = () => {
               />
             </div>
 
-            {/* Track / Edit Buttons */}
             {!hasTrackedToday || isEditing ? (
               <>
                 <div className="mb-3 sm:mb-4">
@@ -209,7 +252,7 @@ const MoodPage: React.FC = () => {
                   <Button
                     onClick={handleTrackMood}
                     className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white text-sm sm:text-base touch-button w-full sm:w-auto"
-                    icon={<Plus size={16} className="sm:size-18" />}
+                    icon={<Plus size={16} />}
                   >
                     {isEditing ? 'Update Mood' : "Track Today's Mood"}
                   </Button>
@@ -317,22 +360,29 @@ const MoodPage: React.FC = () => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.05 + index * 0.02 }}
                             >
-                              <td className="py-2 sm:py-3 px-2 sm:px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-white text-xs sm:text-sm">
+                              {/* ✅ Date cell */}
+                              <td className={cellClass}>
                                 {format(new Date(entry.date), 'MMM d')}
                               </td>
-                              <td className="py-2 sm:py-3 px-2 sm:px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-white font-medium text-xs sm:text-sm">
-                                {moodEmojis[entry.mood]} <span className="hidden sm:inline">{entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}</span>
+                              {/* ✅ Mood cell — identical color to Date and Notes */}
+                              <td className={`${cellClass} font-medium`}>
+                                {moodEmojis[entry.mood]}{' '}
+                                <span className="hidden sm:inline">
+                                  {entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}
+                                </span>
                               </td>
-                              <td className="hidden sm:table-cell py-2 sm:py-3 px-2 sm:px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] text-gray-700 dark:text-gray-300 max-w-xs truncate text-xs sm:text-sm">
+                              {/* ✅ Notes cell */}
+                              <td className={`hidden sm:table-cell ${cellClass} max-w-xs truncate`}>
                                 {entry.note || '-'}
                               </td>
+                              {/* Action cell */}
                               <td className="py-2 sm:py-3 px-2 sm:px-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e]">
                                 <button
                                   onClick={() => handleDeleteMood(entry.id)}
-                                  className="text-red-500 hover:text-red-700 transition-colors p-1 touch-button"
+                                  className="p-1 rounded-md bg-[#f4e4f5] dark:bg-[#3a2860] text-[#6E2B8A] dark:text-[#d8a8e8] hover:bg-[#e8c8eb] dark:hover:bg-[#4a3070] transition-colors"
                                   title="Delete mood entry"
                                 >
-                                  <Trash2 size={16} className="sm:size-18" />
+                                  <Trash2 size={14} />
                                 </button>
                               </td>
                             </motion.tr>

@@ -1,10 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import { MessageCircle, Book, BarChart, Settings, Brain, LogOut } from 'lucide-react';
+import { MessageCircle, Book, BarChart, Settings, Brain } from 'lucide-react';
 import { getRandomQuote } from '../../utils/quotes';
 import storage from '../../utils/storage';
-import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
   closeSidebar: () => void;
@@ -13,7 +12,6 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
   const [quote, setQuote] = React.useState(getRandomQuote());
   const [isAdmin, setIsAdmin] = React.useState(false);
-  const { logout } = useAuth();
   
   React.useEffect(() => {
     const profile = storage.getUserProfile();
@@ -43,14 +41,12 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
     }
   };
 
-  
-
   return (
     <aside className="h-full flex flex-col bg-white dark:bg-[#16213e] overflow-hidden">
       <div className="p-3 sm:p-4 md:p-6 border-b-2 border-[#f4e4f5] dark:border-[#2d1b4e] bg-gradient-to-r from-white to-[#f4e4f5] dark:from-[#1a1a2e] dark:to-[#2d1b4e]">
         <div className="flex items-center gap-2 sm:gap-3 mb-2">
           <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-[#6E2B8A] to-[#a323af] rounded-full flex items-center justify-center flex-shrink-0">
-            <Brain size={16} className="sm:size-20 text-white" />
+           <Brain size={18} className="text-white" />
           </div>
           <div className="min-w-0">
             <h2 className="text-sm sm:text-lg font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent truncate">
@@ -83,13 +79,11 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
                   <span className={`${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'} flex-shrink-0`}>{item.icon}</span>
                   <span className={`${isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>{item.label}</span>
                 </div>
-                
               )}
               onClick={handleNavClick}
             />
           </motion.div>
         ))}
-        
       </nav>
      
       <motion.div 
@@ -110,9 +104,6 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
           <p>"{quote.text}"</p>
           <p className="mt-1 sm:mt-2 text-gray-600 dark:text-gray-300">— {quote.author}</p>
         </motion.div>
-
-        {/* Logout Button */}
-        
       </motion.div>
     </aside>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { color, motion } from 'framer-motion';
 import { MoodEntry, Mood } from '../../types';
 import { format, subDays, isAfter, isSameDay, startOfDay } from 'date-fns';
 
@@ -101,7 +101,7 @@ const MoodChart: React.FC<MoodChartProps> = ({ moodEntries, days = 7 }) => {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
                     {day.mood && (
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                      <div className="absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 text-xs sm:text-base whitespace-nowrap">
                         {moodEmojis[day.mood]}
                       </div>
                     )}
@@ -123,8 +123,8 @@ const MoodChart: React.FC<MoodChartProps> = ({ moodEntries, days = 7 }) => {
       
       <div className="mt-4 border-t border-[#f4e4f5] dark:border-[#2d1b4e] pt-2">
         <div className="flex justify-between text-xs text-[#6E2B8A] dark:text-[#a323af]">
-          <span>Past {days} days</span>
-          <span>Today</span>
+         <span className="text-gray-900 dark:text-white">Past {days} days</span>
+       <span className="text-gray-900 dark:text-white">Today</span>
         </div>
       </div>
     </div>

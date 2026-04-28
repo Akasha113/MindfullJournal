@@ -14,15 +14,14 @@ interface JournalCardProps {
 const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
-  const moodColors = {
-    great: 'bg-[#6E2B8A] text-white',
-    good: 'bg-[#6E2B8A] text-white',
-    neutral: 'bg-[#6E2B8A] text-white',
-    bad: 'bg-[#d191d7] dark:bg-[#2d1b4e] text-black dark:text-white',
-    awful: 'bg-[#e8c8eb] dark:bg-[#3a2860] text-black dark:text-white',
-  };
-
-  const moodEmojis = {
+const moodColors = {
+  great: 'bg-[#E9D5FF]',
+  good: 'bg-[#E9D5FF]',
+  neutral: 'bg-[#E9D5FF]',
+  bad: 'bg-[#E9D5FF]',
+  awful: 'bg-[#E9D5FF]',
+};
+const moodEmojis = {
     great: '😁',
     good: '🙂',
     neutral: '😐',
@@ -30,7 +29,6 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
     awful: '😞',
   };
 
-  // If there's an image attachment, display it as a banner at the top
   const bannerImage = journal.attachments?.find(att => att.fileType === 'image');
 
   return (
@@ -57,8 +55,12 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
             </div>
           </div>
 
-          <div className={`px-2 py-1 rounded-full text-xs sm:text-sm whitespace-nowrap ${moodColors[journal.mood]}`}>
-            {moodEmojis[journal.mood]} {journal.mood.charAt(0).toUpperCase() + journal.mood.slice(1)}
+          <div
+            style={{ color: '#3b0764' }}
+            className={`px-2 py-1 rounded-full text-xs whitespace-nowrap flex-shrink-0 font-semibold ${moodColors[journal.mood]}`}
+          >
+            <span className="hidden sm:inline">{moodEmojis[journal.mood]} {journal.mood.charAt(0).toUpperCase() + journal.mood.slice(1)}</span>
+            <span className="sm:hidden">{moodEmojis[journal.mood]}</span>
           </div>
         </div>
 
@@ -117,23 +119,21 @@ const JournalCard: React.FC<JournalCardProps> = ({ journal, onEdit, onDelete }) 
         )}
 
         {/* Buttons */}
-        <div className="mt-4 flex flex-col sm:flex-row justify-end gap-2">
-          {/* Edit button: purple bg with white icon, hover gradient from white to light purple */}
+        <div className="mt-4 flex flex-row justify-end gap-2">
           <Button
             size="sm"
             onClick={() => onEdit(journal)}
-            icon={<Edit size={14} className="sm:size-16 text-white group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
-            className="bg-[#6E2B8A] dark:bg-[#a323af] text-white dark:text-white hover:bg-gradient-to-r hover:from-white hover:to-[#e8c8eb] dark:hover:bg-gradient-to-r dark:hover:from-[#3d2860] dark:hover:to-[#2d1b4e] hover:text-[#6E2B8A] dark:hover:text-[#a323af] border-2 border-[#6E2B8A] dark:border-[#a323af] transition-all duration-300 group text-xs sm:text-sm w-full sm:w-auto touch-button"
+            icon={<Edit size={14} className="text-white group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
+            className="bg-[#6E2B8A] dark:bg-[#a323af] text-white dark:text-white hover:bg-gradient-to-r hover:from-white hover:to-[#e8c8eb] dark:hover:bg-gradient-to-r dark:hover:from-[#3d2860] dark:hover:to-[#2d1b4e] hover:text-[#6E2B8A] dark:hover:text-[#a323af] border-2 border-[#6E2B8A] dark:border-[#a323af] transition-all duration-300 group text-xs px-2 sm:px-3 touch-button"
           >
             Edit
           </Button>
 
-          {/* Delete button: gradient hover from light purple to white */}
           <Button
             size="sm"
             onClick={() => onDelete(journal.id)}
-            icon={<Trash size={14} className="sm:size-16 text-black group-hover:text-[#6E2B8A] dark:text-white dark:group-hover:text-[#a323af] transition-colors" />}
-            className="bg-white dark:bg-[#2d1b4e] text-black dark:text-white border-2 border-[#E9D5FF] dark:border-[#2d1b4e] hover:bg-gradient-to-r hover:from-[#e8c8eb] hover:to-white dark:hover:bg-gradient-to-r dark:hover:from-[#2d1b4e] dark:hover:to-[#3d2860] hover:text-[#6E2B8A] dark:hover:text-[#a323af] hover:border-[#6E2B8A] dark:hover:border-[#a323af] transition-all duration-300 group text-xs sm:text-sm w-full sm:w-auto touch-button"
+            icon={<Trash size={14} className="text-white group-hover:text-white transition-colors" />}
+            className="bg-[#6E2B8A] dark:bg-[#a323af] text-white dark:text-white hover:bg-gradient-to-r hover:from-white hover:to-[#e8c8eb] dark:hover:bg-gradient-to-r dark:hover:from-[#3d2860] dark:hover:to-[#2d1b4e] hover:text-[#6E2B8A] dark:hover:text-[#a323af] border-2 border-[#6E2B8A] dark:border-[#a323af] transition-all duration-300 group text-xs px-2 sm:px-3 touch-button"
           >
             Delete
           </Button>

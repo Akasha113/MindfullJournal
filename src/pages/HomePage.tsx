@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Book, BarChart, Brain, CheckCircle, Zap, Shield, Users, TrendingUp, Star } from 'lucide-react';
+import { MessageCircle, Book, BarChart, Brain, Zap, Shield, Users, TrendingUp, Star } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { getRandomQuote } from '../utils/quotes';
 import storage from '../utils/storage';
@@ -15,28 +15,26 @@ const HomePage: React.FC = () => {
   const [currentMood, setCurrentMood] = React.useState<Mood>('neutral');
   const [moodNote, setMoodNote] = React.useState('');
   const [hasTrackedMood, setHasTrackedMood] = React.useState(false);
-  
-  // Check if user already tracked mood today (only for authenticated users)
+
   React.useEffect(() => {
     if (isAuthenticated) {
       try {
         const entries = storage.getMoodEntries();
         const today = new Date().setHours(0, 0, 0, 0);
-        
+
         const trackedToday = entries.some(entry => {
           const entryDate = new Date(entry.date).setHours(0, 0, 0, 0);
           return entryDate === today;
         });
-        
+
         setHasTrackedMood(trackedToday);
-        
+
         if (trackedToday) {
-          // Get today's mood
           const todayEntry = entries.find(entry => {
             const entryDate = new Date(entry.date).setHours(0, 0, 0, 0);
             return entryDate === today;
           });
-          
+
           if (todayEntry) {
             setCurrentMood(todayEntry.mood);
             setMoodNote(todayEntry.note || '');
@@ -47,7 +45,7 @@ const HomePage: React.FC = () => {
       }
     }
   }, [isAuthenticated]);
-  
+
   const trackMood = () => {
     storage.addMoodEntry(currentMood, moodNote);
     setHasTrackedMood(true);
@@ -55,6 +53,8 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-white via-[#f9f5fa] to-[#f4e4f5] dark:from-[#0f0f1e] dark:via-[#1a1a2e] dark:to-[#16213e] flex flex-col items-center justify-center py-6 sm:py-8 md:py-12 px-3 sm:px-4">
+      
+      {/* Hero Section */}
       <motion.div
         className="text-center max-w-4xl mx-auto mb-8 sm:mb-12 md:mb-16"
         initial={{ opacity: 0, y: 20 }}
@@ -73,12 +73,12 @@ const HomePage: React.FC = () => {
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ duration: 0.3 }}
             >
-              <Brain size={32} className="sm:size-40 md:size-48 text-white" />
+              <Brain size={32} className="text-white" />
             </motion.div>
           </div>
         </motion.div>
 
-        <motion.h1 
+        <motion.h1
           className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-3 sm:mb-4 md:mb-6 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -86,8 +86,8 @@ const HomePage: React.FC = () => {
         >
           Welcome to Mindful Journal
         </motion.h1>
-        
-        <motion.p 
+
+        <motion.p
           className="text-base sm:text-lg md:text-xl lg:text-2xl text-black dark:text-white mb-4 sm:mb-6 md:mb-8 max-w-2xl mx-auto font-medium"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -132,6 +132,7 @@ const HomePage: React.FC = () => {
         </motion.div>
       </motion.div>
 
+      {/* Features Grid */}
       <motion.div
         className="grid responsive-grid-3 gap-4 sm:gap-6 md:gap-8 w-full max-w-5xl mx-auto"
         initial={{ opacity: 0, y: 20 }}
@@ -140,17 +141,17 @@ const HomePage: React.FC = () => {
       >
         {[
           {
-            icon: <MessageCircle size={24} className="sm:size-32 md:size-8" />,
+            icon: <MessageCircle size={24} />,
             title: "AI Therapy Chat",
             description: "Have meaningful conversations with our AI therapist in a safe, judgment-free space."
           },
           {
-            icon: <Book size={24} className="sm:size-32 md:size-8" />,
+            icon: <Book size={24} />,
             title: "Digital Journal",
             description: "Document your thoughts and feelings with our intuitive journaling system."
           },
           {
-            icon: <BarChart size={24} className="sm:size-32 md:size-8" />,
+            icon: <BarChart size={24} />,
             title: "Mood Tracking",
             description: "Track your emotional well-being and discover patterns over time."
           }
@@ -172,6 +173,7 @@ const HomePage: React.FC = () => {
         ))}
       </motion.div>
 
+      {/* Quote Section */}
       <motion.div
         className="mt-8 sm:mt-12 md:mt-16 text-center max-w-2xl mx-auto p-4 sm:p-6 md:p-8 bg-gradient-to-br from-white to-[#f4e4f5] dark:from-[#1a1a2e] dark:to-[#16213e] rounded-xl shadow-lg dark:shadow-xl border-2 border-[#6E2B8A] dark:border-[#2d1b4e]"
         initial={{ opacity: 0, y: 20 }}
@@ -191,7 +193,7 @@ const HomePage: React.FC = () => {
         transition={{ duration: 0.5, delay: 1 }}
       >
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 sm:mb-8 md:mb-12 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent">How It Works</h2>
-        <div className="responsive-grid-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid responsive-grid-3 gap-4 sm:gap-6 md:gap-8">
           {[
             { step: 1, title: "Create Account", description: "Sign up in seconds and start your wellness journey today." },
             { step: 2, title: "Share Your Feelings", description: "Chat with AI, journal your thoughts, and track your mood daily." },
@@ -208,8 +210,8 @@ const HomePage: React.FC = () => {
               <div className="h-10 w-10 sm:h-11 sm:w-11 md:h-12 md:w-12 bg-gradient-to-br from-[#6E2B8A] to-[#a323af] text-white rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4 font-bold text-base sm:text-lg">
                 {item.step}
               </div>
-              <h3 className="text-base sm:text-lg md:text-lg font-bold text-[#6E2B8A] dark:text-[#ba5ac3] mb-1 sm:mb-2">{item.title}</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm md:text-sm">{item.description}</p>
+              <h3 className="text-base sm:text-lg font-bold text-[#6E2B8A] dark:text-[#ba5ac3] mb-1 sm:mb-2">{item.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{item.description}</p>
             </motion.div>
           ))}
         </div>
@@ -223,12 +225,12 @@ const HomePage: React.FC = () => {
         transition={{ duration: 0.5, delay: 1.4 }}
       >
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 sm:mb-8 md:mb-12 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent">Why Choose Mindful Journal?</h2>
-        <div className="responsive-grid-2 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid responsive-grid-2 gap-3 sm:gap-4 md:gap-6">
           {[
-            { icon: <Shield size={20} className="sm:size-24" />, title: "100% Private", description: "Your data is encrypted and stored locally. Complete privacy guaranteed." },
-            { icon: <Zap size={20} className="sm:size-24" />, title: "AI-Powered Support", description: "Advanced AI therapy tailored to your personal mental wellness needs." },
-            { icon: <TrendingUp size={20} className="sm:size-24" />, title: "Track Progress", description: "Visualize your emotional growth with detailed mood analytics." },
-            { icon: <Users size={20} className="sm:size-24" />, title: "Community Driven", description: "Built with input from mental health professionals and real users." }
+            { icon: <Shield size={20} />, title: "100% Private", description: "Your data is encrypted and stored locally. Complete privacy guaranteed." },
+            { icon: <Zap size={20} />, title: "AI-Powered Support", description: "Advanced AI therapy tailored to your personal mental wellness needs." },
+            { icon: <TrendingUp size={20} />, title: "Track Progress", description: "Visualize your emotional growth with detailed mood analytics." },
+            { icon: <Users size={20} />, title: "Community Driven", description: "Built with input from mental health professionals and real users." }
           ].map((benefit, index) => (
             <motion.div
               key={benefit.title}
@@ -258,7 +260,7 @@ const HomePage: React.FC = () => {
         transition={{ duration: 0.5, delay: 1.8 }}
       >
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 sm:mb-8 md:mb-12 bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent">What Users Say</h2>
-        <div className="responsive-grid-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid responsive-grid-3 gap-4 sm:gap-6 md:gap-8">
           {[
             { name: "Sarah M.", text: "Mindful Journal has been transformative for my mental health. The AI conversations feel so natural and helpful." },
             { name: "Ahmed K.", text: "Finally found a tool that helps me understand my emotions better. The mood tracking is incredible!" },
@@ -274,7 +276,7 @@ const HomePage: React.FC = () => {
             >
               <div className="flex mb-2 sm:mb-3 md:mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} className="sm:size-16 text-yellow-400 fill-yellow-400" />
+                  <Star key={i} size={14} className="text-yellow-400 fill-yellow-400" />
                 ))}
               </div>
               <p className="text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 md:mb-4 text-xs sm:text-sm md:text-base">"{testimonial.text}"</p>
@@ -283,11 +285,7 @@ const HomePage: React.FC = () => {
           ))}
         </div>
       </motion.div>
-              <p className="font-semibold text-[#6E2B8A] dark:text-[#ba5ac3]">— {testimonial.name}</p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+
     </div>
   );
 };
