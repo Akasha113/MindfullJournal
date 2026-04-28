@@ -9,11 +9,11 @@ interface MoodSelectorProps {
 }
 
 const moods: { value: Mood; emoji: string; label: string }[] = [
-  { value: 'awful', emoji: '😞', label: 'Awful' },
-  { value: 'bad', emoji: '🙁', label: 'Bad' },
+  { value: 'awful',   emoji: '😞', label: 'Awful'   },
+  { value: 'bad',     emoji: '🙁', label: 'Bad'     },
   { value: 'neutral', emoji: '😐', label: 'Neutral' },
-  { value: 'good', emoji: '🙂', label: 'Good' },
-  { value: 'great', emoji: '😁', label: 'Great' },
+  { value: 'good',    emoji: '🙂', label: 'Good'    },
+  { value: 'great',   emoji: '😁', label: 'Great'   },
 ];
 
 const MoodSelector: React.FC<MoodSelectorProps> = ({
@@ -21,26 +21,31 @@ const MoodSelector: React.FC<MoodSelectorProps> = ({
   onSelectMood,
   size = 'md',
 }) => {
+  // ✅ Only valid Tailwind sizes used (no xs:, no w-13, no w-18)
   const circleSize = {
-    sm: 'w-12 h-12 sm:w-13 sm:h-13',
-    md: 'w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18',
-    lg: 'w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18',
+    sm: 'w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16',
+    md: 'w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-20 xl:h-20',
+    lg: 'w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-20 xl:h-20 2xl:w-24 2xl:h-24',
   };
 
   const emojiSize = {
-    sm: 'text-xl sm:text-2xl',
-    md: 'text-2xl sm:text-3xl md:text-3xl',
-    lg: 'text-2xl sm:text-3xl md:text-3xl',
+    sm: 'text-lg sm:text-xl md:text-2xl lg:text-3xl',
+    md: 'text-xl sm:text-2xl md:text-3xl lg:text-4xl',
+    lg: 'text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-4xl 2xl:text-5xl',
   };
 
   const labelSize = {
-    sm: 'text-[9px]',
-    md: 'text-[9px] sm:text-[10px] md:text-xs',
-    lg: 'text-[9px] sm:text-[10px] md:text-xs',
+    sm: 'text-[9px] sm:text-[10px] md:text-xs',
+    md: 'text-[9px] sm:text-[10px] md:text-xs lg:text-sm',
+    lg: 'text-[10px] sm:text-xs md:text-sm lg:text-base',
   };
 
   return (
-    <div className="flex justify-center items-center w-full gap-12 sm:gap-12 md:gap-13">
+    <div className="flex justify-center items-center w-full
+      gap-2 sm:gap-3 md:gap-4 lg:gap-5 xl:gap-6
+      px-2 sm:px-4
+      flex-nowrap overflow-x-auto
+    ">
       {moods.map((mood) => (
         <motion.button
           key={mood.value}
@@ -65,7 +70,10 @@ const MoodSelector: React.FC<MoodSelectorProps> = ({
             <span className={`
               mt-0.5 font-medium leading-tight
               ${labelSize[size]}
-              ${selectedMood === mood.value ? 'text-white' : 'text-gray-600 dark:text-gray-300'}
+              ${selectedMood === mood.value
+                ? 'text-white'
+                : 'text-gray-600 dark:text-gray-300'
+              }
             `}>
               {mood.label}
             </span>
