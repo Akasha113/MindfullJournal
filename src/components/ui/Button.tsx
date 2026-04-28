@@ -19,20 +19,20 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
-  const baseStyles = 'flex items-center justify-center rounded-lg focus:outline-none transition-all duration-200 font-semibold';
+  const baseStyles = 'flex items-center justify-center rounded-lg focus:outline-none transition-all duration-200 font-semibold min-h-10 xs:min-h-10 sm:min-h-11';
   
   const variantStyles = {
-    primary: 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] text-white hover:shadow-lg dark:from-[#ba5ac3] dark:to-[#e8c8eb] focus:ring-2 focus:ring-[#6E2B8A]',
-    secondary: 'bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] text-[#6E2B8A] dark:from-[#3a2860] dark:to-[#4a3570] dark:text-[#a323af] hover:shadow-lg focus:ring-2 focus:ring-[#6E2B8A]',
-    outline: 'bg-white border-2 border-[#6E2B8A] text-[#6E2B8A] hover:shadow-lg hover:text-white dark:bg-[#16213e] dark:border-[#a323af] dark:text-[#a323af] dark:hover:text-white focus:ring-2 focus:ring-[#6E2B8A]',
-    ghost: 'bg-gradient-to-r from-[#E9D5FF] to-[#f3e8ff] dark:from-[#2d1b4e] dark:to-[#3a2860] text-black dark:text-white hover:from-[#6E2B8A] hover:to-[#a323af] dark:hover:from-[#6E2B8A] dark:hover:to-[#a323af] hover:text-white focus:ring-2 focus:ring-[#6E2B8A]',
-    link: 'text-[#6E2B8A] dark:text-[#a323af] underline hover:text-[#5a2270] dark:hover:text-[#ba5ac3] p-0 focus:ring-0',
+    primary: 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] text-white hover:shadow-lg dark:from-[#ba5ac3] dark:to-[#e8c8eb] focus:ring-2 focus:ring-[#6E2B8A] active:scale-95',
+    secondary: 'bg-gradient-to-r from-[#f4e4f5] to-[#e8c8eb] text-[#6E2B8A] dark:from-[#3a2860] dark:to-[#4a3570] dark:text-[#a323af] hover:shadow-lg focus:ring-2 focus:ring-[#6E2B8A] active:scale-95',
+    outline: 'bg-white border-2 border-[#6E2B8A] text-[#6E2B8A] hover:shadow-lg hover:text-white dark:bg-[#16213e] dark:border-[#a323af] dark:text-[#a323af] dark:hover:text-white focus:ring-2 focus:ring-[#6E2B8A] active:scale-95',
+    ghost: 'bg-gradient-to-r from-[#E9D5FF] to-[#f3e8ff] dark:from-[#2d1b4e] dark:to-[#3a2860] text-black dark:text-white hover:from-[#6E2B8A] hover:to-[#a323af] dark:hover:from-[#6E2B8A] dark:hover:to-[#a323af] hover:text-white focus:ring-2 focus:ring-[#6E2B8A] active:scale-95',
+    link: 'text-[#6E2B8A] dark:text-[#a323af] underline hover:text-[#5a2270] dark:hover:text-[#ba5ac3] p-0 focus:ring-0 min-h-auto active:scale-95',
   };
   
   const sizeStyles = {
-    sm: 'text-xs py-1 px-2 space-x-1',
-    md: 'text-sm py-2 px-4 space-x-2',
-    lg: 'text-base py-3 px-6 space-x-3',
+    sm: 'text-xs xs:text-xs sm:text-sm py-1 xs:py-1.5 sm:py-2 px-2 xs:px-2.5 sm:px-3 space-x-1',
+    md: 'text-xs xs:text-sm sm:text-sm py-1.5 xs:py-2 sm:py-2.5 px-2.5 xs:px-3 sm:px-4 space-x-1.5 xs:space-x-2',
+    lg: 'text-sm xs:text-base sm:text-base py-2 xs:py-2.5 sm:py-3 px-3 xs:px-4 sm:px-6 space-x-2 xs:space-x-2.5 sm:space-x-3',
   };
   
   const buttonClasses = `

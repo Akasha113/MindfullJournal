@@ -35,7 +35,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           {isUser ? (
             <User size={14} className=" text-white dark:text-[#a323af]" />
           ) : isCrisisMessage ? (
-            <AlertCircle size={14} className="sm:size-16 text-white" />
+            <AlertCircle size={14} className="text-white" />
           ) : (
             <Brain size={14} className=" text-white" />
           )}
@@ -53,7 +53,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           `}>
             {isCrisisMessage && (
               <div className="flex items-center mb-1 sm:mb-2 text-[#6E2B8A] dark:text-[#a323af]">
-                <AlertCircle size={14} className="sm:size-16 mr-1 sm:mr-2" />
+                <AlertCircle size={14} className="mr-1 sm:mr-2" />
                 <span className="font-semibold text-xs sm:text-sm">Crisis Support Resources</span>
               </div>
             )}

@@ -168,14 +168,14 @@ const JournalPage: React.FC = () => {
   }, [journals, searchQuery, activeTag]);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-white dark:bg-[#16213e] py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8 responsive-container">
+    <div className="min-h-[calc(100vh-64px)] xs:min-h-[calc(100vh-56px)] sm:min-h-[calc(100vh-64px)] bg-white dark:bg-[#16213e] py-2 xs:py-3 sm:py-4 md:py-6 lg:py-8 px-2 xs:px-3 sm:px-4 md:px-6 lg:px-8">
       {loading ? (
-        <div className="text-center py-12">
-          <p className="text-black dark:text-white text-sm sm:text-base">Loading journals...</p>
+        <div className="text-center py-8 xs:py-10 sm:py-12">
+          <p className="text-black dark:text-white text-xs xs:text-sm sm:text-base">Loading journals...</p>
         </div>
       ) : error ? (
-        <div className="text-center py-12">
-          <p className="text-red-600 text-sm sm:text-base">Error loading journals: {error}</p>
+        <div className="text-center py-8 xs:py-10 sm:py-12">
+          <p className="text-red-600 text-xs xs:text-sm sm:text-base">Error loading journals: {error}</p>
         </div>
       ) : (
         <AnimatePresence mode="wait">
@@ -185,38 +185,38 @@ const JournalPage: React.FC = () => {
             </motion.div>
           ) : (
             <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <h1 className="text-xl sm:text-2xl font-semibold text-black dark:text-white">Journal</h1>
-                <Button onClick={handleCreateJournal} icon={<Plus size={16} className="sm:size-18 text-white" />} className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white dark:text-white text-sm sm:text-base touch-button w-full sm:w-auto">
+              <div className="flex flex-col xs:flex-col sm:flex-row justify-between items-start sm:items-center gap-2 xs:gap-3 sm:gap-4 mb-3 xs:mb-4 sm:mb-6">
+                <h1 className="text-lg xs:text-xl sm:text-2xl font-semibold text-black dark:text-white">Journal</h1>
+                <Button onClick={handleCreateJournal} icon={<Plus size={14} className="xs:w-4 xs:h-4 sm:w-5 sm:h-5 text-white" />} className="bg-[#6E2B8A] hover:bg-[#5a2270] text-white dark:text-white text-xs xs:text-sm sm:text-base w-full xs:w-full sm:w-auto py-1.5 xs:py-2 sm:py-2.5 min-h-9 xs:min-h-10 sm:min-h-11 px-2 xs:px-3 sm:px-4">
                   New Entry
                 </Button>
               </div>
 
               {/* Search and filter */}
-              <div className="mb-4 sm:mb-6 flex flex-col gap-2 sm:gap-4">
+              <div className="mb-3 xs:mb-4 sm:mb-6 flex flex-col gap-2 xs:gap-3 sm:gap-4">
                 <div className="relative w-full">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search size={16} className="sm:size-18 text-black dark:text-white" />
+                  <div className="absolute inset-y-0 left-0 pl-2 xs:pl-3 sm:pl-3 flex items-center pointer-events-none">
+                    <Search size={14} className="xs:w-4 xs:h-4 sm:w-5 sm:h-5 text-black dark:text-white" />
                   </div>
                   <input
                     type="text"
-                    placeholder="Search journals..."
+                    placeholder="Search..."
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    className="pl-9 sm:pl-10 w-full p-2 sm:p-3 border-2 border-[#6E2B8A] dark:border-[#6E2B8A] bg-white dark:bg-[#2d1b4e] text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent text-sm sm:text-base touch-button"
+                    className="pl-8 xs:pl-9 sm:pl-10 w-full p-1.5 xs:p-2 sm:p-3 border-2 border-[#6E2B8A] dark:border-[#6E2B8A] bg-white dark:bg-[#2d1b4e] text-black dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#6E2B8A] focus:border-transparent text-xs xs:text-sm sm:text-base min-h-8 xs:min-h-9 sm:min-h-10"
                   />
                 </div>
 
                 {allTags.length > 0 && (
-                  <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-2 -mx-3 sm:mx-0 px-3 sm:px-0">
-                    <Filter size={16} className="sm:size-18 text-black dark:text-white flex-shrink-0" />
+                  <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 overflow-x-auto pb-1.5 xs:pb-2 -mx-2 xs:mx-0 px-2 xs:px-0">
+                    <Filter size={14} className="xs:w-4 xs:h-4 sm:w-5 sm:h-5 text-black dark:text-white flex-shrink-0" />
 
-                    <button onClick={() => setActiveTag(null)} className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${!activeTag ? 'bg-[#6E2B8A] text-white' : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white'}`}>
+                    <button onClick={() => setActiveTag(null)} className={`px-2 xs:px-2.5 sm:px-3 py-0.5 xs:py-1 sm:py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap min-h-7 xs:min-h-8 sm:min-h-9 ${!activeTag ? 'bg-[#6E2B8A] text-white' : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white'}`}>
                       All
                     </button>
 
                     {allTags.map(tag => (
-                      <button key={tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)} className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${activeTag === tag ? 'bg-[#6E2B8A] text-white' : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white'}`}>
+                      <button key={tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)} className={`px-2 xs:px-2.5 sm:px-3 py-0.5 xs:py-1 sm:py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap min-h-7 xs:min-h-8 sm:min-h-9 ${activeTag === tag ? 'bg-[#6E2B8A] text-white' : 'bg-[#E9D5FF] dark:bg-[#2d1b4e] text-black dark:text-white'}`}>
                         #{tag}
                       </button>
                     ))}
@@ -226,14 +226,14 @@ const JournalPage: React.FC = () => {
 
               {/* Journal list */}
               {filteredJournals.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-black dark:text-white mb-4 text-sm sm:text-base">No journal entries found</p>
-                  <Button variant="outline" onClick={handleCreateJournal} icon={<Plus size={16} className="sm:size-18 text-black dark:text-white" />} className="border border-[#6E2B8A] text-black dark:text-white text-sm sm:text-base">
-                    Create your first entry
+                <div className="text-center py-8 xs:py-10 sm:py-12">
+                  <p className="text-black dark:text-white mb-3 xs:mb-4 sm:mb-4 text-xs xs:text-sm sm:text-base">No journal entries found</p>
+                  <Button variant="outline" onClick={handleCreateJournal} icon={<Plus size={14} className="xs:w-4 xs:h-4 sm:w-5 sm:h-5 text-black dark:text-white" />} className="border border-[#6E2B8A] text-black dark:text-white text-xs xs:text-sm sm:text-base py-1.5 xs:py-2 sm:py-2.5 min-h-9 xs:min-h-10 sm:min-h-11 px-2 xs:px-3 sm:px-4">
+                    Create Entry
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 xs:gap-3 sm:gap-4 md:gap-5 lg:gap-6">
                   <AnimatePresence>
                     {filteredJournals.map(journal => (
                       <JournalCard key={journal.id} journal={journal} onEdit={handleEditJournal} onDelete={handleDeleteJournal} />

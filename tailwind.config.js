@@ -30,6 +30,29 @@ export default {
       borderColor: {
         'primary': '#6E2B8A',
       },
+      screens: {
+        'xs': '375px',    // iPhone SE
+        'sm': '640px',    // Large phones, small tablets
+        'md': '768px',    // Tablets (iPad Mini+)
+        'lg': '1024px',   // iPad Pro, small laptops
+        'xl': '1280px',   // Laptops, desktops
+        '2xl': '1536px',  // Large monitors
+      },
+      spacing: {
+        'safe': 'env(safe-area-inset-bottom)',
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+      },
+      gridTemplateColumns: {
+        'responsive-2': 'repeat(auto-fit, minmax(300px, 1fr))',
+        'responsive-3': 'repeat(auto-fit, minmax(280px, 1fr))',
+        'responsive-4': 'repeat(auto-fit, minmax(240px, 1fr))',
+        'mobile': '1fr',
+        'tablet': 'repeat(2, 1fr)',
+        'desktop': 'repeat(3, 1fr)',
+        'large': 'repeat(4, 1fr)',
+      },
     },
   },
   plugins: [],
