@@ -84,13 +84,13 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             {/* Theme Toggle */}
             <button
               onClick={toggleDarkMode}
-              className="cursor-pointer p-2.5 xs:p-2 sm:p-2 rounded-md hover:bg-[#f4e4f5] dark:hover:bg-[#2d1b4e] transition-colors min-h-10 min-w-10 flex items-center justify-center"
+              className="cursor-pointer p-2.5 xs:p-2 sm:p-2 rounded-md bg-white dark:bg-[#16213e] hover:bg-[#f4e4f5] dark:hover:bg-[#1a1a2e] transition-colors min-h-10 min-w-10 flex items-center justify-center"
               title="Toggle dark mode"
             >
               {isDarkMode ? (
-                <Sun size={18} className="text-[#a323af]" />
+                <Sun size={18} className="text-white" />
               ) : (
-                <Moon size={18} className="text-[#6E2B8A]" />
+                <Moon size={18} className="text-[#1f1454]" />
               )}
             </button>
 
@@ -104,7 +104,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <span className="truncate hidden xs:inline">{user.name}</span>
-                  <span className="inline xs:hidden text-lg">👤</span>
+                  <span className="inline xs:hidden text-lg text-white">👤</span>
                   <motion.div
                     animate={{ rotate: showDropdown ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
@@ -135,16 +135,16 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                     onClick={() => handleNavigate('/dashboard/profile')}
                     className="w-full flex items-center gap-3 px-3 xs:px-4 py-2 xs:py-2.5 text-xs xs:text-sm text-black dark:text-white bg-gradient-to-r from-white to-[#f9f5fa] dark:from-[#1a1a2e] dark:to-[#2d1b4e] hover:from-[#f4e4f5] hover:to-[#e8c8eb] dark:hover:from-[#2d1b4e] dark:hover:to-[#3a2860] transition-all"
                   >
-                    <User size={16} className="flex-shrink-0" />
-                    <span>Profile</span>
+                    <User size={16} className="flex-shrink-0 text-black dark:text-white" />
+                    <span className="text-black dark:text-white">Profile</span>
                   </button>
 
                   <button
                     onClick={() => handleNavigate('/dashboard/settings')}
                     className="w-full flex items-center gap-3 px-3 xs:px-4 py-2 xs:py-2.5 text-xs xs:text-sm text-black dark:text-white bg-gradient-to-r from-white to-[#f9f5fa] dark:from-[#1a1a2e] dark:to-[#2d1b4e] hover:from-[#f4e4f5] hover:to-[#e8c8eb] dark:hover:from-[#2d1b4e] dark:hover:to-[#3a2860] transition-all"
                   >
-                    <Settings size={16} className="flex-shrink-0" />
-                    <span>Settings</span>
+                    <Settings size={16} className="flex-shrink-0 text-black dark:text-white" />
+                    <span className="text-black dark:text-white">Settings</span>
                   </button>
 
                   <div className="border-t border-[#f4e4f5] dark:border-[#6E2B8A]">

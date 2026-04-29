@@ -40,6 +40,7 @@ const JournalPage: React.FC = () => {
   const [activeTag, setActiveTag] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState('');
+  const [deleteJournalId, setDeleteJournalId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (authLoading || !user) return; // Wait for auth and valid user
@@ -112,11 +113,19 @@ const JournalPage: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleDeleteJournal = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this journal entry?')) {
-      await storage.deleteJournalEntry(id);
-      setJournals(journals.filter(journal => journal.id !== id));
-    }
+  const handleDeleteJournal = (id: string) => {
+    setDeleteJournalId(id);
+  };
+
+  const confirmDeleteJournal = async () => {
+    if (!deleteJournalId) return;
+    await storage.deleteJournalEntry(deleteJournalId);
+    setJournals(journals.filter(journal => journal.id !== deleteJournalId));
+    setDeleteJournalId(null);
+  };
+
+  const cancelDeleteJournal = () => {
+    setDeleteJournalId(null);
   };
 
   const handleSubmitJournal = async (journalData: Omit<JournalEntry, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -233,7 +242,7 @@ const JournalPage: React.FC = () => {
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 xs:gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+                <div className="grid grid-cols-1 gap-2 xs:gap-3 sm:gap-4 md:gap-5 lg:gap-6">
                   <AnimatePresence>
                     {filteredJournals.map(journal => (
                       <JournalCard key={journal.id} journal={journal} onEdit={handleEditJournal} onDelete={handleDeleteJournal} />
@@ -245,6 +254,45 @@ const JournalPage: React.FC = () => {
           )}
         </AnimatePresence>
       )}
+
+      <AnimatePresence>
+        {deleteJournalId && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="w-full max-w-sm rounded-2xl bg-white dark:bg-[#16213e] border border-[#d8a4e8] dark:border-[#4a3570] p-6 shadow-2xl"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+            >
+              <h2 className="text-lg font-bold text-black dark:text-white mb-3">Confirm Delete</h2>
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">
+                Are you sure you want to delete this journal entry? This action cannot be undone.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={cancelDeleteJournal}
+                  className="px-4 py-2 rounded-lg bg-[#f4f4f5] dark:bg-[#2d1b4e] text-black dark:text-white border border-[#d8a4e8] dark:border-[#4a3570] hover:bg-[#e8e8e8] dark:hover:bg-[#3a2860] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDeleteJournal}
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#6E2B8A] to-[#a323af] text-white hover:from-[#5a2270] hover:to-[#892c7e] transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

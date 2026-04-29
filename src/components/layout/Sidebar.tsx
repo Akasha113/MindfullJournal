@@ -50,9 +50,9 @@ const Sidebar: React.FC<SidebarProps> = ({ closeSidebar }) => {
           </div>
           <div className="min-w-0">
             <h2 className="text-xs xs:text-sm sm:text-base md:text-lg font-bold bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] bg-clip-text text-transparent truncate">
-              Mindful
+              Mindful Journal
             </h2>
-            <p className="text-xs text-gray-600 dark:text-gray-400 hidden xs:block truncate">Wellness</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 hidden xs:block truncate">Wellness companion</p>
           </div>
         </div>
       </div>

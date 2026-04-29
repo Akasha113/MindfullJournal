@@ -1,5 +1,5 @@
 import React from 'react';
-import { color, motion } from 'framer-motion';
+import { color, motion, AnimatePresence } from 'framer-motion';
 import storage from '../utils/storage';
 import notificationService from '../utils/notificationService';
 import { useSettings } from '../context/SettingsContext';
@@ -285,13 +285,6 @@ const SettingsPage: React.FC = () => {
           💾 Save All Settings
         </Button>
 
-        {saved && (
-          <motion.div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border border-green-300 dark:border-green-700" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
-            <Check size={20} className="text-green-600 dark:text-green-400" />
-            <span className="text-green-600 dark:text-green-400 font-semibold">✓ Settings saved successfully!</span>
-          </motion.div>
-        )}
-
         {error && (
           <motion.div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#f3e8ff] to-[#ede9fe] dark:from-[#2d1b4e] dark:to-[#3d2560] rounded-lg border border-[#d8a4e8] dark:border-[#5a2270]" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
             <X size={20} className="text-red-600 dark:text-red-400" />
@@ -299,6 +292,25 @@ const SettingsPage: React.FC = () => {
           </motion.div>
         )}
       </motion.div>
+
+      <AnimatePresence>
+        {saved && (
+          <motion.div
+            className="fixed bottom-6 right-6 z-50 max-w-xs rounded-2xl bg-white dark:bg-[#16213e] border border-green-300 dark:border-green-700 shadow-2xl p-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+          >
+            <div className="flex items-center gap-3">
+              <Check size={20} className="text-green-600 dark:text-green-400" />
+              <div>
+                <p className="text-sm font-semibold text-black dark:text-white">Settings updated successfully!</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Your preferences have been saved.</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
