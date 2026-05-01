@@ -259,9 +259,9 @@ const ChatPage: React.FC = () => {
           <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
           {/* FIXED: smaller padding, proper icon size, no oversized button */}
           <button
-            onClick={() => {
+            onClick={async () => {
               if (!activeConversation) return;
-              const cleared = localChat.clearConversation(activeConversation.id);
+              const cleared = await localChat.clearConversation(activeConversation.id);
               if (cleared) {
                 setActiveConversation(cleared);
                 setConversations(prev =>

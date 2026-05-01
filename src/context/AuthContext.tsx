@@ -20,7 +20,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<any | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'));
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Restore user session on app mount (for PWA refresh persistence)
+  React.useEffect(() => {
+    const restoreSession = () => {
+      const storedToken = localStorage.getItem('authToken');
+      const storedAuthData = localStorage.getItem('authData');
+
+      if (storedToken && storedAuthData) {
+        try {
+          const userData = JSON.parse(storedAuthData);
+          setToken(storedToken);
+          setUser(userData);
+          setIsAuthenticated(true);
+          console.log('✅ User session restored from storage');
+        } catch (err) {
+          console.error('Failed to restore session:', err);
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('authData');
+        }
+      }
+      setLoading(false);
+    };
+
+    restoreSession();
+  }, []);
 
   // Login handler
   const login = async (authToken: string, userData: any) => {
