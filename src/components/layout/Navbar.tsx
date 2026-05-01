@@ -104,7 +104,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <span className="truncate hidden xs:inline">{user.name}</span>
-                  <span className="inline xs:hidden text-lg text-white">👤</span>
+                  <User size={18} className="inline xs:hidden text-white" />
                   <motion.div
                     animate={{ rotate: showDropdown ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
@@ -135,7 +135,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                     onClick={() => handleNavigate('/dashboard/profile')}
                     className="w-full flex items-center gap-3 px-3 xs:px-4 py-2 xs:py-2.5 text-xs xs:text-sm text-black dark:text-white bg-gradient-to-r from-white to-[#f9f5fa] dark:from-[#1a1a2e] dark:to-[#2d1b4e] hover:from-[#f4e4f5] hover:to-[#e8c8eb] dark:hover:from-[#2d1b4e] dark:hover:to-[#3a2860] transition-all"
                   >
-                    <User size={16} className="flex-shrink-0 text-black dark:text-white" />
+                    <User size={16} className="flex-shrink-0 text-white" />
                     <span className="text-black dark:text-white">Profile</span>
                   </button>
 
