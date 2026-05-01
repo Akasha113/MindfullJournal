@@ -164,13 +164,13 @@ const SettingsPage: React.FC = () => {
           <label className="block text-base font-semibold text-[#6E2B8A] dark:text-[#ba5ac3] mb-4">
             Font Size Preference: <span className="text-[#a323af] dark:text-white">{fontSize}</span>
           </label>
-          <div className="flex gap-3 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6">
             {(['small', 'medium', 'large'] as const).map((size) => (
               <button
                 key={size}
                 onClick={() => setFontSize(size)}
                 className={`
-                  px-6 py-2 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105
+                  flex-1 min-w-[8rem] sm:flex-none sm:min-w-0 sm:w-auto px-4 sm:px-6 py-2 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105
                   ${fontSize === size
                     ? 'bg-gradient-to-r from-[#6E2B8A] to-[#a323af] dark:from-[#ba5ac3] dark:to-[#e8c8eb] text-white dark:text-white shadow-lg'
                     : 'bg-white dark:bg-[#0f0f1e] text-[#6E2B8A] dark:text-[#e8c8eb] border border-[#e8c8eb] dark:border-[#4a3570] hover:border-[#6E2B8A] dark:hover:border-[#ba5ac3]'
