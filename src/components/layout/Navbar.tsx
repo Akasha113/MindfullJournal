@@ -126,7 +126,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                 >
                   {/* User Info */}
                   <div className="px-3 xs:px-4 py-3 border-b border-[#f4e4f5] dark:border-[#6E2B8A]">
-                    <p className="text-xs xs:text-sm font-semibold text-black dark:text-white truncate">{user.name}</p>
+                    <p classNaGme="text-xs xs:text-sm font-semibold text-black dark:text-white truncate">{user.name}</p>
                     <p className="text-xs text-gray-600 dark:text-[#ba5ac3] truncate">{user.email}</p>
                   </div>
 
@@ -135,7 +135,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                     onClick={() => handleNavigate('/dashboard/profile')}
                     className="w-full flex items-center gap-3 px-3 xs:px-4 py-2 xs:py-2.5 text-xs xs:text-sm text-black dark:text-white bg-gradient-to-r from-white to-[#f9f5fa] dark:from-[#1a1a2e] dark:to-[#2d1b4e] hover:from-[#f4e4f5] hover:to-[#e8c8eb] dark:hover:from-[#2d1b4e] dark:hover:to-[#3a2860] transition-all"
                   >
-                    <User size={16} className="flex-shrink-0 text-white" />
+                    <User size={16} className="flex-shrink-0 text-black" />
                     <span className="text-black dark:text-white">Profile</span>
                   </button>
 
