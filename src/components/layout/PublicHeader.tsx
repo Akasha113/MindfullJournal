@@ -25,20 +25,13 @@ const PublicHeader: React.FC = () => {
           </Link>
           
           <div className="flex items-center space-x-4">
-            <div onClick={toggleDarkMode} className="cursor-pointer">
+            <div onClick={toggleDarkMode} className="cursor-pointer p-2 rounded-lg bg-[#f4e4f5] dark:bg-[#1a1a2e] hover:bg-[#e8e4ef] dark:hover:bg-[#25253b] transition-colors">
               {isDarkMode ? (
                 <Sun size={20} className="text-[#a323af]" />
               ) : (
                 <Moon size={20} className="text-[#6E2B8A]" />
               )}
             </div>
-
-            <Link
-              to="/about"
-              className="text-sm font-semibold text-[#6E2B8A] dark:text-[#a323af] hover:text-[#5a2270] dark:hover:text-[#ba5ac3]"
-            >
-              About
-            </Link>
 
             <motion.div
               whileHover={{ scale: 1.05 }}
