@@ -1444,23 +1444,6 @@ app.delete('/api/journals/:entryId', authMiddleware, async (req, res) => {
   }
 });
 
-// =====================
-// SERVE FRONTEND
-// =====================
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Serve static files from the dist folder (built React app)
-app.use(express.static(path.join(__dirname, '../dist')));
-
-// Catch-all route for SPA - serve index.html for all non-API routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
-});
-
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
