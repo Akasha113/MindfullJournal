@@ -20,7 +20,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(
-  cors({
+ cors({
     origin: [
       'http://localhost:5173',
       'http://localhost:5174',
@@ -29,6 +29,8 @@ app.use(
       process.env.FRONTEND_URL || 'http://localhost:5173',
       /^http:\/\/localhost:\d+$/,  // Allow all localhost ports
       /\.vercel\.app$/,  // Allow all Vercel deployment URLs
+      'https://mindfuljournal.it.com',
+      'http://mindfuljournal.it.com',
     ],
     credentials: true,
   })
@@ -556,6 +558,7 @@ app.put('/api/auth/profile', authMiddleware, async (req, res) => {
     res.status(200).json({
       message: 'Profile updated successfully',
       user,
+
     });
   } catch (error) {
     console.error('Profile update error:', error);
