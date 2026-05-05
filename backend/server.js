@@ -103,7 +103,7 @@ app.post('/api/auth/register', async (req, res) => {
         name,
         password: hashedPassword,
       },
-      expiresAt: new Date(Date.now() + 1 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
     });
 
     // Send verification email
