@@ -19,22 +19,28 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(
- cors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5175',
-      'http://localhost:3000',
-      process.env.FRONTEND_URL || 'http://localhost:5173',
-      /^http:\/\/localhost:\d+$/,  // Allow all localhost ports
-      /\.vercel\.app$/,  // Allow all Vercel deployment URLs
-      'https://mindfuljournal.it.com',
-      'http://mindfuljournal.it.com',
-    ],
-    credentials: true,
-  })
-);
+
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://localhost:3000',
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    /^http:\/\/localhost:\d+$/,       // Allow all localhost ports
+    /\.vercel\.app$/,                 // Allow all Vercel deployment URLs
+    'https://mindfuljournal.it.com',
+    'http://mindfuljournal.it.com',
+    'https://www.mindfuljournal.it.com',  // ✅ ADDED - www subdomain
+    'http://www.mindfuljournal.it.com',
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // ✅ ADDED - Handle preflight requests
 
 // Initialize email service
 initializeEmailService();
@@ -1075,9 +1081,7 @@ app.post('/api/admin/crisis-alerts/:alertId/contact-user', authMiddleware, async
   }
 });
 
-// Check if email service is configured and ready. Useful for disabling UI features when
-// mail credentials are missing or invalid so that admins aren't shown a button that will
-// always fail. Returns { enabled: boolean }.
+// Check if email service is configured and ready.
 app.get('/api/admin/email-ready', authMiddleware, async (req, res) => {
   try {
     const adminUser = await User.findById(req.userId);
@@ -1085,7 +1089,6 @@ app.get('/api/admin/email-ready', authMiddleware, async (req, res) => {
       return res.status(403).json({ error: 'Not authorized' });
     }
 
-    // `isEmailServiceReady` was imported at the top of this file from utils/email.js
     const ready = isEmailServiceReady();
     res.status(200).json({ enabled: ready });
   } catch (err) {
@@ -1128,7 +1131,6 @@ app.get('/api/admin/stats', authMiddleware, async (req, res) => {
 // Error handling middleware
 app.use(errorHandler);
 
-// 404 handler
 // Test email endpoint
 app.post('/api/test-email', async (req, res) => {
   try {
