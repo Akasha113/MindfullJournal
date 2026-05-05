@@ -58,12 +58,14 @@ export const isEmailServiceReady = () => emailServiceReady;
 
 // ---
 // Send via Resend (primary - works on Railway)
+// ✅ FIX: Use verified domain mindfuljournal.it.com as the from address
 // ---
 const sendViaResend = async (to, subject, html) => {
   if (!resendClient) return false;
 
   try {
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+    // ✅ FIXED: Use your verified domain instead of onboarding@resend.dev
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@mindfuljournal.it.com';
     const { data, error } = await resendClient.emails.send({
       from: `Mindful Journal <${fromEmail}>`,
       to,
@@ -100,7 +102,7 @@ const sendViaSendGrid = async (to, subject, html) => {
       },
       body: JSON.stringify({
         personalizations: [{ to: [{ email: to }] }],
-        from: { email: process.env.GMAIL_USER || 'no-reply@mindfuljournal.com' },
+        from: { email: process.env.GMAIL_USER || 'no-reply@mindfuljournal.it.com' },
         subject,
         content: [{ type: 'text/html', value: html }],
       }),
@@ -183,7 +185,7 @@ export const sendVerificationEmail = async (email, code) => {
 
   try {
     const sent = await sendMail({
-      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
+      from: `Mindful Journal <noreply@mindfuljournal.it.com>`,
       to: email,
       subject: 'Verify Your Email - Mindful Journal',
       html,
@@ -203,7 +205,7 @@ export const sendVerificationEmail = async (email, code) => {
 export const sendPasswordResetEmail = async (email, resetLink) => {
   try {
     const sent = await sendMail({
-      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
+      from: `Mindful Journal <noreply@mindfuljournal.it.com>`,
       to: email,
       subject: 'Reset Your Password - Mindful Journal',
       html: `
@@ -248,7 +250,7 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
     const alertUrl = `${frontendUrl}/admin/login?returnUrl=${encodeURIComponent(returnUrl)}`;
 
     const sent = await sendMail({
-      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
+      from: `Mindful Journal <noreply@mindfuljournal.it.com>`,
       to: adminEmail,
       subject: `CRISIS ALERT - ${crisisAlert.riskLevel.toUpperCase()} RISK - ${userDetails.name}`,
       html: `
@@ -306,7 +308,7 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
 export const sendAdminContactEmail = async (userEmail, userName, message) => {
   try {
     const sent = await sendMail({
-      from: `Mindful Journal <${process.env.GMAIL_USER}>`,
+      from: `Mindful Journal <noreply@mindfuljournal.it.com>`,
       to: userEmail,
       subject: 'Support Message - Mindful Journal',
       html: `
