@@ -252,11 +252,11 @@ export const sendCrisisAlertEmail = async (adminEmail, userDetails, crisisAlert)
     const sent = await sendMail({
       from: `Mindful Journal <noreply@mindfuljournal.it.com>`,
       to: adminEmail,
-      subject: `CRISIS ALERT - ${crisisAlert.riskLevel.toUpperCase()} RISK - ${userDetails.name}`,
+      subject: `Mindful Journal - Urgent Review Required for ${userDetails.name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
           <div style="padding: 20px; text-align: center; border-bottom: 1px solid #cccccc;">
-            <h1 style="color: #000000; margin: 0; font-size: 24px;">CRISIS ALERT NOTIFICATION</h1>
+            <h1 style="color: #000000; margin: 0; font-size: 24px;">New User Alert - Action Required</h1>
             <p style="color: #666666; margin: 5px 0 0 0; font-size: 13px;">Mindful Journal - Admin Dashboard</p>
           </div>
           <div style="padding: 30px;">
