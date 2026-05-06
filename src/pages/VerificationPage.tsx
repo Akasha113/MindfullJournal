@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Brain, Mail, AlertCircle, CheckCircle, Lock } from "lucide-react";
 import Button from "../components/ui/Button";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL || "https://mindfulljournal-production.up.railway.app";
 
 const VerificationPage: React.FC = () => {
   const navigate = useNavigate();

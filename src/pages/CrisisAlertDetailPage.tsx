@@ -89,7 +89,7 @@ const CrisisAlertDetailPage: React.FC = () => {
     const fetchEmailStatus = async () => {
       try {
         const token = localStorage.getItem('adminToken');
-        const resp = await fetch('http://localhost:3001/api/admin/email-ready', {
+        const resp = await fetch('https://mindfulljournal-production.up.railway.app/api/admin/email-ready', {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!resp.ok) throw new Error('Failed to get email status');
@@ -108,7 +108,7 @@ const CrisisAlertDetailPage: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem('adminToken');
 
-      const response = await fetch(`http://localhost:3001/api/admin/crisis-alerts/${alertId}`, {
+      const response = await fetch(`https://mindfulljournal-production.up.railway.app/api/admin/crisis-alerts/${alertId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -132,7 +132,7 @@ const CrisisAlertDetailPage: React.FC = () => {
       setUpdating(true);
       const token = localStorage.getItem('adminToken');
 
-      const response = await fetch(`http://localhost:3001/api/admin/crisis-alerts/${alertId}`, {
+      const response = await fetch(`https://mindfulljournal-production.up.railway.app/api/admin/crisis-alerts/${alertId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +230,7 @@ const CrisisAlertDetailPage: React.FC = () => {
       const token = localStorage.getItem('adminToken');
 
       const response = await fetch(
-        `http://localhost:3001/api/admin/crisis-alerts/${alertId}/contact-user`,
+        `https://mindfulljournal-production.up.railway.app/api/admin/crisis-alerts/${alertId}/contact-user`,
         {
           method: 'POST',
           headers: {

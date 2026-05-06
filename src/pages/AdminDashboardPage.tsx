@@ -100,16 +100,16 @@ const AdminDashboardPage: React.FC = () => {
       setError('');
 
       const [statsRes, usersRes, crisisStatsRes, crisisAlertsRes] = await Promise.all([
-        fetch('http://localhost:3001/api/admin/stats', {
+        fetch('https://mindfulljournal-production.up.railway.app/api/admin/stats', {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch('http://localhost:3001/api/admin/users', {
+        fetch('https://mindfulljournal-production.up.railway.app/api/admin/users', {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch('http://localhost:3001/api/admin/crisis-stats', {
+        fetch('https://mindfulljournal-production.up.railway.app/api/admin/crisis-stats', {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch('http://localhost:3001/api/admin/crisis-alerts', {
+        fetch('https://mindfulljournal-production.up.railway.app/api/admin/crisis-alerts', {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);

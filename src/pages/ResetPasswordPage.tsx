@@ -4,7 +4,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Brain, Lock, Eye, EyeOff, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import Button from '../components/ui/Button';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || 'https://mindfulljournal-production.up.railway.app';
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();

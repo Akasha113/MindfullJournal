@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Brain, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || 'https://mindfulljournal-production.up.railway.app';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');

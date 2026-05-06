@@ -3,7 +3,7 @@ import storage from '../utils/storage';
 import { syncConversationsFromBackend } from '../utils/localChat';
 import { syncJournalsFromBackend } from '../utils/storage';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || 'https://mindfulljournal-production.up.railway.app';
 
 export interface AuthContextType {
   isAuthenticated: boolean;
