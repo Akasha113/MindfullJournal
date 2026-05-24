@@ -22,11 +22,157 @@ interface ConversationContext {
   conversationId: string;
 }
 
-// Enhanced suicide-related phrases with context patterns (Multiple Languages)
-// CRITICAL: All keywords marked for immediate crisis detection
+// ============================================================
+// SELF-REFERENTIAL INDICATORS
+// Only trigger crisis response when user is talking about THEMSELVES
+// NOT when talking about someone else ("mera dost", "my friend", etc.)
+// ============================================================
+const SELF_REFERENTIAL_INDICATORS = [
+  // ===== ENGLISH =====
+  'i want', 'i am', 'i\'m', 'i will', 'i have', 'i feel', 'i need',
+  'i plan', 'i decided', 'i\'ve', 'i do', 'i can\'t', 'i cannot',
+  'myself', 'my life', 'my pain', 'my death', 'me ',
+  'i just', 'i keep', 'i keep', 'i know', 'i think about',
+
+  // ===== URDU / HINDI =====
+  'main ', 'mn ', 'mujhe', 'meri ', 'mere ', 'mera ',
+  'apne aap ko', 'khud ko', 'apni zindagi', 'meri zindagi',
+  'main chahti', 'main chahta', 'mn chahti', 'mn chahta',
+  'mujhe marna', 'mujhe jeena', 'meri taraf', 'apna',
+
+  // ===== SPANISH =====
+  'yo quiero', 'yo voy', 'yo he', 'yo soy', 'me quiero',
+  'mi vida', 'mi dolor', 'yo me', 'a mí mismo', 'a mí misma',
+
+  // ===== FRENCH =====
+  'je veux', 'je vais', 'j\'ai', 'je suis', 'je me',
+  'ma vie', 'ma douleur', 'moi-même',
+
+  // ===== ARABIC =====
+  'أنا', 'أريد', 'سأ', 'لدي', 'أشعر', 'حياتي', 'نفسي',
+
+  // ===== PORTUGUESE =====
+  'eu quero', 'eu vou', 'eu tenho', 'eu sou', 'me ',
+  'minha vida', 'minha dor', 'eu mesmo', 'eu mesma',
+
+  // ===== GERMAN =====
+  'ich will', 'ich werde', 'ich habe', 'ich bin', 'ich fühle',
+  'mein leben', 'mein schmerz', 'mich selbst',
+
+  // ===== ITALIAN =====
+  'voglio', 'andrò', 'ho ', 'sono ', 'mi ',
+  'la mia vita', 'il mio dolore', 'me stesso', 'me stessa',
+
+  // ===== TURKISH =====
+  'ben ', 'kendim', 'benim hayatım', 'istiyorum', 'yapacağım',
+
+  // ===== RUSSIAN =====
+  'я ', 'себя', 'моя жизнь', 'мне ', 'мой ',
+
+  // ===== BENGALI =====
+  'ami ', 'amar ', 'nijer', 'amake', 'amii',
+
+  // ===== PUNJABI =====
+  'main ', 'mera ', 'meri ', 'apne aap nu', 'apna ',
+];
+
+// Third-person indicators — if these appear, it's about someone ELSE
+// Do NOT trigger crisis response
+const THIRD_PERSON_INDICATORS = [
+  // ===== ENGLISH =====
+  'my friend', 'my brother', 'my sister', 'my mother', 'my father',
+  'my mom', 'my dad', 'my son', 'my daughter', 'my cousin',
+  'my colleague', 'my classmate', 'my teacher', 'my husband', 'my wife',
+  'someone i know', 'a person i know', 'someone else',
+  'he wants', 'she wants', 'they want', 'he is going to', 'she is going to',
+  'he said', 'she said', 'they said', 'he told me', 'she told me',
+  'my neighbor', 'my relative', 'my uncle', 'my aunt',
+  'a friend of mine', 'one of my friends',
+
+  // ===== URDU / HINDI =====
+  'mera dost', 'meri saheli', 'mera bhai', 'meri behan',
+  'meri ammi', 'mere abbu', 'meri ami', 'mere walid',
+  'mera beta', 'meri beti', 'mera cousine', 'meri cousine',
+  'koi aur', 'ek aur', 'doosra', 'doosri',
+  'woh chahta', 'woh chahti', 'usne kaha', 'usne btaya',
+  'mere dost ne', 'meri friend ne', 'meri teacher ne',
+  'mere bhai ne', 'meri behan ne',
+  'kisi ne mujhe btaya', 'kisi ne kaha',
+  'mera shohar', 'meri biwi', 'mera rishtedaar',
+
+  // ===== SPANISH =====
+  'mi amigo', 'mi amiga', 'mi hermano', 'mi hermana',
+  'mi madre', 'mi padre', 'mi hijo', 'mi hija',
+  'alguien que conozco', 'otra persona', 'él quiere', 'ella quiere',
+  'mi esposo', 'mi esposa', 'mi vecino', 'mi vecina',
+
+  // ===== FRENCH =====
+  'mon ami', 'mon amie', 'mon frère', 'ma sœur',
+  'ma mère', 'mon père', 'mon fils', 'ma fille',
+  'quelqu\'un que je connais', 'quelqu\'un d\'autre',
+  'il veut', 'elle veut', 'mon mari', 'ma femme',
+
+  // ===== ARABIC =====
+  'صديقي', 'أخي', 'أختي', 'أمي', 'أبي',
+  'ابني', 'ابنتي', 'شخص آخر', 'هو يريد', 'هي تريد',
+  'زوجي', 'زوجتي', 'جاري',
+
+  // ===== PORTUGUESE =====
+  'meu amigo', 'minha amiga', 'meu irmão', 'minha irmã',
+  'minha mãe', 'meu pai', 'meu filho', 'minha filha',
+  'alguém que conheço', 'outra pessoa', 'ele quer', 'ela quer',
+
+  // ===== GERMAN =====
+  'mein freund', 'meine freundin', 'mein bruder', 'meine schwester',
+  'meine mutter', 'mein vater', 'jemand anderes', 'er will', 'sie will',
+
+  // ===== ITALIAN =====
+  'il mio amico', 'la mia amica', 'mio fratello', 'mia sorella',
+  'mia madre', 'mio padre', 'qualcun altro', 'lui vuole', 'lei vuole',
+
+  // ===== TURKISH =====
+  'arkadaşım', 'kardeşim', 'annem', 'babam',
+  'oğlum', 'kızım', 'başka biri', 'o istiyor',
+
+  // ===== BENGALI =====
+  'amar bondo', 'amar bhai', 'amar bon', 'amar ma', 'amar baba',
+  'amar chele', 'amar meye', 'onyo keu', 'se chai',
+
+  // ===== PUNJABI =====
+  'mera yaar', 'meri saheli', 'mera veer', 'meri pen',
+  'meri maa', 'mera pita', 'koi hor',
+];
+
+/**
+ * KEY FUNCTION: Checks if the message is about the USER THEMSELVES
+ * Returns true = about self (trigger crisis check)
+ * Returns false = about someone else (skip crisis check)
+ */
+const isAboutSelf = (text: string): boolean => {
+  const lowerText = text.toLowerCase();
+
+  // If message contains third-person indicators → it's about someone else
+  for (const indicator of THIRD_PERSON_INDICATORS) {
+    if (lowerText.includes(indicator.toLowerCase())) {
+      return false;
+    }
+  }
+
+  // If message contains self-referential indicators → it's about self
+  for (const indicator of SELF_REFERENTIAL_INDICATORS) {
+    if (lowerText.includes(indicator.toLowerCase())) {
+      return true;
+    }
+  }
+
+  // Default: if unclear, treat as self-referential to be safe
+  return true;
+};
+
+// Enhanced suicide & self-harm patterns (Multiple Languages)
 const ENHANCED_SUICIDE_PATTERNS = {
   direct: [
-    // ===== ENGLISH =====
+    // ===== ENGLISH — Suicide =====
     'i want to kill myself',
     'i am going to kill myself',
     'i plan to end my life',
@@ -35,10 +181,58 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'i will take my own life',
     'tonight is my last night',
     'i have a plan to',
-    'i already have the',
+    'i already have the means',
     'i know how i will do it',
-    
-    // ===== URDU =====
+    'i want to end it all',
+    'i want to disappear forever',
+    'i dont want to be alive anymore',
+    'i don\'t want to be alive anymore',
+    'i wish i was dead',
+    'i wish i were dead',
+    'i want to be dead',
+    'i am better off dead',
+    'everyone would be better without me',
+    'no reason to live',
+    'nothing to live for',
+    'i want to stop existing',
+    'life is not worth living',
+    'i cant take it anymore',
+    'i can\'t take it anymore',
+    'this is my last message',
+    'goodbye forever',
+    'i have made up my mind to die',
+    'i will end my suffering',
+    'i want to jump',
+    'i want to overdose',
+    'i have pills ready',
+    'i have a gun',
+    'i have a knife ready',
+
+    // ===== ENGLISH — Self-Harm =====
+    'i want to hurt myself',
+    'i want to harm myself',
+    'i want to cut myself',
+    'i am cutting myself',
+    'i cut myself',
+    'i hurt myself',
+    'i burn myself',
+    'i want to burn myself',
+    'i hit myself',
+    'i want to hit myself',
+    'i want to injure myself',
+    'i am self harming',
+    'i self harm',
+    'i want to self harm',
+    'i want to scratch myself',
+    'i want to starve myself',
+    'i am starving myself',
+    'i want to punish myself',
+    'i deserve pain',
+    'i deserve to be hurt',
+    'i want to feel pain',
+    'i need to feel pain',
+
+    // ===== URDU — Suicide =====
     'khudkushi karna chahti hoon',
     'khudkushi karna chahta hoon',
     'jaan lena chahti hoon',
@@ -49,6 +243,8 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'marna chahta hoon',
     'marna chahti hon',
     'marna chahta hon',
+    'mn marna chahti hon',
+    'mn marna chahta hon',
     'khudkushi karne wali hoon',
     'khudkushi karne wala hoon',
     'khudkushi krne wali hoon',
@@ -79,61 +275,240 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'mn khudkushi krne wala hoon',
     'mn khudkushi krna chahti hon',
     'mn khudkushi krna chahta hon',
+    'jeena nahi chahti',
+    'jeena nahi chahta',
+    'mujhe marna hai',
+    'main mar jaana chahti hoon',
+    'main mar jaana chahta hoon',
+    'zindagi se tang aa gayi hoon',
+    'zindagi se tang aa gaya hoon',
+
+    // ===== URDU — Self-Harm =====
+    'khud ko takleef dena chahti hoon',
+    'khud ko takleef dena chahta hoon',
+    'khud ko zakhmi karna chahti hoon',
+    'khud ko zakhmi karna chahta hoon',
+    'apne aap ko maarna chahti hoon',
+    'apne aap ko maarna chahta hoon',
+    'khud ko kata chahti hoon',
+    'khud ko kata chahta hoon',
+    'khud ko jalana chahti hoon',
+    'khud ko jalana chahta hoon',
+    'apne aap ko hurt karna chahti hoon',
+    'apne aap ko hurt karna chahta hoon',
+    'dard chahiye mujhe',
+    'mujhe saza milni chahiye',
+    'main apne aap ko saza dena chahti hoon',
+    'main apne aap ko saza dena chahta hoon',
+
+    // ===== SPANISH — Suicide =====
     'quiero matarme',
     'voy a suicidarme',
     'planeo terminar mi vida',
     'he decidido morir',
     'quiero acabar con esto',
     'no aguanto más la vida',
-    
-    // ===== FRENCH =====
+    'quiero dejar de existir',
+    'no quiero seguir viviendo',
+    'ya no quiero vivir',
+
+    // ===== SPANISH — Self-Harm =====
+    'quiero hacerme daño',
+    'me quiero cortar',
+    'me estoy cortando',
+    'quiero lastimarme',
+    'quiero sentir dolor',
+    'merezco dolor',
+    'me quiero quemar',
+
+    // ===== FRENCH — Suicide =====
     'je veux me tuer',
     'je vais me suicider',
     'je décide de mourir',
     'je veux mettre fin à ma vie',
     'j\'en ai assez de vivre',
-    
-    // ===== ARABIC =====
+    'je ne veux plus vivre',
+    'je vais en finir',
+
+    // ===== FRENCH — Self-Harm =====
+    'je veux me blesser',
+    'je me coupe',
+    'je veux me couper',
+    'je me fais du mal',
+    'je veux me faire du mal',
+    'je mérite d\'avoir mal',
+    'j\'ai besoin de souffrir',
+    'je veux me brûler',
+
+    // ===== ARABIC — Suicide =====
     'أريد أن أنهي حياتي',
     'سأنتحر',
     'لا أستطيع العيش',
     'سأضع حداً لحياتي',
     'أريد أن أموت',
-    
-    // ===== PORTUGUESE =====
+    'لا أريد أن أكمل حياتي',
+
+    // ===== ARABIC — Self-Harm =====
+    'أريد إيذاء نفسي',
+    'أريد جرح نفسي',
+    'أجرح نفسي',
+    'أريد أن أتألم',
+    'أستحق الألم',
+    'أريد أن أحرق نفسي',
+
+    // ===== PORTUGUESE — Suicide =====
     'quero me matar',
     'vou me suicidar',
     'quero acabar com minha vida',
     'não aguento mais viver',
-    
-    // ===== GERMAN =====
+    'não quero mais viver',
+
+    // ===== PORTUGUESE — Self-Harm =====
+    'quero me machucar',
+    'quero me cortar',
+    'me corto',
+    'mereço dor',
+    'preciso sentir dor',
+    'quero me queimar',
+
+    // ===== GERMAN — Suicide =====
     'ich will mich töten',
     'ich werde mich umbringen',
     'ich will mein Leben beenden',
     'ich kann nicht mehr leben',
-    
-    // ===== ITALIAN =====
+    'ich will nicht mehr leben',
+
+    // ===== GERMAN — Self-Harm =====
+    'ich will mir wehtun',
+    'ich verletze mich selbst',
+    'ich will mich schneiden',
+    'ich schneide mich',
+    'ich verdiene schmerzen',
+    'ich brauche schmerzen',
+    'ich will mich verbrennen',
+
+    // ===== ITALIAN — Suicide =====
     'voglio suicidarmi',
     'vado a togliermi la vita',
     'non posso più vivere',
     'voglio morire',
-    
-    // ===== HINDI =====
+    'non voglio più vivere',
+
+    // ===== ITALIAN — Self-Harm =====
+    'voglio farmi del male',
+    'mi faccio del male',
+    'voglio tagliarmi',
+    'mi taglio',
+    'merito di soffrire',
+    'voglio bruciarmi',
+
+    // ===== HINDI — Suicide =====
     'main apne aap ko maarna chahta hoon',
     'main aatmahatya karna chahta hoon',
     'mujhe jeena nahi hai',
     'zindagi se thak gaya hoon',
-    
-    // ===== BENGALI =====
+    'main mar jaana chahta hoon',
+    'mujhe marna hai',
+
+    // ===== HINDI — Self-Harm =====
+    'main apne aap ko takleef dena chahta hoon',
+    'main khud ko zakhmi karna chahta hoon',
+    'mujhe dard chahiye',
+    'main saza chahta hoon apne aap ko',
+    'main khud ko jalana chahta hoon',
+
+    // ===== BENGALI — Suicide =====
     'ami nij-deh poriksha korte chai',
     'ami jeeban sesh korte chai',
     'jeeban aro chalte parchhi na',
-    
-    // ===== TURKISH =====
+    'ami morte chai',
+    'ami amar jibon sesh korte chai',
+
+    // ===== BENGALI — Self-Harm =====
+    'ami nijer khoti korte chai',
+    'ami nijeke kaatle chai',
+    'ami kosto pete chai',
+    'ami shasti paowar joggo',
+    'ami nijeke pora chai',
+
+    // ===== TURKISH — Suicide =====
     'kendimi öldürmek istiyorum',
     'intihar edeceğim',
     'hayatımı bitirmek istiyorum',
-    'artık dayanamıyorum'
+    'artık dayanamıyorum',
+    'yaşamak istemiyorum',
+
+    // ===== TURKISH — Self-Harm =====
+    'kendime zarar vermek istiyorum',
+    'kendimi kesmek istiyorum',
+    'kendimi kesiyorum',
+    'acı hissetmek istiyorum',
+    'acıyı hak ediyorum',
+    'kendimi yakmak istiyorum',
+    'kendimi cezalandırmak istiyorum',
+
+    // ===== RUSSIAN — Suicide =====
+    'я хочу убить себя',
+    'я собираюсь покончить с собой',
+    'я хочу умереть',
+    'я не хочу больше жить',
+
+    // ===== RUSSIAN — Self-Harm =====
+    'я хочу причинить себе вред',
+    'я режу себя',
+    'я хочу порезать себя',
+    'я заслуживаю боли',
+    'я наказываю себя',
+
+    // ===== JAPANESE — Suicide =====
+    '死にたい',
+    '自殺したい',
+    '消えてしまいたい',
+    '生きていたくない',
+
+    // ===== JAPANESE — Self-Harm =====
+    '自分を傷つけたい',
+    '自分を切りたい',
+    '自傷している',
+    '痛みを感じたい',
+    '自分を罰したい',
+
+    // ===== CHINESE — Suicide =====
+    '我想死',
+    '我要自杀',
+    '我想结束生命',
+    '我不想活了',
+
+    // ===== CHINESE — Self-Harm =====
+    '我想伤害自己',
+    '我想割自己',
+    '我在割自己',
+    '我应该受苦',
+    '我想惩罚自己',
+
+    // ===== KOREAN — Suicide =====
+    '죽고 싶다',
+    '자살하고 싶다',
+    '사라지고 싶다',
+    '더 이상 살고 싶지 않다',
+
+    // ===== KOREAN — Self-Harm =====
+    '나 자신을 다치게 하고 싶다',
+    '나를 자르고 싶다',
+    '고통을 느끼고 싶다',
+    '나는 벌을 받아야 해',
+
+    // ===== PUNJABI — Suicide =====
+    'main apne aap nu maarna chahunda haan',
+    'main khatam ho jaana chahunda haan',
+    'mujhe jeona nahi',
+    'main mar jaana chahunda haan',
+
+    // ===== PUNJABI — Self-Harm =====
+    'main apne aap nu takleef dena chahunda haan',
+    'main khud nu zakhmi karna chahunda haan',
+    'mujhe dard chahida hai',
+    'main saza chahunda haan apne aap nu',
   ],
   indirect: [
     // ===== ENGLISH =====
@@ -147,7 +522,7 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'nothing will ever get better',
     'i am a burden to everyone',
     'i just want the pain to stop',
-    
+
     // ===== URDU =====
     'zindagi se tang aa gayi hoon',
     'zindagi se tang aa gaya hoon',
@@ -163,502 +538,180 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'main sab ki bojh hoon',
     'dard khatam karna chahti hoon',
     'dard khatam karna chahta hoon',
-    'sab kuch khatam kar doon',
-    'zindagi se nikalna chahti hoon',
-    'zindagi se nikalna chahta hoon',
-    
+
     // ===== SPANISH =====
     'no puedo seguir',
     'no hay razón para vivir',
     'todos estarían mejor sin mí',
     'quiero rendirme',
-    'la vida es demasiado difícil',
-    'no veo salida',
     'me siento atrapado',
     'nunca mejorará',
     'soy una carga para todos',
-    'solo quiero que el dolor termine',
-    
+
     // ===== FRENCH =====
     'je ne peux pas continuer',
     'il n\'y a pas de raison de vivre',
     'tout le monde serait mieux sans moi',
     'je veux abandonner',
-    'la vie est trop difficile',
-    'je ne vois pas d\'issue',
     'je me sens piégé',
     'rien n\'ira jamais mieux',
     'je suis un fardeau pour tout le monde',
-    'je veux juste que la douleur s\'arrête',
-    
+
     // ===== ARABIC =====
     'لا يمكنني المتابعة',
     'لا فائدة من العيش',
     'الجميع سيكونون أفضل بدوني',
-    'أريد الاستسلام',
-    'الحياة صعبة جداً',
-    'لا أرى مخرجاً',
     'أنا محاصر',
-    'لن يتحسن شيء',
     'أنا عبء على الجميع',
-    
-    // ===== PORTUGUESE =====
-    'não posso mais',
-    'não há razão para viver',
-    'todos estariam melhor sem mim',
-    'quero desistir',
-    'a vida é muito difícil',
-    'não vejo saída',
-    'me sinto preso',
-    'nunca vai melhorar',
-    'sou um peso para todos',
-    
+
     // ===== GERMAN =====
     'ich kann nicht mehr',
-    'es gibt keinen Grund zu leben',
     'alle wären besser ohne mich',
-    'ich will aufgeben',
-    'das Leben ist zu schwer',
-    'ich sehe keinen Ausweg',
     'ich fühle mich gefangen',
     'es wird nie besser',
     'ich bin eine Last für alle',
-    
-    // ===== ITALIAN =====
-    'non riesco a continuare',
-    'non c\'è motivo di vivere',
-    'tutti staremmo meglio senza di me',
-    'voglio rinunciare',
-    'la vita è troppo difficile',
-    'non vedo una via d\'uscita',
-    'mi sento intrappolato',
-    'niente migliorerà mai',
-    'sono un peso per tutti',
-    
+
     // ===== HINDI =====
     'main aur jee nahi sakta',
     'jeene ka koi matlab nahi',
-    'sab mujhe chod kar chale jayenge',
     'main haar maan gaya hoon',
-    'zindagi bahut mushkil hai',
-    'koi rasta nahi dikhta',
     'main fasa hoon',
-    'ab kabhi achcha nahi hoga',
     'main sab ke liye bojh hoon',
-    
-    // ===== BENGALI =====
-    'ami abar chalte parchhi na',
-    'jibanar koi mane nai',
-    'sabai amake chhara bhalo thakta',
-    'ami haari mane gecchhui',
-    'jibon aro kathin',
-    'kono rasta nai',
-    
+
     // ===== TURKISH =====
     'devam edemiyorum',
-    'yaşamak için hiçbir neden yok',
     'herkes bensiz daha iyi olurdu',
-    'pes geçmek istiyorum',
-    'hayat çok zor',
     'çıkış yolu göremiyorum',
-    'tuzağa düştüm',
-    'hiçbir şey iyileşmeyecek',
-    'herkesin yükü olmak'
+    'herkese yük oluyorum',
   ],
   methods: [
     // ===== ENGLISH =====
     'pills', 'rope', 'bridge', 'gun', 'knife', 'overdose',
     'hanging', 'jumping', 'drowning', 'cutting', 'poison',
-    
+
     // ===== URDU =====
     'goli', 'rassee', 'pul', 'bandook', 'chaku', 'dawai',
     'latakna', 'koodna', 'dubna', 'kaatna', 'zehar',
-    'dawai ki over dose', 'khud ko kaatna', 'khud ko jalan',
-    
+
     // ===== SPANISH =====
     'pastillas', 'cuerda', 'puente', 'arma', 'cuchillo', 'sobredosis',
-    'ahorcamiento', 'saltar', 'ahogamiento', 'cortadas', 'veneno',
-    
+    'ahorcamiento', 'saltar', 'veneno',
+
     // ===== FRENCH =====
-    'pilules', 'corde', 'pont', 'arme', 'couteau', 'overdose',
-    'pendaison', 'sauter', 'noyade', 'coupures', 'poison',
-    
+    'pilules', 'corde', 'pont', 'couteau', 'overdose',
+    'pendaison', 'sauter', 'poison',
+
     // ===== ARABIC =====
-    'حبوب', 'حبل', 'جسر', 'سلاح', 'سكين', 'جرعة زائدة',
-    'شنق', 'قفز', 'غرق', 'جروح', 'سم',
-    
-    // ===== PORTUGUESE =====
-    'pílulas', 'corda', 'ponte', 'arma', 'faca', 'overdose',
-    'enforcamento', 'pular', 'afogamento', 'cortes', 'veneno',
-    
+    'حبوب', 'حبل', 'جسر', 'سكين', 'جرعة زائدة', 'سم',
+
     // ===== GERMAN =====
-    'pillen', 'seil', 'brücke', 'waffe', 'messer', 'überdosis',
-    'erhängen', 'springen', 'ertrinken', 'schnitte', 'gift',
-    
-    // ===== ITALIAN =====
-    'pillole', 'corda', 'ponte', 'arma', 'coltello', 'overdose',
-    'impiccagione', 'saltare', 'annegamento', 'tagli', 'veleno',
-    
+    'pillen', 'seil', 'brücke', 'messer', 'überdosis', 'gift',
+
     // ===== HINDI =====
-    'goli', 'rassi', 'pul', 'bandook', 'chhuri', 'jahar',
-    'latakna', 'koodna', 'doobna', 'kaatna', 'zahr',
-    
-    // ===== BENGALI =====
-    'aushadh', 'rassi', 'pul', 'janto', 'chhuri', 'bisash',
-    'phasiye dea', 'jaaye pada', 'jal e dooba',
-    
+    'rassi', 'pul', 'chhuri', 'jahar', 'latakna', 'koodna', 'doobna',
+
     // ===== TURKISH =====
-    'hap', 'ip', 'köprü', 'silah', 'bıçak', 'uyuşturucu',
-    'asılmak', 'sıçramak', 'boğulmak', 'kesikler', 'zehir'
+    'hap', 'ip', 'köprü', 'bıçak', 'zehir',
   ],
   temporal: [
     // ===== ENGLISH =====
-    'tonight', 'today', 'tomorrow', 'this weekend', 'soon',
-    'when i get home', 'after this', 'in the morning',
-    
+    'tonight', 'very soon', 'this is my last',
+    'final goodbye', 'last time', 'end is near',
+
     // ===== URDU =====
-    'aaj raat', 'aaj', 'kal', 'is hafte', 'jaldi',
-    'jab ghar pahunchun', 'iske baad', 'subah',
-    'abhi', 'foran', 'turant', 'bahut jaldi',
-    
+    'aaj raat', 'bahut jaldi', 'aakhri baar', 'yeh meri aakhri',
+    'ant kareeb hai', 'aakhri alvida',
+
     // ===== SPANISH =====
-    'esta noche', 'hoy', 'mañana', 'este fin de semana', 'pronto',
-    'cuando llegue a casa', 'después de esto', 'por la mañana',
-    
+    'esta noche', 'muy pronto', 'última vez', 'el fin está cerca',
+
     // ===== FRENCH =====
-    'ce soir', 'aujourd\'hui', 'demain', 'ce week-end', 'bientôt',
-    'quand je rentre à la maison', 'après cela', 'le matin',
-    
+    'ce soir', 'très bientôt', 'dernière fois', 'la fin est proche',
+
     // ===== ARABIC =====
-    'الليلة', 'اليوم', 'غداً', 'هذا الأسبوع', 'قريباً',
-    'عندما أصل إلى البيت', 'بعد ذلك', 'صباحاً',
-    
-    // ===== PORTUGUESE =====
-    'esta noite', 'hoje', 'amanhã', 'este fim de semana', 'em breve',
-    'quando chegar em casa', 'depois disso', 'pela manhã',
-    
+    'الليلة', 'قريباً جداً', 'آخر مرة', 'النهاية قريبة',
+
     // ===== GERMAN =====
-    'heute nacht', 'heute', 'morgen', 'dieses wochenende', 'bald',
-    'wenn ich nach hause komme', 'danach', 'am morgen',
-    
-    // ===== ITALIAN =====
-    'stasera', 'oggi', 'domani', 'questo fine settimana', 'presto',
-    'quando torno a casa', 'dopo questo', 'al mattino',
-    
+    'heute nacht', 'sehr bald', 'das letzte mal', 'das ende ist nah',
+
     // ===== HINDI =====
-    'aaj raat', 'aaj', 'kal', 'is hafte', 'jaldi',
-    'jab ghar aun', 'iske baad', 'subah',
-    
-    // ===== BENGALI =====
-    'aj raat', 'aj', 'kal', 'ei saptahe', 'shigghrei',
-    'bari fire aile', 'er pare', 'prater bela',
-    
+    'aaj raat', 'bahut jaldi', 'aakhri baar', 'ant kareeb hai',
+
     // ===== TURKISH =====
-    'bu gece', 'bugün', 'yarın', 'bu hafta sonu', 'yakında',
-    'eve gittiğimde', 'bundan sonra', 'sabah'
+    'bu gece', 'çok yakında', 'son kez', 'son yakın',
   ],
   emotional_distress: [
     // ===== ENGLISH =====
     'hopeless', 'worthless', 'empty', 'numb', 'broken',
     'alone', 'abandoned', 'rejected', 'failure', 'useless',
-    
+
     // ===== URDU =====
-    'be umeed', 'bekar', 'khali', 'sunn', 'tota',
-    'akeli', 'akela', 'chhoda gaya', 'rad kar diya',
-    'naakam', 'lafanga', 'laachaar', 'bebas',
+    'be umeed', 'bekar', 'khali', 'sunn', 'tota hua',
+    'akeli', 'akela', 'chhoda gaya', 'naakam', 'laachaar',
     'dukhi', 'pareshan', 'ghamgin', 'udass',
-    
+
     // ===== SPANISH =====
-    'desesperado', 'inútil', 'vacío', 'adormecido', 'roto',
-    'solo', 'abandonado', 'rechazado', 'fracaso', 'inservible',
-    'deprimido', 'angustia', 'tristeza', 'dolor',
-    
-    // ===== FRENCH =====
-    'désespéré', 'inutile', 'vide', 'engourdi', 'brisé',
-    'seul', 'abandonné', 'rejeté', 'échec', 'inutile',
-    'déprimé', 'détresse', 'tristesse', 'souffrance',
-    
+    'desesperado', 'inútil', 'vacío', 'roto',
+    'solo', 'abandonado', 'fracaso',
+
     // ===== ARABIC =====
-    'يائس', 'عديم القيمة', 'فارغ', 'خدر', 'مكسور',
-    'وحيد', 'مهجور', 'مرفوض', 'فشل', 'عديم الفائدة',
-    'حزين', 'منزعج', 'غم', 'ألم',
-    
-    // ===== PORTUGUESE =====
-    'desesperado', 'inútil', 'vazio', 'dormente', 'quebrado',
-    'sozinho', 'abandonado', 'rejeitado', 'fracasso', 'imprestável',
-    'deprimido', 'angústia', 'tristeza', 'sofrimento',
-    
+    'يائس', 'عديم القيمة', 'فارغ', 'مكسور',
+    'وحيد', 'مهجور', 'مرفوض', 'فشل',
+
     // ===== GERMAN =====
-    'hoffnungslos', 'wertlos', 'leer', 'taub', 'zerbrochen',
-    'allein', 'verlassen', 'abgelehnt', 'versagen', 'nutzlos',
-    'deprimiert', 'angst', 'trauer', 'leid',
-    
-    // ===== ITALIAN =====
-    'disperato', 'inutile', 'vuoto', 'intorpidito', 'spezzato',
-    'solo', 'abbandonato', 'rifiutato', 'fallimento', 'inutile',
-    'depresso', 'angoscia', 'tristezza', 'sofferenza',
-    
+    'hoffnungslos', 'wertlos', 'leer', 'zerbrochen',
+    'allein', 'verlassen', 'versagen',
+
     // ===== HINDI =====
-    'nihasa', 'behkaar', 'khali', 'suna', 'tota',
-    'akela', 'paritrakt', 'alnkar', 'nashaboon', 'byarth',
-    'udas', 'pareshaan', 'dukhi', 'bhaari',
-    
-    // ===== BENGALI =====
-    'aasha-hara', 'worthless', 'sunna', 'nirmom', 'bhenkalo',
-    'akendra', 'paritakta', 'ostreekrit', 'abibhal', 'bybohaar',
-    'kharo', 'bipod', 'kandali', 'dukh',
-    
+    'nihasa', 'behkaar', 'khali', 'akela', 'naakam',
+    'udas', 'pareshaan', 'dukhi',
+
     // ===== TURKISH =====
-    'umutsuz', 'değersiz', 'boş', 'uyuşmuş', 'kırılmış',
-    'yalnız', 'terk edilmiş', 'reddedilmiş', 'başarısız', 'işe yaramaz',
-    'depresif', 'ızdırap', 'üzüntü', 'acı'
+    'umutsuz', 'değersiz', 'boş', 'kırılmış',
+    'yalnız', 'terk edilmiş', 'başarısız',
   ]
 };
 
-// Context-aware risk assessment patterns (Multiple Languages)
-// CRITICAL: All keywords marked for immediate crisis detection
 const CONTEXTUAL_RISK_INDICATORS = {
   isolation: [
-    // ===== ENGLISH =====
     'no one cares', 'all alone', 'nobody understands', 'no friends',
-    
-    // ===== URDU =====
     'koi care nahi karta', 'bilkul akeli', 'bilkul akela', 'koi samajhta nahi',
-    'koi dost nahi', 'sab mujhe chhod gaye', 'koi mere saath nahi',
-    
-    // ===== SPANISH =====
-    'nadie se preocupa', 'completamente solo', 'nadie entiende', 'sin amigos',
-    'abandonado por todos', 'sin nadie a mi lado',
-    
-    // ===== FRENCH =====
-    'personne ne s\'en soucie', 'complètement seul', 'personne ne comprend', 'pas d\'amis',
-    'abandonné par tous', 'sans personne à mes côtés',
-    
-    // ===== ARABIC =====
-    'لا أحد يهتم', 'وحيد تماماً', 'لا أحد يفهم', 'لا أصدقاء',
-    'مهجور من الجميع', 'بدون أحد بجانبي',
-    
-    // ===== PORTUGUESE =====
-    'ninguém se preocupa', 'completamente sozinho', 'ninguém entende', 'sem amigos',
-    'abandonado por todos', 'sem ninguém ao meu lado',
-    
-    // ===== GERMAN =====
-    'niemand kümmert sich', 'ganz allein', 'niemand versteht', 'keine freunde',
-    'von allen verlassen', 'ohne jemanden an meiner seite',
-    
-    // ===== ITALIAN =====
-    'nessuno se ne importa', 'completamente solo', 'nessuno capisce', 'nessun amico',
-    'abbandonato da tutti', 'senza nessuno al mio fianco',
-    
-    // ===== HINDI =====
-    'kisi ko fark nahi padta', 'bilkul akela', 'koi nahi samjhta', 'koi dost nahi',
-    'sabne mujhe chhod diya', 'koi mere saath nahi',
-    
-    // ===== BENGALI =====
-    'keu ki pore na', 'bilkul akena', 'keu bujan na', 'keu sathi nai',
-    'sab amake chhare gecchhei', 'keu amader sath nai',
-    
-    // ===== TURKISH =====
-    'kimse umursamıyor', 'tamamen yalnız', 'kimse anlamıyor', 'arkadaş yok',
-    'hepsi tarafından terk edilmiş', 'yanımda kimse yok'
+    'koi dost nahi', 'nadie se preocupa', 'personne ne s\'en soucie',
+    'niemand kümmert sich', 'kimse umursamıyor',
   ],
   plan_formation: [
-    // ===== ENGLISH =====
     'i have thought about', 'i have been planning', 'i know exactly how',
     'i\'ve made plans', 'everything is ready', 'i\'ve decided',
-    
-    // ===== URDU =====
-    'main soch chuki hoon', 'main soch chuka hoon', 'main plan bana rahi hoon',
-    'main plan bana raha hoon', 'main jaanti hoon kaise', 'main jaanta hoon kaise',
-    'mujhe pata hai kaise karna hai', 'maine socha hai', 'maine faisla kiya hai',
-    
-    // ===== SPANISH =====
-    'he pensado en ello', 'he estado planeando', 'sé exactamente cómo',
-    'he hecho planes', 'todo está listo', 'he decidido',
-    
-    // ===== FRENCH =====
-    'j\'y ai pensé', 'je suis en train de planifier', 'je sais exactement comment',
-    'j\'ai fait des plans', 'tout est prêt', 'j\'ai décidé',
-    
-    // ===== ARABIC =====
-    'فكرت في الأمر', 'كنت أخطط', 'أعرف بالضبط كيف',
-    'وضعت خطط', 'كل شيء جاهز', 'قررت',
-    
-    // ===== PORTUGUESE =====
-    'pensei em tudo', 'estive planejando', 'sei exatamente como',
-    'fiz planos', 'tudo está pronto', 'decidi',
-    
-    // ===== GERMAN =====
-    'ich habe darüber nachgedacht', 'ich plane', 'ich weiß genau wie',
-    'ich habe pläne gemacht', 'alles ist bereit', 'ich habe entschieden',
-    
-    // ===== ITALIAN =====
-    'ci ho pensato', 'stavo pianificando', 'so esattamente come',
-    'ho fatto piani', 'tutto è pronto', 'ho deciso',
-    
-    // ===== HINDI =====
-    'mujhe sab pata hai', 'main plan bana raha hoon', 'maine faisla kar liya',
-    'sb tayyar hai', 'main jaanta hoon kaise',
-    
-    // ===== BENGALI =====
-    'ami vebhechhui', 'ami plan kore rachhui', 'ami jaani ki vabe',
-    'sb ready', 'amne faisla kore fellam',
-    
-    // ===== TURKISH =====
-    'üzerinde düşündüm', 'planlıyorum', 'tam olarak nasıl yapacağımı biliyorum',
-    'planlar yaptım', 'her şey hazır', 'karar verdim'
+    'main soch chuki hoon', 'main plan bana rahi hoon', 'maine faisla kiya hai',
+    'he pensado en ello', 'j\'ai décidé', 'ich habe entschieden',
   ],
   means_access: [
-    // ===== ENGLISH =====
     'i have access to', 'i can get', 'i already have',
-    'it\'s nearby', 'i possess', 'readily available',
-    
-    // ===== URDU =====
-    'mere paas hai', 'main la sakti hoon', 'main la sakta hoon', 'pehle se hi hai',
-    'mere paas uda hai', 'main le sakti hoon', 'mere paas tha',
-    
-    // ===== SPANISH =====
-    'tengo acceso a', 'puedo conseguir', 'ya tengo',
-    'está cerca', 'poseo', 'fácilmente disponible',
-    
-    // ===== FRENCH =====
-    'j\'ai accès à', 'je peux obtenir', 'j\'ai déjà',
-    'c\'est à proximité', 'je possède', 'facilement disponible',
-    
-    // ===== ARABIC =====
-    'لدي وصول إلى', 'يمكنني الحصول على', 'لدي بالفعل',
-    'إنه قريب', 'أملك', 'متاح بسهولة',
-    
-    // ===== PORTUGUESE =====
-    'tenho acesso a', 'posso conseguir', 'já tenho',
-    'está perto', 'possuo', 'facilmente disponível',
-    
-    // ===== GERMAN =====
-    'ich habe zugang zu', 'ich kann bekommen', 'ich habe bereits',
-    'es ist in der nähe', 'ich besitze', 'leicht verfügbar',
-    
-    // ===== ITALIAN =====
-    'ho accesso a', 'posso ottenere', 'ho già',
-    'è vicino', 'posseggo', 'facilmente disponibile',
-    
-    // ===== HINDI =====
-    'mere paas hai', 'main le sakta hoon', 'mera paas uda tha',
-    'baat kareeb hai', 'mere paas hai', 'aasan se milta hai',
-    
-    // ===== BENGALI =====
-    'amader kase ache', 'ami pawa jabi', 'amar kase phela ache',
-    'kache ache', 'amar sompod', 'asanei pawa jay',
-    
-    // ===== TURKISH =====
-    'erişimim var', 'alabilirim', 'zaten var',
-    'yakında', 'sahibim', 'kolayca ulaşılabilir'
+    'i possess', 'readily available',
+    'mere paas hai', 'main la sakti hoon', 'main la sakta hoon',
+    'tengo acceso a', 'j\'ai accès à', 'ich habe zugang zu',
   ],
   timeline: [
-    // ===== ENGLISH =====
-    'very soon', 'tonight', 'today', 'this week',
-    'final', 'last', 'end is near', 'count down',
-    
-    // ===== URDU =====
-    'bahut jaldi', 'aaj raat', 'aaj', 'is hafte', 'abhi',
-    'aakhri', 'akher', 'ant kareeb hai', 'ginatee',
-    
-    // ===== SPANISH =====
-    'muy pronto', 'esta noche', 'hoy', 'esta semana',
-    'final', 'último', 'el fin está cerca', 'cuenta regresiva',
-    
-    // ===== FRENCH =====
-    'très bientôt', 'ce soir', 'aujourd\'hui', 'cette semaine',
-    'final', 'dernier', 'la fin est proche', 'compte à rebours',
-    
-    // ===== ARABIC =====
-    'قريباً جداً', 'الليلة', 'اليوم', 'هذا الأسبوع',
-    'نهائي', 'الأخير', 'النهاية قريبة', 'العد العكسي',
-    
-    // ===== PORTUGUESE =====
-    'muito em breve', 'esta noite', 'hoje', 'esta semana',
-    'final', 'último', 'o fim está próximo', 'contagem regressiva',
-    
-    // ===== GERMAN =====
-    'sehr bald', 'heute nacht', 'heute', 'diese woche',
-    'final', 'letzt', 'das ende ist nah', 'countdown',
-    
-    // ===== ITALIAN =====
-    'molto presto', 'stasera', 'oggi', 'questa settimana',
-    'finale', 'ultimo', 'la fine è vicina', 'conto alla rovescia',
-    
-    // ===== HINDI =====
-    'bahut jaldi', 'raat ko', 'aaj', 'is hafte ko',
-    'aakhri', 'ant ke paas', 'samय khatam',
-    
-    // ===== BENGALI =====
-    'bahut jaldi', 'aj raat', 'aj', 'ei saptahe',
-    'sesher kotha', 'aakhri', 'ses kachakachi',
-    
-    // ===== TURKISH =====
-    'çok yakında', 'bu gece', 'bugün', 'bu hafta',
-    'son', 'son derece', 'son yakın', 'geri sayım'
+    'very soon', 'tonight', 'today', 'this week', 'final', 'last',
+    'aaj raat', 'aaj', 'is hafte', 'aakhri',
+    'esta noche', 'hoy', 'ce soir', 'heute nacht',
   ],
   finality: [
-    // ===== ENGLISH =====
-    'final decision', 'made up my mind', 'there\'s no going back', 'this is it',
-    'i\'m done', 'no more chances', 'point of no return', 'sealed fate',
-    
-    // ===== URDU =====
-    'aakhri faisla', 'mujhe pata hai', 'ab wapas nahi ja sakti', 'ab wapas nahi ja sakta',
-    'yahi hai', 'khudkushi karne ka faisla kar liya', 'ab kuch nahi ho sakta',
-    'aakhri fursat', 'faisla ho chuka',
-    
-    // ===== SPANISH =====
-    'decisión final', 'tomé mi decisión', 'no hay vuelta atrás', 'esto es',
-    'terminé', 'no hay más oportunidades', 'punto de no retorno', 'suerte sellada',
-    
-    // ===== FRENCH =====
-    'décision finale', 'j\'ai pris ma décision', 'pas de retour', 'c\'est tout',
-    'j\'ai terminé', 'pas d\'autres chances', 'point de non-retour', 'destin scellé',
-    
-    // ===== ARABIC =====
-    'القرار النهائي', 'اتخذت قراري', 'لا عودة', 'هذا كل شيء',
-    'انتهيت', 'لا مزيد من الفرص', 'نقطة اللاعودة', 'مصير محتوم',
-    
-    // ===== PORTUGUESE =====
-    'decisão final', 'já decidi', 'não há volta', 'isto é tudo',
-    'terminei', 'não há mais chances', 'ponto de não retorno', 'destino selado',
-    
-    // ===== GERMAN =====
-    'endgültige entscheidung', 'ich habe mich entschieden', 'kein zurück', 'das ist es',
-    'ich bin fertig', 'keine zweite chance', 'punkt ohne rückkehr', 'versiegeltes schicksal',
-    
-    // ===== ITALIAN =====
-    'decisione finale', 'ho deciso', 'non c\'è ritorno', 'è tutto',
-    'ho finito', 'nessuna altra chance', 'punto di non ritorno', 'destino sigillato',
-    
-    // ===== HINDI =====
-    'aakhri faisla', 'maine faisla kar liya', 'ab koi rast nahi', 'bas itna hi',
-    'main khatam', 'ab koi ausav nahi', 'aakhri mauqaa',
-    
-    // ===== BENGALI =====
-    'sesher nischoy', 'amne nischoy korllam', 'ab fere asbar nai', 'bas etai',
-    'ami khatam', 'ab ar keu option nai', 'sesher somoi',
-    
-    // ===== TURKISH =====
-    'son karar', 'kararını verdim', 'geri dönüş yok', 'bu kadar',
-    'bittim', 'daha fazla şans yok', 'dönüş noktası', 'kaderini mühürlemiş'
+    'final decision', 'made up my mind', 'there\'s no going back', 'i\'m done',
+    'no more chances', 'point of no return',
+    'aakhri faisla', 'ab wapas nahi ja sakti', 'ab wapas nahi ja sakta',
+    'decisión final', 'décision finale', 'endgültige entscheidung',
   ]
 };
 
 class EnhancedSuicideDetector {
-  // Removed unused knowledgeBase for now
-
-  constructor() {
-    // Removed initializeKnowledgeBase call
-  }
+  constructor() {}
 
   private calculatePatternScore(text: string): { score: number; matchedPatterns: string[] } {
     const lowerText = text.toLowerCase();
     let score = 0;
     const matchedPatterns: string[] = [];
 
-    // Direct suicide mentions (highest weight)
     for (const pattern of ENHANCED_SUICIDE_PATTERNS.direct) {
       if (lowerText.includes(pattern)) {
         score += 10;
@@ -666,7 +719,6 @@ class EnhancedSuicideDetector {
       }
     }
 
-    // Indirect expressions (medium-high weight)
     for (const pattern of ENHANCED_SUICIDE_PATTERNS.indirect) {
       if (lowerText.includes(pattern)) {
         score += 6;
@@ -674,7 +726,6 @@ class EnhancedSuicideDetector {
       }
     }
 
-    // Method mentions (high weight)
     for (const method of ENHANCED_SUICIDE_PATTERNS.methods) {
       if (lowerText.includes(method)) {
         score += 8;
@@ -682,7 +733,6 @@ class EnhancedSuicideDetector {
       }
     }
 
-    // Temporal indicators (high weight)
     for (const temporal of ENHANCED_SUICIDE_PATTERNS.temporal) {
       if (lowerText.includes(temporal)) {
         score += 7;
@@ -690,7 +740,6 @@ class EnhancedSuicideDetector {
       }
     }
 
-    // Emotional distress (medium weight)
     for (const emotion of ENHANCED_SUICIDE_PATTERNS.emotional_distress) {
       if (lowerText.includes(emotion)) {
         score += 3;
@@ -706,7 +755,6 @@ class EnhancedSuicideDetector {
     let score = 0;
     const contextualCues: string[] = [];
 
-    // Check for contextual risk indicators
     Object.entries(CONTEXTUAL_RISK_INDICATORS).forEach(([category, indicators]) => {
       indicators.forEach(indicator => {
         if (lowerText.includes(indicator)) {
@@ -717,10 +765,9 @@ class EnhancedSuicideDetector {
       });
     });
 
-    // Analyze conversation history for escalating patterns
     if (context) {
-      const recentMessages = context.messages.slice(-5); // Last 5 messages
-      const negativePatterns = recentMessages.filter(msg => 
+      const recentMessages = context.messages.slice(-5);
+      const negativePatterns = recentMessages.filter(msg =>
         msg.role === 'user' && this.calculatePatternScore(msg.content).score > 0
       );
 
@@ -737,10 +784,8 @@ class EnhancedSuicideDetector {
     try {
       const response = await fetch('http://localhost:8002/analyze_suicide_risk', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           text,
           conversation_id: 'current',
           user_id: 'current-user',
@@ -781,28 +826,37 @@ class EnhancedSuicideDetector {
   }
 
   public async analyzeSuicideRisk(
-    text: string, 
+    text: string,
     context?: ConversationContext
   ): Promise<SuicideRiskAnalysis> {
-    // Use existing content monitor as baseline
+
+    // 🔑 SELF-REFERENTIAL CHECK FIRST
+    // If user is talking about someone else, skip crisis detection entirely
+    if (!isAboutSelf(text)) {
+      return {
+        riskLevel: 'low',
+        confidence: 0,
+        riskFactors: [],
+        contextualCues: ['Message is about a third party, not the user themselves'],
+        mcpClassification: false,
+        recommendedAction: 'No action required — message is about someone else.',
+        flagged: false,
+        reason: 'Third-party reference detected — not self-harm or self-risk'
+      };
+    }
+
     const basicCheck = checkContent(text);
-    
-    // Enhanced pattern analysis
     const patternAnalysis = this.calculatePatternScore(text);
     const contextualAnalysis = this.analyzeContextualRisk(text, context);
-    
-    // MCP classifier integration
     const mcpClassification = await this.callMCPClassifier(text);
-    
-    // Calculate total risk score
+
     const totalScore = patternAnalysis.score + contextualAnalysis.score;
     const riskLevel = this.determineRiskLevel(totalScore, mcpClassification);
-    
-    // Calculate confidence based on multiple factors
+
     const confidence = Math.min(
-      (totalScore / 20) * 0.7 + 
-      (mcpClassification ? 0.3 : 0) + 
-      (basicCheck.flagged ? 0.2 : 0), 
+      (totalScore / 20) * 0.7 +
+      (mcpClassification ? 0.3 : 0) +
+      (basicCheck.flagged ? 0.2 : 0),
       1.0
     );
 
@@ -814,10 +868,9 @@ class EnhancedSuicideDetector {
       mcpClassification,
       recommendedAction: this.getRecommendedAction(riskLevel),
       flagged: riskLevel !== 'low' || basicCheck.flagged,
-      reason: basicCheck.reason || 'Enhanced suicide risk patterns detected'
+      reason: basicCheck.reason || 'Enhanced suicide/self-harm risk patterns detected'
     };
 
-    // Log high-risk cases for admin review
     if (riskLevel === 'high' || riskLevel === 'critical') {
       this.logHighRiskCase(text, analysis, context);
     }
@@ -826,8 +879,8 @@ class EnhancedSuicideDetector {
   }
 
   private async logHighRiskCase(
-    text: string, 
-    analysis: SuicideRiskAnalysis, 
+    text: string,
+    analysis: SuicideRiskAnalysis,
     context?: ConversationContext
   ) {
     const logEntry = {
@@ -839,29 +892,18 @@ class EnhancedSuicideDetector {
       requiresImmediateAttention: analysis.riskLevel === 'critical'
     };
 
-    // Store in admin flagged content (integrate with existing storage system)
     try {
-      // This would integrate with your existing storage system
-      console.error('HIGH RISK SUICIDE CASE DETECTED:', logEntry);
-      
-      // In a real implementation, you would:
-      // 1. Store in database for admin review
-      // 2. Send immediate alerts to mental health professionals
-      // 3. Trigger crisis intervention protocols
-      // 4. Log for compliance and follow-up
-      
+      console.error('HIGH RISK SUICIDE/SELF-HARM CASE DETECTED:', logEntry);
     } catch (_error) {
       console.error('Failed to log high-risk case:', _error);
     }
   }
 }
 
-// Singleton instance
 export const suicideDetector = new EnhancedSuicideDetector();
 
-// Enhanced content monitoring function that integrates with RAG
 export const enhancedCheckContent = async (
-  text: string, 
+  text: string,
   context?: ConversationContext
 ): Promise<SuicideRiskAnalysis> => {
   return await suicideDetector.analyzeSuicideRisk(text, context);
@@ -871,5 +913,6 @@ export default {
   suicideDetector,
   enhancedCheckContent,
   ENHANCED_SUICIDE_PATTERNS,
-  CONTEXTUAL_RISK_INDICATORS
+  CONTEXTUAL_RISK_INDICATORS,
+  isAboutSelf,
 };

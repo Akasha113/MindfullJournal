@@ -1,24 +1,3 @@
-/**
- * 🔒 JOURNAL PAGE - ENCRYPTED CLOUD SYNC + LOCAL STORAGE
- * 
- * Privacy Guarantee:
- * ✅ Journal entries are stored in browser localStorage AND synced to backend
- * ✅ Data is encrypted before sending to backend
- * ✅ Admins CANNOT view or decrypt your journal entries
- * ✅ Data is user-specific and isolated (indexed by user ID)
- * ✅ Entries persist across sessions and devices
- * ✅ When you login from a new device, your journals sync automatically
- * 
- * How journals work:
- * 1. All entries stored locally with key: MindFul_Journal_journals_${userId}
- * 2. Each entry is encrypted with your password hash before backend sync
- * 3. Backend stores encrypted data but cannot decrypt it
- * 4. When you login from another device, encrypted data is fetched and decrypted
- * 5. Your data is always synced across all your devices
- * 
- * NOTE: Maximum privacy with cross-device sync.
- * See PRIVACY_MODEL.md for full privacy documentation.
- */
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
