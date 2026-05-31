@@ -86,7 +86,36 @@ const CONCERNING_KEYWORDS = [
   'udass hoon', 'udass', 'udas hoon'
 ];
 
+const isSelfReferentialText = (text: string): boolean => {
+  const lower = text.toLowerCase();
+
+  const firstPersonIndicators = [
+    ' i ', 'i ', 'i\'', 'i am', 'i\'m', 'me ', 'my ', 'myself',
+    'main ', 'mn ', 'mujhe', 'meri ', 'mera ', 'khud ko', 'apne aap',
+  ];
+
+  const thirdPersonIndicators = [
+    'my friend', 'my brother', 'my sister', 'my mother', 'my father',
+    'someone i know', 'a person i know', 'someone else',
+    'he wants', 'she wants', 'they want', 'he said', 'she said', 'they said',
+    'he told me', 'she told me', 'they told me', 'my neighbor', 'my relative',
+    'a friend of mine', 'one of my friends',
+  ];
+
+  for (const phrase of thirdPersonIndicators) {
+    if (lower.includes(phrase)) return false;
+  }
+  for (const phrase of firstPersonIndicators) {
+    if (lower.includes(phrase)) return true;
+  }
+  return false;
+};
+
 export const checkContent = (text: string): { flagged: boolean; reason?: string } => {
+  if (!isSelfReferentialText(text)) {
+    return { flagged: false };
+  }
+
   const lowerText = text.toLowerCase();
   
   for (const keyword of CONCERNING_KEYWORDS) {

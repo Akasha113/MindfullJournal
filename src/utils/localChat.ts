@@ -85,6 +85,8 @@ const SYSTEM_PROMPT = `You are a friendly and supportive companion. Your role is
 - Keep responses short and friendly (2-3 sentences)
 - Respond like a good friend would
 - Make people feel welcome and safe talking to you
+- Only offer emergency hotline or crisis resources when the person is clearly describing their own immediate suicidal or self-harm intent.
+- If someone is talking about another person, be empathetic and help them talk about their concerns without assuming an immediate crisis.
 
 Always be warm, friendly, and supportive. Help people feel heard and understood.`;
 
@@ -259,9 +261,20 @@ const CRISIS_KEYWORDS = [
   'artık dayanamıyorum'
 ];
 
+const isThirdPartyCrisisMention = (message: string): boolean => {
+  const lowerMessage = message.toLowerCase();
+  return !isAboutSelf(message) && CRISIS_KEYWORDS.some(keyword => lowerMessage.includes(keyword));
+};
+
 export const isCrisisMessage = (message: string): boolean => {
   const lowerMessage = message.toLowerCase();
   return isAboutSelf(message) && CRISIS_KEYWORDS.some(keyword => lowerMessage.includes(keyword));
+};
+
+const getThirdPartySupportResponse = (): string => {
+  return `I’m sorry to hear that someone you know is struggling. It can feel overwhelming when someone else is in pain. If you’re worried about them, please encourage them to reach out to a trusted friend, family member, or a mental health professional.
+
+I’m here to listen to how this is affecting you and how you’re feeling about it.`;
 };
 
 export const getCrisisResponse = (): string => {
@@ -506,7 +519,20 @@ export const sendMessage = async (
   const afterUser = await addMessage(conversationId, userMsg);
   if (!afterUser) return null;
 
-  // If crisis detected, send crisis alert to admin dashboard
+  const hasThirdPartyCrisisReference = isThirdPartyCrisisMention(userMessage);
+
+  // If this is a third-party mention of suicidal or self-harm behavior, respond with empathy only
+  if (hasThirdPartyCrisisReference) {
+    const supportMsg: ChatMessage = {
+      id: 'msg-' + (Date.now() + 1) + '-' + Math.random().toString(36).substr(2, 9),
+      role: 'assistant',
+      content: getThirdPartySupportResponse(),
+      timestamp: Date.now(),
+    };
+    return await addMessage(conversationId, supportMsg);
+  }
+
+  // If crisis detected for the user themself, send crisis alert to admin dashboard
   if (hasCrisisContent) {
     try {
       // Get user ID and token from sessionStorage

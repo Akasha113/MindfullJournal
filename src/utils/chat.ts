@@ -1310,6 +1310,35 @@ const isCriticalMessage = (message: string): boolean => {
   );
 };
 
+const isThirdPartyCrisisMention = (message: string): boolean => {
+  if (isInformationalQuery(message)) return false;
+  if (isAboutSelf(message)) return false;
+
+  const lowerMessage = message.toLowerCase();
+  const fallbackKeywords = [
+    'suicide',
+    'suicidal',
+    'kill myself',
+    'kill me',
+    'take my life',
+    'end my life',
+    'hurt myself',
+    'self-harm',
+    'self harm',
+    'want to die',
+  ];
+
+  return CRITICAL_SUICIDE_PATTERNS.some(pattern =>
+    lowerMessage.includes(pattern.toLowerCase())
+  ) || fallbackKeywords.some(keyword => lowerMessage.includes(keyword));
+};
+
+const getThirdPartySupportResponse = (): string => {
+  return `I’m sorry to hear that someone you know is struggling. If you’re worried about them, encourage them to reach out to a trusted friend, family member, or mental health professional.
+
+I’m here to listen to how this is affecting you and how you’re feeling about it.`;
+};
+
 // Crisis resources response for high-risk messages
 const getCrisisResourcesResponse = (riskLevel: string): string => {
   if (riskLevel === 'critical') {
@@ -1457,6 +1486,19 @@ export const sendMessage = async (
 
   // ── GUARD 2: Self-referential check ────────────────────────────────────
   const aboutSelf = isAboutSelf(content);
+
+  // ── GUARD 2.5: Third-party crisis references should never trigger self-harm crisis resources ─
+  if (isThirdPartyCrisisMention(content)) {
+    const updatedConvo = storage.addMessageToConversation(conversationId, {
+      role: 'user',
+      content,
+    });
+    if (!updatedConvo) return null;
+    return storage.addMessageToConversation(conversationId, {
+      role: 'assistant',
+      content: getThirdPartySupportResponse(),
+    });
+  }
 
   // ── GUARD 3: Critical message check — immediate crisis response ─────────
   if (aboutSelf && isCriticalMessage(content)) {

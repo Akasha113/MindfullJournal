@@ -825,39 +825,6 @@
 //     }
 //   }
 
-//   public async analyzeSuicideRisk(
-//     text: string,
-//     context?: ConversationContext
-//   ): Promise<SuicideRiskAnalysis> {
-
-//     // 🔑 SELF-REFERENTIAL CHECK FIRST
-//     // If user is talking about someone else, skip crisis detection entirely
-        if (isInformationalQuery(text)) {
-          return {
-            riskLevel: 'low',
-            confidence: 0,
-            riskFactors: [],
-            contextualCues: ['Informational query detected — no crisis response'],
-            mcpClassification: false,
-            recommendedAction: 'No action required — informational query.',
-            flagged: false,
-            reason: 'Informational query'
-          };
-        }
-
-        // 🔑 SELF-REFERENTIAL CHECK: require the message to be about the user
-        // If it's about someone else or ambiguous, skip crisis detection
-        if (!isAboutSelf(text)) {
-          return {
-            riskLevel: 'low',
-            confidence: 0,
-            riskFactors: [],
-            contextualCues: ['Message is not self-referential — skipping crisis detection'],
-            mcpClassification: false,
-            recommendedAction: 'No action required — message is not about the user.',
-            flagged: false,
-            reason: 'Non-self reference or ambiguous message'
-          };
 
 //     const basicCheck = checkContent(text);
 //     const patternAnalysis = this.calculatePatternScore(text);
@@ -1153,10 +1120,15 @@ const THIRD_PERSON_INDICATORS = [
   'my colleague', 'my classmate', 'my teacher', 'my husband', 'my wife',
   
   'someone i know', 'a person i know', 'someone else',
-  'he wants', 'she wants', 'they want', 'he is going to', 'she is going to',
+  'he wants', 'she wants', 'they want', 'he wants to', 'she wants to', 'they want to',
+  'he wants to do', 'she wants to do', 'they want to do',
+  'he wants to die', 'she wants to die', 'they want to die',
+  'he wants to kill himself', 'she wants to kill herself', 'they want to kill themselves',
+  'he is going to', 'she is going to',
   'he said', 'she said', 'they said', 'he told me', 'she told me',
   'my neighbor', 'my relative', 'my uncle', 'my aunt',
   'a friend of mine', 'one of my friends',
+  'her friend', 'his friend', 'her brother', 'his brother', 'her sister', 'his sister',
 
   // ===== URDU / HINDI =====
   'mera dost', 'meri saheli', 'mera bhai', 'meri behan',
