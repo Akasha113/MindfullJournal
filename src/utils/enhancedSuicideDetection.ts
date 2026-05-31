@@ -832,18 +832,32 @@
 
 //     // 🔑 SELF-REFERENTIAL CHECK FIRST
 //     // If user is talking about someone else, skip crisis detection entirely
-//     if (!isAboutSelf(text)) {
-//       return {
-//         riskLevel: 'low',
-//         confidence: 0,
-//         riskFactors: [],
-//         contextualCues: ['Message is about a third party, not the user themselves'],
-//         mcpClassification: false,
-//         recommendedAction: 'No action required — message is about someone else.',
-//         flagged: false,
-//         reason: 'Third-party reference detected — not self-harm or self-risk'
-//       };
-//     }
+        if (isInformationalQuery(text)) {
+          return {
+            riskLevel: 'low',
+            confidence: 0,
+            riskFactors: [],
+            contextualCues: ['Informational query detected — no crisis response'],
+            mcpClassification: false,
+            recommendedAction: 'No action required — informational query.',
+            flagged: false,
+            reason: 'Informational query'
+          };
+        }
+
+        // 🔑 SELF-REFERENTIAL CHECK: require the message to be about the user
+        // If it's about someone else or ambiguous, skip crisis detection
+        if (!isAboutSelf(text)) {
+          return {
+            riskLevel: 'low',
+            confidence: 0,
+            riskFactors: [],
+            contextualCues: ['Message is not self-referential — skipping crisis detection'],
+            mcpClassification: false,
+            recommendedAction: 'No action required — message is not about the user.',
+            flagged: false,
+            reason: 'Non-self reference or ambiguous message'
+          };
 
 //     const basicCheck = checkContent(text);
 //     const patternAnalysis = this.calculatePatternScore(text);
@@ -1137,6 +1151,7 @@ const THIRD_PERSON_INDICATORS = [
   'my friend', 'my brother', 'my sister', 'my mother', 'my father',
   'my mom', 'my dad', 'my son', 'my daughter', 'my cousin',
   'my colleague', 'my classmate', 'my teacher', 'my husband', 'my wife',
+  
   'someone i know', 'a person i know', 'someone else',
   'he wants', 'she wants', 'they want', 'he is going to', 'she is going to',
   'he said', 'she said', 'they said', 'he told me', 'she told me',
@@ -1196,6 +1211,30 @@ const THIRD_PERSON_INDICATORS = [
   'mera yaar', 'meri saheli', 'mera veer', 'meri pen',
   'meri maa', 'mera pita', 'koi hor',
 ];
+
+/**
+ * Returns true only when the message is clearly self-referential.
+ * - If any third-person indicator is present, returns false.
+ * - If any self-referential indicator is present (and no third-person found), returns true.
+ * - Otherwise returns false (conservative default — do not treat ambiguous messages as self-harm).
+ */
+export const isAboutSelf = (text: string): boolean => {
+  if (!text || typeof text !== 'string') return false;
+  const lower = text.toLowerCase();
+
+  // If message explicitly mentions third-person indicators -> not about self
+  for (const t of THIRD_PERSON_INDICATORS) {
+    if (t && lower.includes(t)) return false;
+  }
+
+  // If message contains explicit self-referential indicators -> about self
+  for (const s of SELF_REFERENTIAL_INDICATORS) {
+    if (s && lower.includes(s)) return true;
+  }
+
+  // Conservative default: treat ambiguous messages as NOT about self
+  return false;
+};
 
 export const isAboutSelf = (text: string): boolean => {
   const lowerText = text.toLowerCase();
@@ -2080,22 +2119,18 @@ class EnhancedSuicideDetector {
       };
     }
 
-    // ── STEP 3: Full risk analysis ─────────────────────────────────────────
+    // ── STEP 3: Full risk analysis (STRICT: only use ENHANCED_SUICIDE_PATTERNS) ──
     const basicCheck = checkContent(text);
     const patternAnalysis = this.calculatePatternScore(text);
-    const contextualAnalysis = this.analyzeContextualRisk(text, context);
-    const mcpClassification = await this.callMCPClassifier(text);
 
-    // Emotional distress words only boost score if other risk indicators already exist
-    const emotionBoost = patternAnalysis.score > 0 ? patternAnalysis.emotionCount * 3 : 0;
-    const totalScore = patternAnalysis.score + contextualAnalysis.score + emotionBoost;
-
-    const riskLevel = this.determineRiskLevel(totalScore, mcpClassification);
+    // Do NOT use contextual indicators, emotion boosts or MCP classifier here.
+    // Only ENHANCED_SUICIDE_PATTERNS determine the score.
+    const totalScore = patternAnalysis.score;
+    const riskLevel = this.determineRiskLevel(totalScore, false);
 
     const confidence = Math.min(
-      (totalScore / 20) * 0.7 +
-      (mcpClassification ? 0.3 : 0) +
-      (basicCheck.flagged ? 0.2 : 0),
+      (totalScore / 20) * 0.9 +
+      (basicCheck.flagged ? 0.1 : 0),
       1.0
     );
 
@@ -2103,8 +2138,8 @@ class EnhancedSuicideDetector {
       riskLevel,
       confidence,
       riskFactors: patternAnalysis.matchedPatterns,
-      contextualCues: contextualAnalysis.contextualCues,
-      mcpClassification,
+      contextualCues: [],
+      mcpClassification: false,
       recommendedAction: this.getRecommendedAction(riskLevel),
       flagged: riskLevel !== 'low' || basicCheck.flagged,
       reason: basicCheck.reason || 'Enhanced suicide/self-harm risk patterns detected'
