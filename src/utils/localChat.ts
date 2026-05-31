@@ -24,6 +24,7 @@
 // src/utils/localChat.ts - Local storage with GitHub Models API + Backend Sync
 import { ChatMessage, Conversation } from '../types';
 import { syncChatToBackend, deleteChatFromBackend } from './cloudSync';
+import { isAboutSelf } from './enhancedSuicideDetection';
 
 // Get current user ID from sessionStorage (set during login)
 const getCurrentUserId = (): string => {
@@ -260,7 +261,7 @@ const CRISIS_KEYWORDS = [
 
 export const isCrisisMessage = (message: string): boolean => {
   const lowerMessage = message.toLowerCase();
-  return CRISIS_KEYWORDS.some(keyword => lowerMessage.includes(keyword));
+  return isAboutSelf(message) && CRISIS_KEYWORDS.some(keyword => lowerMessage.includes(keyword));
 };
 
 export const getCrisisResponse = (): string => {

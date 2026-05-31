@@ -1236,17 +1236,6 @@ export const isAboutSelf = (text: string): boolean => {
   return false;
 };
 
-export const isAboutSelf = (text: string): boolean => {
-  const lowerText = text.toLowerCase();
-  for (const indicator of THIRD_PERSON_INDICATORS) {
-    if (lowerText.includes(indicator.toLowerCase())) return false;
-  }
-  for (const indicator of SELF_REFERENTIAL_INDICATORS) {
-    if (lowerText.includes(indicator.toLowerCase())) return true;
-  }
-  return true;
-};
-
 // ============================================================
 // SUICIDE & SELF-HARM PATTERNS
 // direct   — full explicit phrases (score 10 each)
