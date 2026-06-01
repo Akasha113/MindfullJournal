@@ -1247,7 +1247,7 @@ app.get('/api/chats/all', optionalAuthMiddleware, async (req, res) => {
     }
 
     // Build a safe query that avoids casting invalid strings to ObjectId
-    const query: any = { isDeleted: false };
+    const query = { isDeleted: false };
     if (req.isAuthenticated) {
       query.userId = req.userId;
     } else {
