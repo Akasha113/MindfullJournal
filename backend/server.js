@@ -1236,11 +1236,31 @@ app.get('/api/chats/all', optionalAuthMiddleware, async (req, res) => {
   try {
     // Use authenticated user ID or conversation ID for anonymous users
     const userId = req.isAuthenticated ? req.userId : req.headers['x-conversation-id'] || 'anonymous';
-    
-    const chats = await EncryptedChat.find({
-      userId: userId,
-      isDeleted: false,
-    }).select('conversationId encryptedData iv authTag dataHash clientUpdatedAt createdAt');
+
+    // If unauthenticated and no usable conversation id was provided, return an empty set
+    if (!req.isAuthenticated) {
+      const convoHeader = req.headers['x-conversation-id'];
+      if (!convoHeader || convoHeader === 'anonymous' || convoHeader === 'default') {
+        console.log('📥 Anonymous request without conversation id - returning empty chats');
+        return res.status(200).json({ message: 'Chats retrieved successfully', count: 0, chats: [], isAuthenticated: false });
+      }
+    }
+
+    // Build a safe query that avoids casting invalid strings to ObjectId
+    const query: any = { isDeleted: false };
+    if (req.isAuthenticated) {
+      query.userId = req.userId;
+    } else {
+      const convoId = String(req.headers['x-conversation-id']);
+      if (mongoose.Types.ObjectId.isValid(convoId)) {
+        query.userId = mongoose.Types.ObjectId(convoId);
+      } else {
+        // Search by conversationId OR by any userId string stored for anonymous entries
+        query.$or = [{ conversationId: convoId }, { userId: convoId }];
+      }
+    }
+
+    const chats = await EncryptedChat.find(query).select('conversationId encryptedData iv authTag dataHash clientUpdatedAt createdAt');
 
     res.status(200).json({
       message: 'Chats retrieved successfully',

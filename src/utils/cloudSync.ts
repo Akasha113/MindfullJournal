@@ -92,6 +92,12 @@ export const fetchChatsFromBackend = async (conversationId?: string): Promise<{
   error?: string;
 }> => {
   try {
+    // If there's no auth token and no valid conversationId, skip backend fetch for anonymous users
+    const token = getToken();
+    if (!token && (!conversationId || conversationId === 'default' || conversationId === 'anonymous')) {
+      console.log('No auth token and no valid conversationId - skipping backend chat fetch for anonymous user');
+      return { success: true, chats: [] };
+    }
     const response = await fetch(`${API_URL}/api/chats/all`, {
       headers: getAuthHeaders(conversationId),
     });

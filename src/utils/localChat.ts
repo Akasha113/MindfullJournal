@@ -377,6 +377,12 @@ export const getAllConversations = (): Conversation[] => {
 // Sync conversations from backend (call this on login)
 export const syncConversationsFromBackend = async (): Promise<void> => {
   try {
+    // Skip backend sync for anonymous/default users to avoid sending invalid ids
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId || currentUserId === 'default' || currentUserId === 'anonymous') {
+      console.log('Skipping backend sync: anonymous or default user');
+      return;
+    }
     const { fetchChatsFromBackend } = await import('./cloudSync');
     const result = await fetchChatsFromBackend();
     
