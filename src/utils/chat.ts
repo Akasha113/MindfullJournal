@@ -45,23 +45,18 @@ const CRITICAL_SUICIDE_PATTERNS = [
   'i wish i were dead',
   'i want to be dead',
   'i am better off dead',
-  'everyone would be better without me',
+  
   'no reason to live',
   'nothing to live for',
   'i want to stop existing',
   'life is not worth living',
-  'i cant take it anymore',
-  'i can\'t take it anymore',
-  'this is my last message',
-  'goodbye forever',
+  
   'i have made up my mind to die',
   'i will end my suffering',
-  'i want to jump',
+  
   'i want to overdose',
   'i have pills ready',
-  'i have a gun',
-  'i have a knife ready',
-
+  
   // ===== ENGLISH — Self-Harm =====
   'i want to hurt myself',
   'i want to harm myself',
@@ -81,11 +76,7 @@ const CRITICAL_SUICIDE_PATTERNS = [
   'i want to starve myself',
   'i am starving myself',
   'i want to punish myself',
-  'i deserve pain',
-  'i deserve to be hurt',
-  'i want to feel pain',
-  'i need to feel pain',
-
+  
   // ===== URDU — Suicide =====
   'khudkushi karna chahti hoon',
   'khudkushi karna chahta hoon',
@@ -157,10 +148,7 @@ const CRITICAL_SUICIDE_PATTERNS = [
   'apne aap ko hurt karna chahta hoon',
   'main khud ko nuksaan pohchana chahti hoon',
   'main khud ko nuksaan pohchana chahta hoon',
-  'dard chahiye mujhe',
-  'mujhe saza milni chahiye',
-  'main apne aap ko saza dena chahti hoon',
-  'main apne aap ko saza dena chahta hoon',
+  
 
   // ===== SPANISH — Suicide =====
   'quiero matarme',
@@ -311,8 +299,8 @@ const CRITICAL_SUICIDE_PATTERNS = [
   'main apne aap ko takleef dena chahta hoon',
   'main khud ko zakhmi karna chahta hoon',
   'main khud ko kaatna chahta hoon',
-  'mujhe dard chahiye',
-  'main saza chahta hoon apne aap ko',
+ 
+ 
   'main khud ko jalana chahta hoon',
   'main apne aap ko nuksaan pohchana chahta hoon',
 
@@ -466,7 +454,7 @@ const CRITICAL_SUICIDE_PATTERNS = [
   // ===== PUNJABI — Self-Harm =====
   'main apne aap nu takleef dena chahunda haan',
   'main khud nu zakhmi karna chahunda haan',
-  'mujhe dard chahida hai',
+ 
   'main saza chahunda haan apne aap nu',
 ];
 
