@@ -179,34 +179,28 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'i am going to commit suicide',
     'i have decided to die',
     'i will take my own life',
-    'tonight is my last night',
-    'i have a plan to',
-    'i already have the means',
-    'i know how i will do it',
-    'i want to end it all',
-    'i want to disappear forever',
+    
+    
     'i dont want to be alive anymore',
     'i don\'t want to be alive anymore',
     'i wish i was dead',
     'i wish i were dead',
     'i want to be dead',
     'i am better off dead',
-    'everyone would be better without me',
-    'no reason to live',
-    'nothing to live for',
+    
+   
+    
     'i want to stop existing',
-    'life is not worth living',
-    'i cant take it anymore',
-    'i can\'t take it anymore',
-    'this is my last message',
-    'goodbye forever',
+    
+   
+   
+    
     'i have made up my mind to die',
     'i will end my suffering',
-    'i want to jump',
+    
     'i want to overdose',
-    'i have pills ready',
-    'i have a gun',
-    'i have a knife ready',
+    
+  
 
     // ===== ENGLISH — Self-Harm =====
     'i want to hurt myself',
@@ -217,8 +211,8 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'i hurt myself',
     'i burn myself',
     'i want to burn myself',
-    'i hit myself',
-    'i want to hit myself',
+    
+   
     'i want to injure myself',
     'i am self harming',
     'i self harm',
@@ -227,11 +221,7 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'i want to starve myself',
     'i am starving myself',
     'i want to punish myself',
-    'i deserve pain',
-    'i deserve to be hurt',
-    'i want to feel pain',
-    'i need to feel pain',
-
+  
     // ===== URDU — Suicide =====
     'khudkushi karna chahti hoon',
     'khudkushi karna chahta hoon',
@@ -239,12 +229,12 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'jaan lena chahta hoon',
     'jaan lena chahti hon',
     'jaan lena chahta hon',
-    'marna chahti hoon',
-    'marna chahta hoon',
+    'marna/mrna chahti hoon',
+    'marna/mrna chahta hoon',
     'marna chahti hon',
-    'marna chahta hon',
-    'mn marna chahti hon',
-    'mn marna chahta hon',
+    'marna/mrna chahta hon',
+    'mn marna/mrna chahti hon',
+    'mn marna/mrna chahta hon',
     'khudkushi karne wali hoon',
     'khudkushi karne wala hoon',
     'khudkushi krne wali hoon',
@@ -261,8 +251,7 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'khud ko maarna chahta hoon',
     'khud ko marna chahti hoon',
     'khud ko marna chahta hoon',
-    'aaj raat meri aakhri raat hai',
-    'kal mera aakhri din hai',
+   
     'main marne ka faisla kar chuki hoon',
     'main marne ka faisla kar chuka hoon',
     'mn marne ka faisla kar chuki hoon',
@@ -296,8 +285,8 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'khud ko jalana chahta hoon',
     'apne aap ko hurt karna chahti hoon',
     'apne aap ko hurt karna chahta hoon',
-    'dard chahiye mujhe',
-    'mujhe saza milni chahiye',
+    
+    
     'main apne aap ko saza dena chahti hoon',
     'main apne aap ko saza dena chahta hoon',
 
@@ -505,204 +494,14 @@ const ENHANCED_SUICIDE_PATTERNS = {
     'main mar jaana chahunda haan',
 
     // ===== PUNJABI — Self-Harm =====
-    'main apne aap nu takleef dena chahunda haan',
+    'main apne aap nu takleef dena chahta hoon',
     'main khud nu zakhmi karna chahunda haan',
-    'mujhe dard chahida hai',
-    'main saza chahunda haan apne aap nu',
-  ],
-  indirect: [
-    // ===== ENGLISH =====
-    'i can\'t go on anymore',
-    'there\'s no point in living',
-    'everyone would be better without me',
-    'i feel like giving up',
-    'life is too hard',
-    'i don\'t see a way out',
-    'i feel trapped',
-    'nothing will ever get better',
-    'i am a burden to everyone',
-    'i just want the pain to stop',
-
-    // ===== URDU =====
-    'zindagi se tang aa gayi hoon',
-    'zindagi se tang aa gaya hoon',
-    'zindagi ka koi matlab nahi',
-    'sab log bina mere behtar honge',
-    'main haar maan gayi hoon',
-    'main haar maan gaya hoon',
-    'zindagi bahut mushkil hai',
-    'koi raasta nahi dikhta',
-    'main phas gayi hoon',
-    'main phas gaya hoon',
-    'kabhi kuch behtar nahi hoga',
-    'main sab ki bojh hoon',
-    'dard khatam karna chahti hoon',
-    'dard khatam karna chahta hoon',
-
-    // ===== SPANISH =====
-    'no puedo seguir',
-    'no hay razón para vivir',
-    'todos estarían mejor sin mí',
-    'quiero rendirme',
-    'me siento atrapado',
-    'nunca mejorará',
-    'soy una carga para todos',
-
-    // ===== FRENCH =====
-    'je ne peux pas continuer',
-    'il n\'y a pas de raison de vivre',
-    'tout le monde serait mieux sans moi',
-    'je veux abandonner',
-    'je me sens piégé',
-    'rien n\'ira jamais mieux',
-    'je suis un fardeau pour tout le monde',
-
-    // ===== ARABIC =====
-    'لا يمكنني المتابعة',
-    'لا فائدة من العيش',
-    'الجميع سيكونون أفضل بدوني',
-    'أنا محاصر',
-    'أنا عبء على الجميع',
-
-    // ===== GERMAN =====
-    'ich kann nicht mehr',
-    'alle wären besser ohne mich',
-    'ich fühle mich gefangen',
-    'es wird nie besser',
-    'ich bin eine Last für alle',
-
-    // ===== HINDI =====
-    'main aur jee nahi sakta',
-    'jeene ka koi matlab nahi',
-    'main haar maan gaya hoon',
-    'main fasa hoon',
-    'main sab ke liye bojh hoon',
-
-    // ===== TURKISH =====
-    'devam edemiyorum',
-    'herkes bensiz daha iyi olurdu',
-    'çıkış yolu göremiyorum',
-    'herkese yük oluyorum',
-  ],
-  methods: [
-    // ===== ENGLISH =====
-    'pills', 'rope', 'bridge', 'gun', 'knife', 'overdose',
-    'hanging', 'jumping', 'drowning', 'cutting', 'poison',
-
-    // ===== URDU =====
-    'goli', 'rassee', 'pul', 'bandook', 'chaku', 'dawai',
-    'latakna', 'koodna', 'dubna', 'kaatna', 'zehar',
-
-    // ===== SPANISH =====
-    'pastillas', 'cuerda', 'puente', 'arma', 'cuchillo', 'sobredosis',
-    'ahorcamiento', 'saltar', 'veneno',
-
-    // ===== FRENCH =====
-    'pilules', 'corde', 'pont', 'couteau', 'overdose',
-    'pendaison', 'sauter', 'poison',
-
-    // ===== ARABIC =====
-    'حبوب', 'حبل', 'جسر', 'سكين', 'جرعة زائدة', 'سم',
-
-    // ===== GERMAN =====
-    'pillen', 'seil', 'brücke', 'messer', 'überdosis', 'gift',
-
-    // ===== HINDI =====
-    'rassi', 'pul', 'chhuri', 'jahar', 'latakna', 'koodna', 'doobna',
-
-    // ===== TURKISH =====
-    'hap', 'ip', 'köprü', 'bıçak', 'zehir',
-  ],
-  temporal: [
-    // ===== ENGLISH =====
-    'tonight', 'very soon', 'this is my last',
-    'final goodbye', 'last time', 'end is near',
-
-    // ===== URDU =====
-    'aaj raat', 'bahut jaldi', 'aakhri baar', 'yeh meri aakhri',
-    'ant kareeb hai', 'aakhri alvida',
-
-    // ===== SPANISH =====
-    'esta noche', 'muy pronto', 'última vez', 'el fin está cerca',
-
-    // ===== FRENCH =====
-    'ce soir', 'très bientôt', 'dernière fois', 'la fin est proche',
-
-    // ===== ARABIC =====
-    'الليلة', 'قريباً جداً', 'آخر مرة', 'النهاية قريبة',
-
-    // ===== GERMAN =====
-    'heute nacht', 'sehr bald', 'das letzte mal', 'das ende ist nah',
-
-    // ===== HINDI =====
-    'aaj raat', 'bahut jaldi', 'aakhri baar', 'ant kareeb hai',
-
-    // ===== TURKISH =====
-    'bu gece', 'çok yakında', 'son kez', 'son yakın',
-  ],
-  emotional_distress: [
-    // ===== ENGLISH =====
-    'hopeless', 'worthless', 'empty', 'numb', 'broken',
-    'alone', 'abandoned', 'rejected', 'failure', 'useless',
-
-    // ===== URDU =====
-    'be umeed', 'bekar', 'khali', 'sunn', 'tota hua',
-    'akeli', 'akela', 'chhoda gaya', 'naakam', 'laachaar',
-    'dukhi', 'pareshan', 'ghamgin', 'udass',
-
-    // ===== SPANISH =====
-    'desesperado', 'inútil', 'vacío', 'roto',
-    'solo', 'abandonado', 'fracaso',
-
-    // ===== ARABIC =====
-    'يائس', 'عديم القيمة', 'فارغ', 'مكسور',
-    'وحيد', 'مهجور', 'مرفوض', 'فشل',
-
-    // ===== GERMAN =====
-    'hoffnungslos', 'wertlos', 'leer', 'zerbrochen',
-    'allein', 'verlassen', 'versagen',
-
-    // ===== HINDI =====
-    'nihasa', 'behkaar', 'khali', 'akela', 'naakam',
-    'udas', 'pareshaan', 'dukhi',
-
-    // ===== TURKISH =====
-    'umutsuz', 'değersiz', 'boş', 'kırılmış',
-    'yalnız', 'terk edilmiş', 'başarısız',
+ 
+   
   ]
 };
 
-const CONTEXTUAL_RISK_INDICATORS = {
-  isolation: [
-    'no one cares', 'all alone', 'nobody understands', 'no friends',
-    'koi care nahi karta', 'bilkul akeli', 'bilkul akela', 'koi samajhta nahi',
-    'koi dost nahi', 'nadie se preocupa', 'personne ne s\'en soucie',
-    'niemand kümmert sich', 'kimse umursamıyor',
-  ],
-  plan_formation: [
-    'i have thought about', 'i have been planning', 'i know exactly how',
-    'i\'ve made plans', 'everything is ready', 'i\'ve decided',
-    'main soch chuki hoon', 'main plan bana rahi hoon', 'maine faisla kiya hai',
-    'he pensado en ello', 'j\'ai décidé', 'ich habe entschieden',
-  ],
-  means_access: [
-    'i have access to', 'i can get', 'i already have',
-    'i possess', 'readily available',
-    'mere paas hai', 'main la sakti hoon', 'main la sakta hoon',
-    'tengo acceso a', 'j\'ai accès à', 'ich habe zugang zu',
-  ],
-  timeline: [
-    'very soon', 'tonight', 'today', 'this week', 'final', 'last',
-    'aaj raat', 'aaj', 'is hafte', 'aakhri',
-    'esta noche', 'hoy', 'ce soir', 'heute nacht',
-  ],
-  finality: [
-    'final decision', 'made up my mind', 'there\'s no going back', 'i\'m done',
-    'no more chances', 'point of no return',
-    'aakhri faisla', 'ab wapas nahi ja sakti', 'ab wapas nahi ja sakta',
-    'decisión final', 'décision finale', 'endgültige entscheidung',
-  ]
-};
+
 
 class EnhancedSuicideDetector {
   constructor() {}
@@ -719,65 +518,14 @@ class EnhancedSuicideDetector {
       }
     }
 
-    for (const pattern of ENHANCED_SUICIDE_PATTERNS.indirect) {
-      if (lowerText.includes(pattern)) {
-        score += 6;
-        matchedPatterns.push(`Indirect indicator: "${pattern}"`);
-      }
-    }
-
-    for (const method of ENHANCED_SUICIDE_PATTERNS.methods) {
-      if (lowerText.includes(method)) {
-        score += 8;
-        matchedPatterns.push(`Method reference: "${method}"`);
-      }
-    }
-
-    for (const temporal of ENHANCED_SUICIDE_PATTERNS.temporal) {
-      if (lowerText.includes(temporal)) {
-        score += 7;
-        matchedPatterns.push(`Temporal indicator: "${temporal}"`);
-      }
-    }
-
-    for (const emotion of ENHANCED_SUICIDE_PATTERNS.emotional_distress) {
-      if (lowerText.includes(emotion)) {
-        score += 3;
-        matchedPatterns.push(`Emotional distress: "${emotion}"`);
-      }
-    }
-
     return { score, matchedPatterns };
   }
 
   private analyzeContextualRisk(text: string, context?: ConversationContext): { score: number; contextualCues: string[] } {
-    const lowerText = text.toLowerCase();
-    let score = 0;
-    const contextualCues: string[] = [];
-
-    Object.entries(CONTEXTUAL_RISK_INDICATORS).forEach(([category, indicators]) => {
-      indicators.forEach(indicator => {
-        if (lowerText.includes(indicator)) {
-          const weight = category === 'plan_formation' || category === 'means_access' ? 5 : 3;
-          score += weight;
-          contextualCues.push(`${category}: "${indicator}"`);
-        }
-      });
-    });
-
-    if (context) {
-      const recentMessages = context.messages.slice(-5);
-      const negativePatterns = recentMessages.filter(msg =>
-        msg.role === 'user' && this.calculatePatternScore(msg.content).score > 0
-      );
-
-      if (negativePatterns.length >= 2) {
-        score += 4;
-        contextualCues.push('Escalating pattern detected in conversation history');
-      }
-    }
-
-    return { score, contextualCues };
+    return {
+      score: 0,
+      contextualCues: []
+    };
   }
 
   private async callMCPClassifier(text: string): Promise<boolean> {
@@ -913,6 +661,6 @@ export default {
   suicideDetector,
   enhancedCheckContent,
   ENHANCED_SUICIDE_PATTERNS,
-  CONTEXTUAL_RISK_INDICATORS,
+ 
   isAboutSelf,
 };
