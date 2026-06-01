@@ -11,7 +11,7 @@ import EncryptedChat from './models/EncryptedChat.js';
 import EncryptedJournal from './models/EncryptedJournal.js';
 import { hashPassword, verifyPassword, generateToken, generateVerificationCode } from './utils/crypto.js';
 import { initializeEmailService, isEmailServiceReady, sendVerificationEmail, sendPasswordResetEmail, sendCrisisAlertEmail, sendAdminContactEmail } from './utils/email.js';
-import { authMiddleware, errorHandler } from './middleware/auth.js';
+import { authMiddleware, optionalAuthMiddleware, errorHandler } from './middleware/auth.js';
 
 dotenv.config();
 
@@ -1174,7 +1174,7 @@ app.post('/api/test-email', async (req, res) => {
  * Client sends encrypted chat data
  * Backend stores without access to decrypted content
  */
-app.post('/api/chats/sync', authMiddleware, async (req, res) => {
+app.post('/api/chats/sync', optionalAuthMiddleware, async (req, res) => {
   try {
     const { conversationId, encryptedData, iv, authTag, clientUpdatedAt, dataHash } = req.body;
 
@@ -1183,9 +1183,12 @@ app.post('/api/chats/sync', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Missing required encryption fields' });
     }
 
+    // Use authenticated user ID or conversation ID for anonymous users
+    const userId = req.isAuthenticated ? req.userId : conversationId;
+
     // Find or create encrypted chat record
     let chat = await EncryptedChat.findOne({
-      userId: req.userId,
+      userId: userId,
       conversationId: conversationId,
     });
 
@@ -1200,7 +1203,7 @@ app.post('/api/chats/sync', authMiddleware, async (req, res) => {
     } else {
       // Create new chat
       chat = new EncryptedChat({
-        userId: req.userId,
+        userId: userId,
         conversationId: conversationId,
         encryptedData,
         iv,
@@ -1217,6 +1220,7 @@ app.post('/api/chats/sync', authMiddleware, async (req, res) => {
       message: 'Chat synced successfully',
       chatId: chat._id,
       conversationId: conversationId,
+      isAuthenticated: req.isAuthenticated,
     });
   } catch (error) {
     console.error('Chat sync error:', error);
@@ -1228,10 +1232,13 @@ app.post('/api/chats/sync', authMiddleware, async (req, res) => {
  * 🔒 GET ALL ENCRYPTED CHATS FOR USER
  * Returns encrypted data - client will decrypt
  */
-app.get('/api/chats/all', authMiddleware, async (req, res) => {
+app.get('/api/chats/all', optionalAuthMiddleware, async (req, res) => {
   try {
+    // Use authenticated user ID or conversation ID for anonymous users
+    const userId = req.isAuthenticated ? req.userId : req.headers['x-conversation-id'] || 'anonymous';
+    
     const chats = await EncryptedChat.find({
-      userId: req.userId,
+      userId: userId,
       isDeleted: false,
     }).select('conversationId encryptedData iv authTag dataHash clientUpdatedAt createdAt');
 
@@ -1239,6 +1246,7 @@ app.get('/api/chats/all', authMiddleware, async (req, res) => {
       message: 'Chats retrieved successfully',
       count: chats.length,
       chats: chats,
+      isAuthenticated: req.isAuthenticated,
     });
   } catch (error) {
     console.error('Get chats error:', error);

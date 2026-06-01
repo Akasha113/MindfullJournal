@@ -11,7 +11,26 @@
  */
 
 import { getUserEncryptionKey, encryptData, decryptData, hashData } from './encryption';
-import { getToken, getAuthHeaders, API_URL } from './api';
+import { getToken, API_URL } from './api';
+
+// Get auth headers - now with x-conversation-id support for anonymous users
+const getAuthHeaders = (conversationId?: string) => {
+  const token = getToken();
+  const headers: any = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  // Send conversation ID for anonymous user tracking
+  if (conversationId) {
+    headers['x-conversation-id'] = conversationId;
+  }
+  
+  return headers;
+};
 
 // =====================
 // ENCRYPTED CHAT SYNC
@@ -35,10 +54,10 @@ export const syncChatToBackend = async (
     const { encryptedData, iv, authTag } = await encryptData(conversationData, encryptionKey);
     const dataHash = await hashData(conversationData);
 
-    // Send to backend
+    // Send to backend with conversation ID in headers for anonymous users
     const response = await fetch(`${API_URL}/api/chats/sync`, {
       method: 'POST',
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders(conversationId),
       body: JSON.stringify({
         conversationId,
         encryptedData,
@@ -51,11 +70,12 @@ export const syncChatToBackend = async (
 
     if (!response.ok) {
       const error = await response.json();
+      console.error('❌ Sync error response:', error);
       throw new Error(error.error || 'Failed to sync chat');
     }
 
     const result = await response.json();
-    console.log('✅ Chat synced to backend:', conversationId);
+    console.log('✅ Chat synced to backend:', conversationId, `(Auth: ${result.isAuthenticated})`);
     return { success: true };
   } catch (error) {
     console.error('❌ Failed to sync chat to backend:', error);
@@ -66,14 +86,14 @@ export const syncChatToBackend = async (
 /**
  * Fetch all encrypted chats from backend
  */
-export const fetchChatsFromBackend = async (): Promise<{
+export const fetchChatsFromBackend = async (conversationId?: string): Promise<{
   success: boolean;
   chats?: any[];
   error?: string;
 }> => {
   try {
     const response = await fetch(`${API_URL}/api/chats/all`, {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders(conversationId),
     });
 
     if (!response.ok) {
@@ -81,6 +101,7 @@ export const fetchChatsFromBackend = async (): Promise<{
     }
 
     const data = await response.json();
+    console.log(`📥 Fetched chats - Count: ${data.count}, Auth: ${data.isAuthenticated}`);
     
     if (!data.chats || data.chats.length === 0) {
       console.log('No chats found on backend');
