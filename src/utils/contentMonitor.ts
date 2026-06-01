@@ -111,6 +111,23 @@ const isSelfReferentialText = (text: string): boolean => {
   return false;
 };
 
+// Check if a keyword is negated (preceded by negation words within ~15 chars)
+const isKeywordNegated = (text: string, keywordIndex: number, keyword: string): boolean => {
+  const negationWords = ['not', 'don\'t', 'dont', 'won\'t', 'wont', 'isnt', 'isn\'t', 'cant', 'can\'t', 'no ', 'is good', 'is bad', 'is wrong', 'bad idea', 'wrong', 'never'];
+  
+  // Look at text before the keyword (up to 40 chars back)
+  const startIdx = Math.max(0, keywordIndex - 40);
+  const beforeKeyword = text.substring(startIdx, keywordIndex).toLowerCase();
+  
+  for (const negation of negationWords) {
+    if (beforeKeyword.includes(negation)) {
+      return true;
+    }
+  }
+  
+  return false;
+};
+
 export const checkContent = (text: string): { flagged: boolean; reason?: string } => {
   if (!isSelfReferentialText(text)) {
     return { flagged: false };
@@ -119,7 +136,14 @@ export const checkContent = (text: string): { flagged: boolean; reason?: string 
   const lowerText = text.toLowerCase();
   
   for (const keyword of CONCERNING_KEYWORDS) {
-    if (lowerText.includes(keyword)) {
+    const keywordIndex = lowerText.indexOf(keyword);
+    if (keywordIndex !== -1) {
+      // Check if this keyword is negated (e.g., "not harmful", "is good", "is bad", "is wrong")
+      if (isKeywordNegated(lowerText, keywordIndex, keyword)) {
+        // Skip this keyword - it's negated
+        continue;
+      }
+      
       return {
         flagged: true,
         reason: `Contains concerning keyword: "${keyword}"`
